@@ -412,6 +412,28 @@ body {
 .iod-label { font-size: 12px; font-variant: small-caps; letter-spacing: 2px; color: var(--brass); }
 .iod-hint { font-size: 12px; font-style: italic; color: inherit; opacity: .8; }
 
+/* workshop skills */
+.skill-hook {
+  font-size: 17px; font-style: italic; color: var(--ink);
+  border-left: 3px solid var(--brass-bright);
+  background: rgba(232,207,143,.2);
+  padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin-bottom: 14px; line-height: 1.6;
+}
+.skill-teach p { margin: 10px 0; font-size: 16px; line-height: 1.6; color: var(--ink); }
+.skill-big { font-size: 22px; letter-spacing: 2px; color: var(--wood); font-weight: bold; }
+.skill-small { font-size: 14px; line-height: 1.8; color: var(--ink-soft); }
+.skill-answer-zone { display: grid; gap: 10px; }
+.skill-input {
+  font-family: inherit; font-size: 22px; text-align: center;
+  background: rgba(255,255,255,.65); color: var(--ink);
+  border: 1px solid var(--brass); border-radius: 8px;
+  padding: 12px; width: 100%;
+}
+.skill-input:focus { outline: 2px solid var(--brass-bright); }
+.skill-input-right { border-color: var(--green); background: #dbe7cf; font-weight: bold; }
+.skill-input-wrong { border-color: var(--red); background: #ecd3ce; }
+
 /* expedition */
 #expedition-map {
   text-align: center; margin-bottom: 14px; line-height: 2;
@@ -791,6 +813,11 @@ body::after {
       <div class="menu-section">
         <div class="menu-head">Study</div>
         <div class="menu-grid">
+          <button class="menu-card" data-go="workshop" title="Learn a real skill in minutes and keep it for life.">
+            <span class="menu-emblem">&#128736;</span>
+            <span class="menu-title">Workshop</span>
+            <span class="menu-badge" id="workshop-badge"></span>
+          </button>
           <button class="menu-card" data-go="cabinet" title="Open drawers: one small idea, then one question.">
             <span class="menu-emblem">&#128452;</span>
             <span class="menu-title">The Cabinet</span>
@@ -905,6 +932,27 @@ body::after {
       <div class="topbar-right" id="lightning-status"></div>
     </div>
     <div id="lightning-body"></div>
+  </section>
+
+  <!-- WORKSHOP -->
+  <section id="screen-workshop" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">The Workshop</div>
+      <div class="topbar-right" id="workshop-count"></div>
+    </div>
+    <p class="helper-text">Each of these is a real ability. Ten minutes in, you can do something you could not do this morning.</p>
+    <div id="workshop-list"></div>
+  </section>
+
+  <!-- SKILL RUNNER -->
+  <section id="screen-skill" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="workshop">&larr; Workshop</button>
+      <div class="topbar-title" id="skill-topbar"></div>
+      <div class="topbar-right" id="skill-progress"></div>
+    </div>
+    <div id="skill-body"></div>
   </section>
 
   <!-- EXPEDITION -->
@@ -1927,6 +1975,115 @@ const QUESTS = [
 
 </script>
 <script>
+// The Workshop: real skills you can learn in minutes and keep for life.
+// Each: a hook, a short how-to, then generated practice until 5 correct = skill claimed.
+// practice() returns {prompt, answer (string, for typed), choices/c (for multiple choice), explain}
+
+const ROMAN_PAIRS = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+function toRoman(n){ let s=''; ROMAN_PAIRS.forEach(([v,r])=>{ while(n>=v){ s+=r; n-=v; } }); return s; }
+
+const NATO = { A:'Alpha',B:'Bravo',C:'Charlie',D:'Delta',E:'Echo',F:'Foxtrot',G:'Golf',H:'Hotel',I:'India',J:'Juliett',K:'Kilo',L:'Lima',M:'Mike',N:'November',O:'Oscar',P:'Papa',Q:'Quebec',R:'Romeo',S:'Sierra',T:'Tango',U:'Uniform',V:'Victor',W:'Whiskey',X:'X-ray',Y:'Yankee',Z:'Zulu' };
+
+function pickN(arr, n){ const a=arr.slice(); const out=[]; while(out.length<n && a.length){ out.push(a.splice(Math.floor(Math.random()*a.length),1)[0]); } return out; }
+
+const SKILLS = [
+  {
+    id:'roman', icon:'🏛️', title:'Read Roman Numerals', mastery:5,
+    hook:'Movie credits, building dates, clock faces, Super Bowls: the old numbers are everywhere, and after this you will read them like your own name.',
+    teach:`<p>Seven letters carry every number:</p>
+      <p class="skill-big">I=1 &nbsp; V=5 &nbsp; X=10 &nbsp; L=50 &nbsp; C=100 &nbsp; D=500 &nbsp; M=1000</p>
+      <p><b>Rule 1:</b> read left to right and add. XVI = 10+5+1 = <b>16</b>.</p>
+      <p><b>Rule 2:</b> one smaller letter before a bigger one means subtract. IV = <b>4</b>. IX = <b>9</b>. XC = <b>90</b>. CM = <b>900</b>.</p>
+      <p>That is the whole system. MCMXCIV = 1000 + 900 + 90 + 4 = <b>1994</b>.</p>`,
+    practice(){
+      const n = 4 + Math.floor(Math.random() * 2200);
+      const r = toRoman(n);
+      return { prompt:`What number is <b class="skill-big">${r}</b>?`, answer: String(n),
+        explain:`${r} = ${n}. Read it chunk by chunk, subtracting when a smaller letter sits before a bigger one.` };
+    }
+  },
+  {
+    id:'eleven', icon:'✖️', title:'Multiply by 11 in Your Head', mastery:5,
+    hook:'Someone says "what is 53 times 11?" and you answer before they finish the sentence. Today you become that person.',
+    teach:`<p>To multiply any two-digit number by 11:</p>
+      <p><b>1.</b> Split the digits apart. &nbsp; 53 → 5 _ 3</p>
+      <p><b>2.</b> Add the two digits and put the sum in the middle. &nbsp; 5+3=8 → <b>583</b></p>
+      <p><b>3.</b> If the sum is 10 or more, carry the 1 left. &nbsp; 87×11: 8+7=15 → 8,5,7 with the 1 carried → <b>957</b>.</p>
+      <p>That is it. 62×11 = 6 (6+2) 2 = <b>682</b>.</p>`,
+    practice(){
+      const n = 12 + Math.floor(Math.random() * 86);
+      return { prompt:`In your head: <b class="skill-big">${n} × 11</b> = ?`, answer: String(n * 11),
+        explain:`${n}×11 = ${n*11}. Split ${Math.floor(n/10)} and ${n%10}, put their sum (${Math.floor(n/10)+n%10}) in the middle, carry if needed.` };
+    }
+  },
+  {
+    id:'binary', icon:'🖐️', title:'Count to 31 on One Hand', mastery:5,
+    hook:'Computers think in binary, and after this so can your hand: every finger is a number, and one hand counts to 31.',
+    teach:`<p>Give each finger a value, thumb to pinky:</p>
+      <p class="skill-big">1 &nbsp; 2 &nbsp; 4 &nbsp; 8 &nbsp; 16</p>
+      <p>Each finger doubles the last. A raised finger counts, a folded one does not. <b>Add the raised fingers.</b></p>
+      <p>Thumb + middle finger up = 1 + 4 = <b>5</b>. All five up = 1+2+4+8+16 = <b>31</b>.</p>
+      <p>This is exactly how computers store numbers: each wire is on or off, each position doubles. You now read binary: 10110 means 16+4+2 = <b>22</b>.</p>`,
+    practice(){
+      const n = 1 + Math.floor(Math.random() * 31);
+      const bits = [16,8,4,2,1].map(v => (n & v) ? '1' : '0').join('');
+      return { prompt:`Fingers worth 16-8-4-2-1. Which number is <b class="skill-big">${bits}</b>? (1 = finger up)`, answer: String(n),
+        explain:`${bits} = ${[16,8,4,2,1].filter(v => n & v).join(' + ')} = ${n}.` };
+    }
+  },
+  {
+    id:'percent', icon:'🔁', title:'The Percentage Flip', mastery:5,
+    hook:'"What is 4% of 75?" sounds hard. Flip it: 75% of 4 is obviously 3. Same answer, always. This trick feels illegal.',
+    teach:`<p>x% of y is <b>always exactly equal</b> to y% of x. Multiplication does not care about order.</p>
+      <p>So when a percentage looks ugly, flip it:</p>
+      <p><b>8% of 50</b> → 50% of 8 = <b>4</b></p>
+      <p><b>16% of 25</b> → 25% of 16 = <b>4</b></p>
+      <p><b>2% of 350</b> → 350% of 2 = 3.5 × 2 = <b>7</b></p>
+      <p>One of the two directions is almost always easy. Pick that one.</p>`,
+    practice(){
+      const easies = [[4,75],[8,50],[16,25],[2,150],[6,50],[12,25],[4,25],[8,25],[2,350],[18,50],[36,25],[14,50],[5,80],[4,175],[22,50]];
+      const [a,b] = easies[Math.floor(Math.random() * easies.length)];
+      return { prompt:`Flip it in your head: <b class="skill-big">${a}% of ${b}</b> = ?`, answer: String(a * b / 100),
+        explain:`${a}% of ${b} = ${b}% of ${a} = ${a*b/100}.` };
+    }
+  },
+  {
+    id:'nato', icon:'🎙️', title:'Spell Like a Pilot', mastery:8,
+    hook:'"That is S as in... snake?" Never again. Pilots, sailors, and dispatchers share one alphabet, and it takes ten minutes to own.',
+    teach:`<p>The NATO alphabet gives every letter a word that cannot be misheard, even over a bad radio:</p>
+      <p class="skill-small">Alpha Bravo Charlie Delta Echo Foxtrot Golf Hotel India Juliett Kilo Lima Mike November Oscar Papa Quebec Romeo Sierra Tango Uniform Victor Whiskey X-ray Yankee Zulu</p>
+      <p>Your name, license plate, or booking code, spelled with these, lands perfectly on the first try, every time.</p>`,
+    practice(){
+      const letters = Object.keys(NATO);
+      const L = letters[Math.floor(Math.random() * letters.length)];
+      const wrong = pickN(letters.filter(x => x !== L).map(x => NATO[x]), 3);
+      const choices = pickN([NATO[L], ...wrong], 4);
+      return { prompt:`Over the radio, <b class="skill-big">${L}</b> is...`, choices, c: choices.indexOf(NATO[L]),
+        explain:`${L} is ${NATO[L]}.` };
+    }
+  },
+  {
+    id:'moon', icon:'🌙', title:'Read the Moon', mastery:5,
+    hook:'One glance at the night sky and you will know if the moon is growing or shrinking, and roughly where the month stands. Most people never learn this.',
+    teach:`<p>The moon lights up from the <b>right</b>, then empties from the right (in the northern half of the world).</p>
+      <p><b>Lit on the right</b> → waxing (growing), full moon is coming. 🌒🌓🌔</p>
+      <p><b>Lit on the left</b> → waning (shrinking), heading toward dark. 🌖🌗🌘</p>
+      <p>Memory trick: the moon is a liar. When it looks like a <b>D</b> it is <b>growing</b>, when it looks like a <b>C</b> it is shrinking ("C" for closing down).</p>
+      <p>Growing takes about two weeks, shrinking two weeks. That glance now tells you the whole month.</p>`,
+    practice(){
+      const waxing = [['🌒','a thin crescent, lit on the right'],['🌓','half lit, on the right'],['🌔','almost full, lit toward the right']];
+      const waning = [['🌖','almost full, lit toward the left'],['🌗','half lit, on the left'],['🌘','a thin crescent, lit on the left']];
+      const isWax = Math.random() < 0.5;
+      const [icon, desc] = (isWax ? waxing : waning)[Math.floor(Math.random() * 3)];
+      const choices = ['Growing (waxing): a full moon is coming', 'Shrinking (waning): dark skies are coming'];
+      return { prompt:`Tonight you see <span class="skill-big">${icon}</span> (${desc}). The moon is...`, choices, c: isWax ? 0 : 1,
+        explain:`Lit on the ${isWax ? 'right: it is growing toward full' : 'left: it is shrinking toward new'}.` };
+    }
+  }
+];
+
+</script>
+<script>
 // The Revelations pack: questions whose answers you will want to tell someone.
 // w:1 marks a "worth retelling" fact, eligible for the end-of-session take-away.
 QUESTIONS.push(
@@ -2038,7 +2195,9 @@ const ACHIEVEMENTS = [
   { id:'a24', icon:'🎓', name:'Master of All Wings',desc:'Earn every wing’s diploma', test:s => Object.keys(s.exams||{}).length >= Object.keys(DOMAINS).length },
   { id:'a25', icon:'🥾', name:'Into the Field',     desc:'Complete a weekly field quest', test:s => Object.keys(s.questsDone||{}).length >= 1 },
   { id:'a26', icon:'🗣️', name:'The Teacher',        desc:'Teach an idea back in your own words', test:s => (s.journal||[]).some(e => e.mine) },
-  { id:'a27', icon:'🕯️', name:'Quiet Day Keeper',   desc:'Save your streak with a token', test:s => !!s.tokenUsed }
+  { id:'a27', icon:'🕯️', name:'Quiet Day Keeper',   desc:'Save your streak with a token', test:s => !!s.tokenUsed },
+  { id:'a28', icon:'🛠️', name:'New Hands',          desc:'Learn your first Workshop skill', test:s => Object.keys(s.skills||{}).length >= 1 },
+  { id:'a29', icon:'🧰', name:'Jack of All Trades', desc:'Learn every Workshop skill', test:s => Object.keys(s.skills||{}).length >= SKILLS.length }
 ];
 
 </script>
@@ -2285,6 +2444,7 @@ function freshSave(){
     mysteryClaimed: null,   // day string of last opened mystery drawer
     examiner: {},           // month key -> score when passed
     expeditionBest: 0,      // most loot brought home
+    skills: {},             // skill id -> true once learned
     journal: [],            // starred ideas: {t: title, x: text, d: domain, ts, mine?}
     exams: {},              // domain -> true once diploma earned
     questsDone: {},         // week key -> true
@@ -2500,6 +2660,7 @@ function go(name){
   if (name === 'journal') renderJournal();
   if (name === 'wheel') renderWheel();
   if (name === 'expedition') startExpedition();
+  if (name === 'workshop') renderWorkshop();
   if (name === 'duel') renderDuelSetup();
   SFX.page();
 }
@@ -2657,6 +2818,7 @@ function renderHome(){
   $('#honors-badge').textContent = `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} plaques`;
   $('#journal-badge').textContent = S.journal.length ? `${S.journal.length} kept` : 'empty';
   $('#expedition-badge').textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
+  $('#workshop-badge').textContent = `${Object.keys(S.skills).length} of ${SKILLS.length} learned`;
 
   // idea of the day: one drawer, chosen by the calendar
   const dayN = Math.floor(Date.now() / 86400000);
@@ -2801,6 +2963,129 @@ function openMystery(){
       <div class="iod-hint">Loose light, left by whoever owned this cabinet before you.</div>`;
     myst.onclick = null;
   }
+}
+
+// ---------- THE WORKSHOP (skills) ----------
+function renderWorkshop(){
+  const list = $('#workshop-list');
+  list.innerHTML = '';
+  $('#workshop-count').textContent = `${Object.keys(S.skills).length} / ${SKILLS.length}`;
+  SKILLS.forEach(sk => {
+    const learned = !!S.skills[sk.id];
+    const item = el(`<button class="bridge-item ${learned ? 'bridge-done' : ''}">
+      <span class="bridge-domains">${sk.icon} ${learned ? 'A skill you own' : 'A skill you could own in minutes'}</span>
+      <span class="bridge-title">${sk.title}</span>
+      <span class="bridge-state">${learned ? '✓ learned · practice anytime' : 'learn it now'}</span>
+    </button>`);
+    item.addEventListener('click', () => openSkill(sk));
+    list.appendChild(item);
+  });
+}
+
+let skillRun = null;
+function openSkill(sk){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#screen-skill').classList.add('active');
+  window.scrollTo(0,0);
+  $('#skill-topbar').textContent = sk.title;
+  $('#skill-progress').textContent = '';
+  const body = $('#skill-body');
+  body.innerHTML = '';
+  body.appendChild(el(`<div class="lesson-card">
+    <div class="skill-hook">${sk.icon} ${sk.hook}</div>
+    <div class="skill-teach">${sk.teach}</div>
+    <button class="btn-primary" id="skill-go">${S.skills[sk.id] ? 'Practice again' : `Try it: get ${sk.mastery} right and it is yours`}</button>
+  </div>`));
+  $('#skill-go').addEventListener('click', () => {
+    skillRun = { sk, right: 0 };
+    renderSkillPractice();
+  });
+}
+function renderSkillPractice(){
+  const { sk } = skillRun;
+  $('#skill-progress').textContent = `${skillRun.right} / ${sk.mastery}`;
+  const body = $('#skill-body');
+  body.innerHTML = '';
+  const p = sk.practice();
+  const card = el(`<div class="qcard">
+    <div class="qcard-question">${p.prompt}</div>
+    <div class="skill-answer-zone"></div>
+    <div class="qcard-why hidden"></div>
+    <button class="btn-primary qcard-next hidden">Next</button>
+    <button class="btn-secondary" id="skill-reread">Reread the how-to</button>
+  </div>`);
+  const zone = card.querySelector('.skill-answer-zone');
+  const finish = (right) => {
+    const why = card.querySelector('.qcard-why');
+    why.textContent = (right ? '✓ ' : '✗ ') + p.explain;
+    why.classList.remove('hidden');
+    if (right) { skillRun.right++; SFX.correct(); } else SFX.wrong();
+    $('#skill-progress').textContent = `${skillRun.right} / ${sk.mastery}`;
+    const next = card.querySelector('.qcard-next');
+    next.classList.remove('hidden');
+    next.focus();
+    next.addEventListener('click', () => {
+      if (skillRun.right >= sk.mastery) finishSkill();
+      else renderSkillPractice();
+    }, { once: true });
+  };
+  if (p.choices) {
+    let answered = false;
+    p.choices.forEach((text, i) => {
+      const btn = el(`<button class="answer-btn">${text}</button>`);
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        answered = true;
+        zone.querySelectorAll('.answer-btn').forEach((b, j) => {
+          if (j === p.c) b.classList.add('correct'); else b.classList.add('faded');
+        });
+        if (i !== p.c) { btn.classList.remove('faded'); btn.classList.add('wrong'); }
+        finish(i === p.c);
+      });
+      zone.appendChild(btn);
+    });
+  } else {
+    const input = el(`<input class="skill-input" inputmode="numeric" placeholder="Your answer">`);
+    const submit = el(`<button class="btn-primary" style="margin-top:10px">Check</button>`);
+    let answered = false;
+    const check = () => {
+      if (answered || !input.value.trim()) return;
+      answered = true;
+      const ok = input.value.trim().replace(/[,\s]/g, '') === p.answer;
+      input.classList.add(ok ? 'skill-input-right' : 'skill-input-wrong');
+      input.disabled = true;
+      submit.classList.add('hidden');
+      finish(ok);
+    };
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+    submit.addEventListener('click', check);
+    zone.appendChild(input);
+    zone.appendChild(submit);
+    setTimeout(() => input.focus(), 50);
+  }
+  card.querySelector('#skill-reread').addEventListener('click', () => openSkill(sk));
+  body.appendChild(card);
+}
+function finishSkill(){
+  const sk = skillRun.sk;
+  const first = !S.skills[sk.id];
+  let earned = 0;
+  if (first) {
+    S.skills[sk.id] = true;
+    earned = awardLumens(40);
+  }
+  save();
+  const body = $('#skill-body');
+  body.innerHTML = `
+    <div class="result-card">
+      <div class="result-title">Skill Claimed</div>
+      <div class="result-score">${sk.icon}</div>
+      <div class="result-verdict"><b>You can now ${sk.title.toLowerCase()}.</b> This morning you could not. It is yours for life now, and it sharpens every time you use it in the wild.</div>
+      ${first ? `<div class="result-earn">+${earned} lumens</div>` : ''}
+      <button class="btn-primary" data-go="workshop">Learn another skill</button>
+      <button class="btn-secondary" data-go="home">Back to the cabinet</button>
+    </div>`;
+  $('#skill-progress').textContent = '';
 }
 
 // ---------- THE EXPEDITION ----------
