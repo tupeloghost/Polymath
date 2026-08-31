@@ -757,6 +757,23 @@ body::after {
 .season-dec .masthead-rule { background: linear-gradient(90deg, transparent, #bcd4e0, transparent); }
 .season-dec .masthead h1 { text-shadow: 0 0 14px rgba(188,212,224,.4); }
 
+/* locked rooms + intro */
+.menu-locked {
+  opacity: .55; cursor: pointer;
+  background: linear-gradient(180deg, #4a3c28, #3a2e1e);
+}
+.menu-locked .menu-title { color: #a08c66; }
+.menu-locked .menu-emblem { filter: grayscale(1); opacity: .8; }
+.menu-locked .menu-badge { color: #a08c66; border-color: #6b5a40; background: transparent; }
+.menu-locked:hover { transform: none; box-shadow: 0 4px 10px rgba(0,0,0,.4); border-color: var(--brass); }
+.intro-ov { cursor: pointer; }
+.intro-owl { font-size: 64px; margin-bottom: 18px; animation: titlein .7s cubic-bezier(.2,1.4,.4,1); }
+.intro-line {
+  font-size: clamp(18px, 4vw, 24px); font-style: italic; color: #e8d9b5;
+  max-width: 520px; margin: 0 auto; line-height: 1.6;
+  animation: fadein .4s ease;
+}
+
 /* juice: confetti, ceremony, doors, hot streak */
 .confetti {
   position: fixed; top: -20px; z-index: 90; pointer-events: none;
@@ -2940,6 +2957,8 @@ function freshSave(){
     examiner: {},           // month key -> score when passed
     expeditionBest: 0,      // most loot brought home
     skills: {},             // skill id -> true once learned
+    intro: false,           // has met the Curator
+    roomsSeen: {},          // rooms whose unlock was already announced
     journal: [],            // starred ideas: {t: title, x: text, d: domain, ts, mine?}
     exams: {},              // domain -> true once diploma earned
     questsDone: {},         // week key -> true
@@ -3139,6 +3158,30 @@ function awardLumens(base){
   return total;
 }
 
+// ---------- rooms unlock with play ----------
+const ROOMS = [
+  { go:'daily', at:0 }, { go:'cabinet', at:0 }, { go:'ledger', at:0 },
+  { go:'workshop', at:10, name:'The Workshop' }, { go:'bridges', at:10, name:'Bridges' },
+  { go:'chains', at:20, name:'Study Chains' }, { go:'collection', at:20, name:'The Collection Room' }, { go:'journal', at:20, name:'Your Commonplace Book' },
+  { go:'gauntlet', at:35, name:'The Gauntlet' }, { go:'lightning', at:35, name:'The Lightning Round' }, { go:'wheel', at:35, name:'The Wheel' },
+  { go:'expedition', at:50, name:'The Expedition' }, { go:'duel', at:50, name:'The Duel' }, { go:'honors', at:50, name:'The Hall of Honors' }
+];
+function roomUnlocked(goName){
+  const r = ROOMS.find(x => x.go === goName);
+  return !r || S.totalRight >= r.at;
+}
+function announceUnlocks(){
+  let any = false;
+  ROOMS.forEach(r => {
+    if (roomUnlocked(r.go) && !S.roomsSeen[r.go]) {
+      S.roomsSeen[r.go] = true;
+      if (r.name) { toast(`🚪 A new room opens: ${r.name}`); any = true; }
+    }
+  });
+  if (any) { confetti(35); SFX.fanfare(); }
+  save();
+}
+
 // ---------- navigation ----------
 function go(name){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -3164,7 +3207,13 @@ function go(name){
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-go]');
-  if (b) go(b.dataset.go);
+  if (!b) return;
+  if (b.classList.contains('menu-locked')) {
+    const r = ROOMS.find(x => x.go === b.dataset.go);
+    toast(`🔒 Locked. Answer ${r.at - S.totalRight} more questions right to open this door.`);
+    return;
+  }
+  go(b.dataset.go);
 });
 
 // ---------- shared question card ----------
@@ -3427,6 +3476,36 @@ function renderHome(){
     save();
     at.classList.toggle('ambient-on', AMBIENT.playing());
   };
+  // rooms: lock what has not been discovered yet
+  document.querySelectorAll('.menu-card').forEach(card => {
+    const r = ROOMS.find(x => x.go === card.dataset.go);
+    const locked = r && S.totalRight < r.at;
+    card.classList.toggle('menu-locked', !!locked);
+    const emblem = card.querySelector('.menu-emblem');
+    const title = card.querySelector('.menu-title');
+    if (locked) {
+      if (!card.dataset.realEmblem) { card.dataset.realEmblem = emblem.textContent; card.dataset.realTitle = title.textContent; }
+      emblem.textContent = '🔒';
+      title.textContent = 'A locked door';
+      const badge = card.querySelector('.menu-badge');
+      if (badge) badge.textContent = `${r.at} correct opens it`;
+    } else if (card.dataset.realEmblem) {
+      emblem.textContent = card.dataset.realEmblem;
+      title.textContent = card.dataset.realTitle;
+    }
+  });
+  announceUnlocks();
+
+  // a quiet room for beginners
+  const early = S.totalRight < 10;
+  if (early) {
+    $('#today-panel').style.display = 'none';
+    $('#mystery-card').style.display = 'none';
+    $('#examiner-card').style.display = 'none';
+  } else {
+    $('#today-panel').style.display = '';
+  }
+
   checkAchievements();
 }
 
@@ -4617,8 +4696,61 @@ function renderLedger(){
     </div>`;
 }
 
+// ---------- first visit: the Curator walks you in ----------
+function introSequence(){
+  const lines = [
+    'Ah. A new visitor. Come in, come in. Mind the dust: it is older than you think.',
+    'I am the Curator. This cabinet holds a little of everything worth knowing: stars, bodies, money, music, myths, and more.',
+    'The rules are simple. I show you one small idea. Then I ask one question. Answer right, and the idea is yours to keep. Forever.',
+    'Most doors here are locked, for now. Every right answer opens this place a little more. That is the whole adventure.'
+  ];
+  let i = 0;
+  const ov = el(`<div class="ceremony intro-ov">
+    <div class="ceremony-inner">
+      <div class="intro-owl">🦉</div>
+      <div class="intro-line"></div>
+      <div class="ceremony-hint">tap to continue</div>
+    </div>
+  </div>`);
+  const lineEl = ov.querySelector('.intro-line');
+  const hintEl = ov.querySelector('.ceremony-hint');
+  function show(){
+    lineEl.textContent = lines[i];
+    if (i === lines.length - 1) {
+      hintEl.innerHTML = '<button class="btn-primary" style="max-width:300px;margin:16px auto 0">Open your first drawer</button>';
+      hintEl.querySelector('button').addEventListener('click', (e) => {
+        e.stopPropagation();
+        S.intro = true;
+        ROOMS.forEach(r => { if (roomUnlocked(r.go)) S.roomsSeen[r.go] = true; });
+        save();
+        ov.remove();
+        renderHome();
+        openNode(NODES.find(n => n.id === 'ast2') || NODES[0]);
+      });
+    }
+  }
+  ov.addEventListener('click', () => {
+    if (i < lines.length - 1) { i++; SFX.page(); show(); }
+  });
+  document.body.appendChild(ov);
+  show();
+}
+
 // ---------- boot ----------
-renderHome();
+if (!S.intro) {
+  if (S.totalRight > 0) {
+    // an existing scholar: skip the welcome, open every earned door quietly
+    S.intro = true;
+    ROOMS.forEach(r => { if (roomUnlocked(r.go)) S.roomsSeen[r.go] = true; });
+    save();
+    renderHome();
+  } else {
+    renderHome();
+    setTimeout(introSequence, 1800);
+  }
+} else {
+  renderHome();
+}
 })();
 
 </script>
