@@ -919,9 +919,9 @@ body::after {
             <span class="menu-emblem">&#127919;</span>
             <span class="menu-title">The Wheel</span>
           </button>
-          <button class="menu-card" data-go="duel" title="Two players, one device, sudden death on ties.">
-            <span class="menu-emblem">&#9876;</span>
-            <span class="menu-title">Duel</span>
+          <button class="menu-card" data-go="parlor" title="Games for two people on one device. Always open.">
+            <span class="menu-emblem">&#127917;</span>
+            <span class="menu-title">Two Players</span>
           </button>
         </div>
       </div>
@@ -1079,6 +1079,16 @@ body::after {
     </div>
     <div id="expedition-map"></div>
     <div id="expedition-body"></div>
+  </section>
+
+  <!-- PARLOR (two players) -->
+  <section id="screen-parlor" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">The Parlor</div>
+      <div class="topbar-right"></div>
+    </div>
+    <div id="parlor-body"></div>
   </section>
 
   <!-- DUEL -->
@@ -3164,8 +3174,9 @@ const ROOMS = [
   { go:'workshop', at:10, name:'The Workshop' }, { go:'bridges', at:10, name:'Bridges' },
   { go:'chains', at:20, name:'Study Chains' }, { go:'collection', at:20, name:'The Collection Room' }, { go:'journal', at:20, name:'Your Commonplace Book' },
   { go:'gauntlet', at:35, name:'The Gauntlet' }, { go:'lightning', at:35, name:'The Lightning Round' }, { go:'wheel', at:35, name:'The Wheel' },
-  { go:'expedition', at:50, name:'The Expedition' }, { go:'duel', at:50, name:'The Duel' }, { go:'honors', at:50, name:'The Hall of Honors' }
+  { go:'expedition', at:50, name:'The Expedition' }, { go:'honors', at:50, name:'The Hall of Honors' }
 ];
+// the Parlor (two players) is never locked: guests can always play
 function roomUnlocked(goName){
   const r = ROOMS.find(x => x.go === goName);
   return !r || S.totalRight >= r.at;
@@ -3203,6 +3214,7 @@ function go(name){
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
   if (name === 'duel') renderDuelSetup();
+  if (name === 'parlor') renderParlor();
   SFX.page();
 }
 document.addEventListener('click', e => {
@@ -3235,7 +3247,8 @@ function questionCard(opts){
     btn.addEventListener('click', () => {
       if (answered) return;
       answered = true;
-      recordAnswer(opts.domain, opt.right);
+      if (opts.noRecord) { if (opt.right) SFX.correct(); else SFX.wrong(); }
+      else recordAnswer(opts.domain, opt.right);
       answersBox.querySelectorAll('.answer-btn').forEach((b,i) => {
         if (order[i].right) b.classList.add('correct');
         else b.classList.add('faded');
@@ -3682,16 +3695,26 @@ function pickQ(domain, advanced){
   if (!pool.length) pool = QUESTIONS.filter(q => q.d === domain);
   return pool[Math.floor(Math.random() * pool.length)];
 }
-function startExpedition(){
+function startExpedition(coopNames){
   const route = [
     { type:'q' }, { type:'q' }, { type:'fork' }, { type:'treasure' },
     { type:'q' }, { type:'q' }, { type:'heart' }, { type:'fork' },
     { type:'q' }, { type:'treasure' }, { type:'q' }, { type:'boss', left:3 }
   ];
   route.forEach(s => { if (s.type === 'q') s.d = randDomain(); });
-  exp = { route, i: 0, hearts: 3, loot: 0 };
+  exp = { route, i: 0, hearts: 3, loot: 0, coop: coopNames || null, turn: 0 };
+  if (exp.coop) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    $('#screen-expedition').classList.add('active');
+    window.scrollTo(0,0);
+  }
   renderExpedition();
 }
+function expTurnBanner(body){
+  if (!exp.coop) return;
+  body.appendChild(el(`<div class="duel-turn duel-p${exp.turn}">${exp.coop[exp.turn]}, this one is yours</div>`));
+}
+function expPassTurn(){ if (exp.coop) exp.turn = 1 - exp.turn; }
 function expIcon(stop, idx){
   const cur = idx === exp.i, done = idx < exp.i;
   const icon = stop.type === 'q' ? DOMAINS[stop.d || 'astronomy'].emblem
@@ -3709,12 +3732,14 @@ function renderExpedition(){
 
   if (stop.type === 'q') {
     const q = pickQ(stop.d, false);
+    expTurnBanner(body);
     body.appendChild(questionCard({
-      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, noRecord: !!exp.coop,
       onDone(right){
         if (right) { exp.loot += 6; toast('+6 loot'); }
         else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
         exp.i++;
+        expPassTurn();
         renderExpedition();
       }
     }));
@@ -3730,13 +3755,15 @@ function renderExpedition(){
     const walk = (d, adv, reward) => {
       const q = pickQ(d, adv);
       body.innerHTML = '';
+      expTurnBanner(body);
       body.appendChild(questionCard({
-        domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
+        domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, noRecord: !!exp.coop,
         tag: adv ? 'advanced' : '',
         onDone(right){
           if (right) { exp.loot += reward; toast(`+${reward} loot`); }
           else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
           exp.i++;
+          expPassTurn();
           renderExpedition();
         }
       }));
@@ -3776,14 +3803,16 @@ function renderExpedition(){
     }
     const q = pickQ(randDomain(), true);
     body.appendChild(el(`<div class="boss-banner">🗿 The Guardian asks (${Math.ceil(stop.left)} left)</div>`));
+    expTurnBanner(body);
     body.appendChild(questionCard({
-      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why,
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, noRecord: !!exp.coop,
       tag: 'advanced',
       onDone(right){
         if (right) { exp.loot += 15; toast('+15 loot. The Guardian nods slowly.'); }
         else { exp.hearts--; SFX.wrong(); toast('The Guardian frowns. A heart cracks.'); }
         stop.left = Math.ceil(stop.left) - 1;
         if (stop.left <= 0) exp.i++;
+        expPassTurn();
         renderExpedition();
       }
     }));
@@ -3792,23 +3821,118 @@ function renderExpedition(){
 function endExpedition(survived){
   const body = $('#expedition-body');
   const keep = survived ? exp.loot + 25 : Math.floor(exp.loot / 2);
-  const isBest = keep > S.expeditionBest;
+  const isBest = !exp.coop && keep > S.expeditionBest;
   if (isBest) S.expeditionBest = keep;
   const earned = awardLumens(keep);
+  if (survived) confetti(50);
+  const names = exp.coop ? `${exp.coop[0]} and ${exp.coop[1]}` : 'You';
   body.innerHTML = `
     <div class="result-card">
       <div class="result-title">${survived ? 'The Road Home' : 'Carried Back on a Cart'}</div>
       <div class="result-score">${survived ? '🏕️' : '💔'}</div>
       <div class="result-verdict">${survived
-        ? 'You walked the whole road, faced the Guardian, and came home heavier with loot and lighter with knowing.'
-        : 'Your hearts gave out on the road. Half your loot made it home with you. The road will be there tomorrow.'}</div>
+        ? `${names} walked the whole road, faced the Guardian, and came home heavier with loot and lighter with knowing.`
+        : `The hearts gave out on the road. Half the loot made it home with ${exp.coop ? 'you both' : 'you'}. The road will be there tomorrow.`}</div>
       ${isBest ? '<div class="result-earn">New best expedition!</div>' : ''}
       <div class="result-earn">+${earned} lumens</div>
-      <button class="btn-primary" data-go="expedition">Set out again</button>
+      <button class="btn-primary" id="exp-again">Set out again</button>
       <button class="btn-secondary" data-go="home">Back to the cabinet</button>
     </div>`;
+  const coopNames = exp.coop;
+  $('#exp-again').addEventListener('click', () => startExpedition(coopNames || undefined));
   $('#expedition-map').innerHTML = '';
   $('#expedition-status').textContent = '';
+}
+
+// ---------- THE PARLOR (two players) ----------
+function renderParlor(){
+  const body = $('#parlor-body');
+  body.innerHTML = `
+    <p class="helper-text">Games for two people sharing one device. No solo progress needed, and none is touched.</p>
+    <div class="bridge-list">
+      <button class="bridge-item" id="parlor-duel">
+        <span class="bridge-domains">⚔ Head to head</span>
+        <span class="bridge-title">The Duel</span>
+        <span class="bridge-state">Ten questions, five each. Winner takes the crown.</span>
+      </button>
+      <button class="bridge-item" id="parlor-coop">
+        <span class="bridge-domains">🗺 Side by side</span>
+        <span class="bridge-title">Expedition for Two</span>
+        <span class="bridge-state">Walk the trail together. Shared hearts, shared loot, take turns answering.</span>
+      </button>
+      <button class="bridge-item" id="parlor-teach">
+        <span class="bridge-domains">🕯 Face to face</span>
+        <span class="bridge-title">Teach &amp; Test</span>
+        <span class="bridge-state">One reads a lesson out loud. The other answers its question. Then swap.</span>
+      </button>
+    </div>`;
+  $('#parlor-duel').addEventListener('click', () => go('duel'));
+  $('#parlor-coop').addEventListener('click', () => parlorNames('Set out together', (names) => startExpedition(names)));
+  $('#parlor-teach').addEventListener('click', () => parlorNames('Light the candle', (names) => startTeachTest(names)));
+}
+function parlorNames(buttonText, onReady){
+  const body = $('#parlor-body');
+  body.innerHTML = `
+    <div class="lesson-card" style="text-align:center">
+      <h2 class="lesson-title">Who is playing?</h2>
+      <input class="duel-name" id="pn1" maxlength="14" placeholder="Player 1 name">
+      <input class="duel-name" id="pn2" maxlength="14" placeholder="Player 2 name">
+      <button class="btn-primary" id="pn-go">${buttonText}</button>
+    </div>`;
+  $('#pn-go').addEventListener('click', () => {
+    onReady([($('#pn1').value.trim() || 'Player 1'), ($('#pn2').value.trim() || 'Player 2')]);
+  });
+}
+
+// Teach & Test: read aloud, then your partner answers
+let tt = null;
+function startTeachTest(names){
+  tt = { names, round: 0, rounds: 6, score: 0, pool: shuffle(NODES).slice(0, 6) };
+  renderTeachTest();
+}
+function renderTeachTest(){
+  const body = $('#parlor-body');
+  body.innerHTML = '';
+  if (tt.round >= tt.rounds) {
+    const s = tt.score;
+    SFX.reward();
+    if (s >= 5) confetti(50);
+    const earned = awardLumens(10);
+    body.innerHTML = `
+      <div class="result-card">
+        <div class="result-title">The Candle Burns Down</div>
+        <div class="result-score">${s} / ${tt.rounds}</div>
+        <div class="result-verdict">${s >= 5 ? 'A great team. Teaching each other is the fastest way to learn: you both just proved it.' : 'Good work. What one of you reads, the other remembers. Play again and watch the score climb.'}</div>
+        <div class="result-earn">+${earned} lumens to the cabinet</div>
+        <button class="btn-primary" id="tt-again">Play again</button>
+        <button class="btn-secondary" data-go="parlor">Back to the parlor</button>
+      </div>`;
+    $('#tt-again').addEventListener('click', () => startTeachTest(tt.names));
+    return;
+  }
+  const reader = tt.names[tt.round % 2];
+  const answerer = tt.names[(tt.round + 1) % 2];
+  const node = tt.pool[tt.round];
+  const dom = DOMAINS[node.d];
+  body.appendChild(el(`<div class="duel-turn duel-p${tt.round % 2}">Round ${tt.round + 1} of ${tt.rounds}: ${reader} reads, ${answerer} answers</div>`));
+  body.appendChild(el(`<div class="lesson-card">
+    <div class="lesson-domain" style="color:${dom.color}">${dom.emblem} ${dom.name}</div>
+    <h2 class="lesson-title">${node.title}</h2>
+    <p class="lesson-text">${node.lesson}</p>
+    <button class="btn-primary" id="tt-ready">${reader}, read it out loud. Then ${answerer} taps here.</button>
+  </div>`));
+  $('#tt-ready').addEventListener('click', () => {
+    body.innerHTML = '';
+    body.appendChild(el(`<div class="duel-turn duel-p${(tt.round + 1) % 2}">${answerer}, your question</div>`));
+    body.appendChild(questionCard({
+      domain: node.d, q: node.q.q, a: node.q.a, c: node.q.c, why: '', noRecord: true,
+      onDone(right){
+        if (right) tt.score++;
+        tt.round++;
+        renderTeachTest();
+      }
+    }));
+  });
 }
 
 // ---------- THE DUEL ----------
@@ -4708,12 +4832,28 @@ function introSequence(){
   const ov = el(`<div class="ceremony intro-ov">
     <div class="ceremony-inner">
       <div class="intro-owl">🦉</div>
-      <div class="intro-line"></div>
-      <div class="ceremony-hint">tap to continue</div>
+      <div class="intro-line">Welcome. One question before anything: how many of you are at the cabinet right now?</div>
+      <div class="ceremony-hint intro-count">
+        <button class="btn-primary" id="intro-solo" style="max-width:260px;margin:14px auto 8px">Just me</button>
+        <button class="btn-secondary" id="intro-duo" style="max-width:260px;margin:0 auto">Two of us</button>
+      </div>
     </div>
   </div>`);
   const lineEl = ov.querySelector('.intro-line');
   const hintEl = ov.querySelector('.ceremony-hint');
+  let started = false;
+  ov.querySelector('#intro-solo').addEventListener('click', (e) => {
+    e.stopPropagation();
+    started = true;
+    hintEl.innerHTML = 'tap to continue';
+    show();
+  });
+  ov.querySelector('#intro-duo').addEventListener('click', (e) => {
+    e.stopPropagation();
+    ov.remove();
+    go('parlor');
+    toast('Welcome, both of you. The solo cabinet will introduce itself another time.');
+  });
   function show(){
     lineEl.textContent = lines[i];
     if (i === lines.length - 1) {
@@ -4730,10 +4870,9 @@ function introSequence(){
     }
   }
   ov.addEventListener('click', () => {
-    if (i < lines.length - 1) { i++; SFX.page(); show(); }
+    if (started && i < lines.length - 1) { i++; SFX.page(); show(); }
   });
   document.body.appendChild(ov);
-  show();
 }
 
 // ---------- boot ----------
