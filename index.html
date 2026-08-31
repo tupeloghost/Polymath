@@ -2095,7 +2095,13 @@ const QUESTS = [
   { id:'q11', d:'language',  title:'Word Archaeology', text:'Pick three ordinary words and look up where they came from. Share the best origin story with someone.' },
   { id:'q12', d:'psychology',title:'Name It to Tame It', text:'The next bad mood this week, write one precise sentence: "I feel ___ because ___." Notice what the naming does.' },
   { id:'q13', d:'earth',     title:'Read a Stone', text:'Find one rock, wall, or cliff face nearby and ask: layers or crystals? Water-made or fire-made? You are reading deep time.' },
-  { id:'q14', d:'practical', title:'The Subtraction Round', text:'Remove one thing this week: an unused subscription, a dusty object, a commitment you dread. Notice the lightness.' }
+  { id:'q14', d:'practical', title:'The Subtraction Round', text:'Remove one thing this week: an unused subscription, a dusty object, a commitment you dread. Notice the lightness.' },
+  { id:'q15', d:'earth',     title:'Read Tomorrow’s Sky', text:'Look at the clouds tonight and predict tomorrow’s weather out loud. Check yourself tomorrow. Sailors did this daily.' },
+  { id:'q16', d:'practical', title:'Walk the Dollar', text:'Pick one thing you buy this week and guess where each dollar of its price goes: ingredients, rent, labor, profit. Look one number up.' },
+  { id:'q17', d:'language',  title:'The NATO Test', text:'Spell your full name out loud in the pilot alphabet, from memory. Bonus: use it for real on your next customer service call.' },
+  { id:'q18', d:'music',     title:'Sing to Something Alive', text:'Play or sing music near a plant, a pet, or a person for ten minutes. Notice who responds. (The cows gave more milk.)' },
+  { id:'q19', d:'psychology',title:'Close One Loop', text:'Write down the three unfinished things nagging you most. Finish the smallest one this week. Feel the Zeigarnik effect release.' },
+  { id:'q20', d:'astronomy', title:'Ancient Light', text:'On the next clear night, find one star and remember: that light left before you were born. Say hello to the past directly.' }
 ];
 
 </script>
@@ -2534,6 +2540,148 @@ CURIOSITIES.push(
   { id:'c40', d:'language', name:'First Folio Inkwell', price:450, icon:'🖋️', story:'An inkwell of the kind Shakespeare’s printers dipped from. Roughly a thousand words you use today first dried on pages inked from wells like this.' },
   { id:'c41', d:'practical', name:'Pocket Abacus', price:75, icon:'🧮', story:'Merchants ran empires of trade on sliding beads. A skilled abacus hand can still beat a person with a calculator on simple sums.' },
   { id:'c42', d:'practical', name:'Franklin’s Ledger', price:450, icon:'📔', story:'Benjamin Franklin tracked one virtue a week in a little book, and his errors too. He called the habit the reason for his good fortune. A journal, honestly kept, is a compass.' }
+);
+
+</script>
+<script>
+// Revelations, third printing.
+QUESTIONS.push(
+  { d:'astronomy', w:1, q:'Saturn would float if you had a big enough bathtub. Why?', a:['It is hollow','It is less dense than water','It is made of ice','It would sink'], c:1, why:'Saturn is mostly light gas: its average density is lower than water. A planet that would float. (The bathtub remains the hard part.)' },
+  { d:'astronomy', w:1, q:'How long does a photon born in the Sun’s core take to reach the surface?', a:['8 minutes','8 days','Thousands to millions of years','Instantly'], c:2, why:'It ricochets through dense plasma for ages, then crosses to your eyes in 8 minutes. Sunlight is ancient light with a fast finish.' },
+  { d:'astronomy', w:1, q:'The footprints on the Moon will last...', a:['a few years','a century','millions of years','they are gone'], c:2, why:'No wind, no rain. Barring meteorites, Apollo bootprints will outlast every building on Earth.' },
+  { d:'biology', w:1, q:'The largest living thing on Earth is...', a:['a blue whale','a redwood','a fungus spanning 3.5 square miles underground','a coral reef'], c:2, why:'A single honey fungus in Oregon, thousands of years old. The biggest organism alive is mostly invisible.' },
+  { d:'biology', w:1, q:'Your eyes can detect...', a:['only bright light','a single candle roughly 1.7 miles away on a dark night','light indoors only','nothing past 100 feet'], c:1, why:'Human night vision is astonishing when dark-adapted. Give your eyes 20 minutes of true dark and meet them properly.' },
+  { d:'biology', w:1, q:'Wounds heal faster when they are...', a:['dried out in open air','kept slightly moist and covered','iced hourly','exposed to sun'], c:1, why:'The "let it air out" rule is backwards: cells rebuild faster in a moist covered environment. Modern bandages know this.' },
+  { d:'history', w:1, q:'Harvard was founded before...', a:['calculus was invented','Isaac Newton finished school','both of these','neither'], c:2, why:'1636: before calculus existed and while Newton was a toddler-to-be. Some institutions predate the knowledge they now teach.' },
+  { d:'history', w:1, q:'Ancient Romans used what as mouthwash?', a:['wine','salt water','imported urine','mint oil'], c:2, why:'The ammonia whitens teeth, and Rome taxed the urine trade. History is glorious and disgusting in equal parts.' },
+  { d:'history', w:1, q:'The shortest war in history lasted about...', a:['38 minutes','3 days','3 weeks','6 hours'], c:0, why:'Britain vs Zanzibar, 1896. It ended before lunch.' },
+  { d:'art', w:1, q:'The color wheel was invented by...', a:['a painter','Isaac Newton','a printing company','the French Academy'], c:1, why:'Newton bent the spectrum into a circle in 1704. Every artist’s color wheel descends from a physics experiment.' },
+  { d:'art', w:1, q:'Michelangelo’s David has an oddly calm face from the front, but from David’s eye level he looks...', a:['identical','tense and worried, ready for the fight','asleep','angry'], c:1, why:'Michelangelo carved the emotion to read from below, where viewers stand. Sculpture with a built-in camera angle.' },
+  { d:'music', w:1, q:'The chills you get from music have a scientific name:', a:['euphonia','frisson','resonance','tremolo'], c:1, why:'Frisson: a measurable skin-and-spine response. About two-thirds of people get it. Your goosebumps are peer-reviewed.' },
+  { d:'music', w:1, q:'Astronauts on the ISS hear the station...', a:['in silence','constantly humming and creaking around them','only through radios','echo like a cave'], c:1, why:'Inside there is air, so there is sound: fans, pumps, metal flexing. Space is silent; spaceships never are.' },
+  { d:'math', w:1, q:'Take any four-digit number, sort digits high-low minus low-high, repeat. You always reach...', a:['zero','6174, and get stuck there','9999','your starting number'], c:1, why:'Kaprekar’s constant. Nearly every four-digit number falls into 6174 within seven steps. Try it on paper tonight.' },
+  { d:'math', w:1, q:'A pizza with radius z and thickness a has volume...', a:['unknowable','pi × z × z × a','z × a × 2','none'], c:1, why:'Pi·z·z·a. Mathematics occasionally winks at us.' },
+  { d:'philosophy', w:1, q:'The "hedonic treadmill" means humans...', a:['love exercise','return to a happiness baseline after wins and losses alike','get sadder with age','chase pain'], c:1, why:'Raises, gadgets, even setbacks: the feeling fades, the baseline returns. Gratitude and giving are the known treadmill-breakers.' },
+  { d:'philosophy', w:1, q:'Seneca wrote that we suffer more often...', a:['in old age','in imagination than in reality','at night','from others'], c:1, why:'Two thousand years before anxiety research, he nailed it: most of what we dread never arrives.' },
+  { d:'earth', w:1, q:'Mount Everest’s summit rock contains...', a:['volcanic glass','fossils of ancient sea creatures','pure granite','meteorite iron'], c:1, why:'The top of the world is old ocean floor, heaved five and a half miles up. Sea shells on the summit.' },
+  { d:'earth', w:1, q:'Lightning strikes Earth about how often?', a:['100 times a day','100 times a minute','100 times a second','once a second'], c:2, why:'Roughly 8 million strikes a day. Somewhere, always, the sky is on fire.' },
+  { d:'psychology', w:1, q:'People remember unfinished tasks better than finished ones. This is called...', a:['the Zeigarnik effect','deja vu','priming','flow'], c:0, why:'Open loops nag the mind: why cliffhangers work, and why writing tasks down quiets your brain.' },
+  { d:'psychology', w:1, q:'Handwriting notes beats typing them for learning because...', a:['pens are slower, forcing you to compress ideas into your own words','ink aids memory','screens hurt eyes','it does not'], c:0, why:'You cannot transcribe by hand, so you must digest. The inefficiency IS the feature.' },
+  { d:'economics', w:1, q:'The world’s first paper money appeared in...', a:['Renaissance Italy','Song dynasty China, ~1,000 years ago','ancient Egypt','colonial America'], c:1, why:'Chinese merchants tired of hauling coin invented promissory paper. Marco Polo reported it and was called a liar.' },
+  { d:'economics', w:1, q:'A $5 daily habit costs about how much per decade?', a:['$1,800','$18,000','$180,000','$500'], c:1, why:'5 × 365 × 10 ≈ $18,000. Not an argument against coffee: an argument for choosing your dailies on purpose.' },
+  { d:'physics', w:1, q:'If you removed all the space between Earth and Moon, the other seven planets would...', a:['not come close to fitting','fit with room to spare','exactly fill it','overlap Earth'], c:1, why:'All seven, lined up, fit in the Earth-Moon gap. Space is mostly space, even nearby.' },
+  { d:'physics', w:1, q:'Helium was discovered...', a:['in balloons','on the Sun before it was found on Earth','underwater','in 1990'], c:1, why:'A stray yellow line in sunlight, 1868, named for Helios. We knew a star’s ingredient before finding it under our feet.' },
+  { d:'literature', w:1, q:'The longest novel ever published runs about...', a:['1,000 pages','3,000 pages','1.2 million words (Proust)','no records exist'], c:2, why:'In Search of Lost Time: 1.2 million words, launched by the taste of one small cake. Memory is the real main character.' },
+  { d:'technology', w:1, q:'The first computer "bug" was...', a:['a coding error','an actual moth taped into the logbook in 1947','a virus','a myth'], c:1, why:'Grace Hopper’s team found a moth in a relay and wrote "first actual case of bug being found." The joke became the word.' },
+  { d:'mythology', w:1, q:'Dragons were imagined independently by cultures worldwide possibly because...', a:['dragons existed','fossil bones of dinosaurs and whales needed explaining','trade spread one story','of volcanoes'], c:1, why:'Dig up a T. rex femur with no paleontology and you WILL invent a dragon. Myths are often the first draft of science.' },
+  { d:'body', w:1, q:'You are about how much taller in the morning?', a:['not at all','half an inch','2 inches','it varies wildly'], c:1, why:'Spine discs decompress overnight. Measure yourself at 8am for flattery, 8pm for honesty.' },
+  { d:'language', w:1, q:'A word that is its own opposite (like "dust" or "cleave") is called...', a:['an antonym','a contronym','a palindrome','impossible'], c:1, why:'"Dust the cake" adds powder; "dust the shelf" removes it. English contains its own contradictions, labeled.' },
+  { d:'practical', w:1, q:'The best predictor of expertise in most fields is...', a:['talent tests','hours of deliberate, feedback-rich practice','age started','confidence'], c:1, why:'Across music, chess, and sports, focused practice hours dwarf everything else measurable. The door is open to almost anyone.' }
+);
+
+</script>
+<script>
+// Workshop bench four.
+
+const CLOUD_QS = [
+  { q:'High, thin, wispy streaks (cirrus) usually mean...', a:['rain within the hour','fair now, but weather may change in a day or so','a storm tonight','nothing at all'], c:1, why:'Cirrus rides ahead of weather systems. Wisps today often introduce tomorrow’s front.' },
+  { q:'Puffy white cotton-ball clouds with flat bottoms (cumulus) mean...', a:['storms soon','fair weather, for now','fog coming','high winds'], c:1, why:'Friendly fair-weather clouds. Watch them though: if they tower upward, the mood changes.' },
+  { q:'A cumulus cloud growing tall like a cauliflower tower means...', a:['clearing skies','a thunderstorm may be building','cold night ahead','nothing'], c:1, why:'Vertical growth is energy. When the tower flattens into an anvil top, the storm is ready.' },
+  { q:'A gray featureless blanket covering the whole sky (stratus) usually brings...', a:['violent storms','drizzle or gray calm, not drama','heat','hail'], c:1, why:'Stratus is the sky’s gray sweater: dull, damp, rarely dangerous.' },
+  { q:'A ring (halo) around the moon at night often means...', a:['clear skies for days','ice crystals aloft: precipitation often arrives within a day or so','an eclipse','frost only'], c:1, why:'The old sailors’ ring-around-the-moon rule has real physics: high ice crystals ride in front of wet weather.' },
+  { q:'"Red sky at night, sailors delight" works (in mid-latitudes) because...', a:['it rhymes','weather mostly moves west to east, and a red sunset means clear air to the west, coming your way','red light is warm','it does not work'], c:1, why:'The rhyme encodes real meteorology: tomorrow’s weather is usually west of you tonight.' }
+];
+
+const PAYCHECK_QS = [
+  { q:'Gross pay is...', a:['your take-home','your pay before anything is taken out','overtime only','after taxes'], c:1, why:'Gross is the big number. Net is what lands in your account. The gap between them is the whole story.' },
+  { q:'Net pay is...', a:['pay before taxes','what actually reaches your bank after all deductions','your hourly rate','bonus pay'], c:1, why:'Net = gross minus taxes and deductions. Budget from net, never from gross.' },
+  { q:'FICA on your paystub pays for...', a:['state parks','Social Security and Medicare','your 401k','insurance'], c:1, why:'About 7.65% of your pay, matched by your employer, funding retirement and elder healthcare.' },
+  { q:'Money your employer matches in a 401k is...', a:['a gimmick','free money you only get if you contribute enough to claim it','taxed twice','a loan'], c:1, why:'A 50-100% instant return exists nowhere else in finance. Claim every dollar of match before anything else.' },
+  { q:'Tax withholding is...', a:['a penalty','an estimate of your yearly tax, prepaid from each check','optional','a savings account'], c:1, why:'A refund at tax time means you overpaid all year: an interest-free loan you gave the government.' },
+  { q:'A big tax refund every year mostly means...', a:['you won money','your withholding is set too high; you could adjust it and keep more per check','good luck','you must spend it'], c:1, why:'Refunds feel like gifts but are your own money returning late. Adjusting a W-4 moves it back into your months.' }
+];
+
+const SCAM_QS = [
+  { q:'The single biggest red flag common to nearly all scams is...', a:['bad spelling','manufactured urgency: act NOW or lose everything','foreign numbers','big amounts'], c:1, why:'Urgency exists to stop you from thinking or checking. Real institutions survive a callback.' },
+  { q:'Your "bank" calls about fraud and asks you to confirm your password or code. You should...', a:['confirm quickly','hang up and call the number on your own card','ask questions','text instead'], c:1, why:'Banks never ask for passwords or one-time codes. The number YOU dial is the only one you can trust.' },
+  { q:'A stranger who overpays you and asks you to refund the difference is running...', a:['a favor','a fake-payment scam: their money vanishes, your refund was real','a test','a promotion'], c:1, why:'The classic overpayment scam. Any "oops, send some back" is the trap itself.' },
+  { q:'Payment by gift cards or wire transfer is demanded because...', a:['it is fast','those payments cannot be reversed or traced','fees are low','banks are slow'], c:1, why:'Nobody legitimate, not the IRS, not tech support, is paid in gift cards. That word alone ends the call.' },
+  { q:'"You won a prize! Just pay a small fee to claim it" is...', a:['sometimes real','the advance-fee scam, centuries old','a tax rule','worth trying once'], c:1, why:'Real prizes never cost money to receive. This scam predates the telephone; only the costume changes.' },
+  { q:'The strongest all-purpose scam defense is...', a:['caller ID','slow down, and verify through a channel you found yourself','never answering','good instincts'], c:1, why:'Scams die in daylight and delay. "I will call the official number myself" defeats nearly all of them.' }
+];
+
+const TWENTY_QS = [
+  { q:'Research on rapid skill learning suggests reaching "decent" at most skills takes about...', a:['10,000 hours','20 focused hours','2 years','it is genetic'], c:1, why:'Mastery takes years. Basic real competence, playing songs, conversational phrases, usable code, takes about 20 deliberate hours.' },
+  { q:'The main thing that stops adults from learning new skills is...', a:['age','the frustration barrier of the first few awkward hours','money','time'], c:1, why:'Feeling clumsy feels bad, so adults quit early. Deciding in advance to be bad for 3 hours is the unlock.' },
+  { q:'The first step of rapid skill learning is to...', a:['buy equipment','deconstruct: break the skill into its few most-used sub-skills','watch experts','practice daily'], c:1, why:'Guitar is mostly 4 chords; a language is mostly 1,000 words. Find the vital 20% and practice that.' },
+  { q:'Practicing right before sleep helps because...', a:['you are relaxed','the brain consolidates the day’s practice during sleep','rooms are quiet','it does not'], c:1, why:'Sleep is when practice becomes skill. A short session before bed punches above its weight.' },
+  { q:'The best target for a practice session is something...', a:['easy and comfortable','just past your current edge, where you fail about a third of the time','impossible','random'], c:1, why:'Too easy teaches nothing; too hard teaches quitting. The sweet spot is reachable failure.' },
+  { q:'To actually finish 20 hours, the method recommends...', a:['willpower','pre-committing: schedule the sessions before you start at all','a coach','an app'], c:1, why:'Decide the when-and-where up front. Twenty 40-minute sessions on a calendar beats an intention every time.' }
+];
+
+SKILLS.push(
+  { id:'clouds', icon:'⛅', title:'Read the Clouds', mastery:5,
+    hook:'The sky posts tomorrow’s forecast all day, free. Sailors and farmers read it for centuries. It takes six cloud shapes.',
+    teach:`<p>Four clouds and two old rules cover most of the sky:</p>
+      <p><b>Cirrus</b> (high, thin wisps): fine now, change may come in a day.</p>
+      <p><b>Cumulus</b> (white cotton puffs): fair weather. But if one grows into a <b>tall tower</b>: storm building.</p>
+      <p><b>Stratus</b> (flat gray blanket): drizzle and gloom, not danger.</p>
+      <p><b>Rule 1:</b> a ring around the moon means wet weather is often a day away.</p>
+      <p><b>Rule 2:</b> red sky at night, clear air to the west, and weather moves west to east. The rhyme is real.</p>`,
+    practice(){ const item = CLOUD_QS[Math.floor(Math.random()*CLOUD_QS.length)]; return { prompt:item.q, choices:item.a, c:item.c, explain:item.why }; } },
+  { id:'paycheck', icon:'💵', title:'Read Your Paycheck', mastery:5,
+    hook:'Most people never look past the big number. Five minutes here and every paystub, job offer, and tax season makes sense.',
+    teach:`<p>Every paystub tells one story: <b>gross</b> (what you earned) shrinks to <b>net</b> (what you keep). The shrinkage:</p>
+      <p><b>Federal and state tax withholding:</b> a prepaid estimate of your yearly taxes. Big refund later = you prepaid too much all year.</p>
+      <p><b>FICA (~7.65%):</b> Social Security and Medicare.</p>
+      <p><b>Benefits and 401k:</b> insurance premiums and retirement. If your employer matches 401k money, contribute enough to take all of it: it is a 50-100% instant return.</p>
+      <p>Rule: budget from net, chase every match dollar, and read one paystub closely a year.</p>`,
+    practice(){ const item = PAYCHECK_QS[Math.floor(Math.random()*PAYCHECK_QS.length)]; return { prompt:item.q, choices:item.a, c:item.c, explain:item.why }; } },
+  { id:'scams', icon:'🛡️', title:'Spot a Scam', mastery:5,
+    hook:'Scams take billions every year from smart people. They all share the same skeleton, and once you see it, you cannot unsee it.',
+    teach:`<p>Nearly every scam uses the same four moves:</p>
+      <p><b>1. Urgency.</b> "Act now or else." Panic disables thinking. That feeling of rush IS the red flag.</p>
+      <p><b>2. Authority.</b> They claim to be your bank, the IRS, the police, tech support.</p>
+      <p><b>3. Untraceable payment.</b> Gift cards, wire transfers, crypto. The word "gift card" from any official ends the conversation.</p>
+      <p><b>4. Secrecy.</b> "Do not tell anyone." Honest business survives witnesses.</p>
+      <p>The universal defense: <b>slow down and verify through a channel you found yourself.</b> Hang up, look up the real number, call it.</p>`,
+    practice(){ const item = SCAM_QS[Math.floor(Math.random()*SCAM_QS.length)]; return { prompt:item.q, choices:item.a, c:item.c, explain:item.why }; } },
+  { id:'twenty', icon:'⏱️', title:'The 20-Hour Method', mastery:5,
+    hook:'The skill of learning skills. Twenty focused hours makes you decent at almost anything, if you spend them right. This is the master key to the whole Workshop.',
+    teach:`<p>Mastery takes years. <b>Decent takes about 20 deliberate hours.</b> How to spend them:</p>
+      <p><b>1. Deconstruct.</b> Find the 20% of the skill used 80% of the time (4 guitar chords, 1,000 words, 5 knife cuts).</p>
+      <p><b>2. Pre-commit.</b> Put twenty 40-minute sessions on the calendar before you begin.</p>
+      <p><b>3. Practice at your edge.</b> Aim where you fail about a third of the time. Comfortable practice is rehearsal, not learning.</p>
+      <p><b>4. Expect the awkward wall.</b> The first 3 hours feel bad for everyone. Deciding in advance to be bad is what gets you through.</p>
+      <p><b>5. End sessions before sleep when you can.</b> Sleep is where practice becomes skill.</p>`,
+    practice(){ const item = TWENTY_QS[Math.floor(Math.random()*TWENTY_QS.length)]; return { prompt:item.q, choices:item.a, c:item.c, explain:item.why }; } }
+);
+
+</script>
+<script>
+// Three more chains.
+CHAINS.push(
+  { id:'ch13', d:'earth', title:'The Map That Solved Cholera', steps:[
+    { lesson:'London, 1854. Cholera was killing hundreds in Soho, and everyone "knew" it spread through bad-smelling air, the miasma theory. The smell of the city was blamed for its deaths.', q:{ q:'In 1854, most experts believed cholera spread through...', a:['water','bad-smelling air','touch','rats'], c:1 } },
+    { lesson:'Dr. John Snow doubted the smell theory. Instead of arguing, he walked the neighborhood and put a dot on a map for every death. He gathered where others guessed.', q:{ q:'Snow’s key move was to...', a:['write a paper','plot every death on a map and look at the pattern','smell the air','close the hospitals'], c:1 } },
+    { lesson:'The dots crowded around one spot: the Broad Street water pump. Families who drank elsewhere were spared. A brewery nearby had no deaths: the workers drank beer, not pump water.', q:{ q:'The map revealed deaths clustering around...', a:['the sewers','one shared water pump','the market','the graveyard'], c:1 } },
+    { lesson:'Snow convinced officials to remove the pump’s handle. The outbreak collapsed. He had stopped a plague without knowing bacteria existed, purely by seeing where the deaths stood.', q:{ q:'Snow stopped the outbreak by...', a:['a new medicine','removing the handle of the suspect pump','quarantine','luck'], c:1 } },
+    { lesson:'That dotted map founded epidemiology and modern data thinking: when opinions conflict, put the facts where you can see their shape. A good chart still beats a loud argument, in medicine and in meetings.', q:{ q:'The lasting lesson of Snow’s map:', a:['maps are pretty','plotting real data often reveals truths that arguments hide','water is dangerous','experts are wrong'], c:1 } }
+  ]},
+  { id:'ch14', d:'psychology', title:'Why We Believe False Things', steps:[
+    { lesson:'Hear a claim repeated three times and it starts feeling true. This is the illusory truth effect: familiarity masquerades as accuracy. Repetition, not evidence, does most of the convincing in daily life.', q:{ q:'Repetition makes claims feel true because...', a:['repeated things are true','familiarity gets mistaken for accuracy','people are lazy','memory improves'], c:1 } },
+    { lesson:'We also recruit evidence like lawyers, not judges: motivated reasoning. Nobody feels themselves doing it. The claim we WANT true gets gentle questions; the one we dislike gets a cross-examination.', q:{ q:'Motivated reasoning means we...', a:['reason quickly','unknowingly grade evidence easier when we like its conclusion','lack motivation','argue often'], c:1 } },
+    { lesson:'Groups make it stronger. Beliefs mark belonging: doubting the group’s claim can feel like betraying the group itself. People rarely surrender a belief that would cost them their people.', q:{ q:'Beliefs are hard to change partly because they are tied to...', a:['intelligence','belonging to a group','memory','age'], c:1 } },
+    { lesson:'Corrections often fail or even backfire when they attack identity. What works better: genuine questions ("how would that work, step by step?"), shared goals, and letting people update in private without an audience watching them lose.', q:{ q:'Corrections work best when they...', a:['are louder','avoid attacking identity and let people change their mind without public defeat','come from experts','repeat often'], c:1 } },
+    { lesson:'The kicker: every mechanism in this chain runs in YOUR head too, right now. The polymath’s defense is a habit, not a talent: ask "what would change my mind?" and "am I grading this claim on a curve because I like it?"', q:{ q:'The best personal defense against false belief is...', a:['trusting experts','regularly asking what evidence would change your own mind','avoiding news','confidence'], c:1 } }
+  ]},
+  { id:'ch15', d:'economics', title:'Where Your Coffee Money Goes', steps:[
+    { lesson:'Follow one $5 latte. The beans in it cost about ten cents. The cup, lid, and milk add maybe sixty. So where do the other four dollars go? This question opens every business in the world.', q:{ q:'The raw ingredients of a $5 latte cost roughly...', a:['$4','$2.50','well under $1','$5'], c:2 } },
+    { lesson:'Most of the price pays for everything AROUND the coffee: rent on a corner you walk past, wages for hands that make it, machines, insurance, spoiled milk, the failed store across town that investors also funded.', q:{ q:'Most of a product’s price usually pays for...', a:['ingredients','the system around it: rent, labor, equipment, risk','taxes','profit'], c:1 } },
+    { lesson:'Profit is usually smaller than people guess: often 25-50 cents on that latte. Half the shops on the street are barely breaking even. Margins, not sales, decide who survives.', q:{ q:'The actual profit on a $5 coffee is typically...', a:['$4','$2','under 50 cents','zero'], c:2 } },
+    { lesson:'Now reverse it: when something seems weirdly cheap, the system costs did not vanish. They were squeezed from somewhere: wages, quality, or a plan to raise prices once you are hooked. Cheapness always has a source.', q:{ q:'When a product is surprisingly cheap, the savings usually come from...', a:['generosity','somewhere specific: labor, quality, or a hook-now-charge-later plan','magic','small profits only'], c:1 } },
+    { lesson:'This lens, "walk the dollar", works everywhere: concert tickets, phone plans, houses. Ask where each dollar goes and you can spot fair prices, doomed businesses, and deals too good to be honest. You now read prices the way you read sentences.', q:{ q:'"Walking the dollar" through a price teaches you to...', a:['haggle','see what a price is actually paying for, and judge if it is fair','avoid buying','feel guilty'], c:1 } }
+  ]}
 );
 
 </script>
