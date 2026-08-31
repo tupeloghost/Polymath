@@ -720,6 +720,67 @@ body::after {
 }
 .ladder-req { font-size: 12px; font-style: italic; opacity: .8; }
 
+/* juice: confetti, ceremony, doors, hot streak */
+.confetti {
+  position: fixed; top: -20px; z-index: 90; pointer-events: none;
+  border-radius: 2px;
+  animation: confettifall linear forwards;
+}
+@keyframes confettifall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: .7; }
+}
+.ceremony {
+  position: fixed; inset: 0; z-index: 95;
+  background: rgba(24, 16, 9, .88);
+  display: flex; align-items: center; justify-content: center;
+  animation: fadein .4s ease; cursor: pointer;
+}
+.ceremony-out { opacity: 0; transition: opacity .4s ease; }
+.ceremony-inner { text-align: center; padding: 20px; }
+.ceremony-label { font-variant: small-caps; letter-spacing: 3px; color: #cbb98f; font-size: 15px; }
+.ceremony-title {
+  font-size: clamp(34px, 9vw, 60px); font-variant: small-caps; letter-spacing: 3px;
+  color: var(--brass-bright); margin: 14px 0;
+  text-shadow: 0 0 30px rgba(232,207,143,.6), 0 3px 10px rgba(0,0,0,.8);
+  animation: titlein .8s cubic-bezier(.2, 1.6, .4, 1);
+}
+@keyframes titlein { 0% { transform: scale(2.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.ceremony-seal { font-size: 40px; color: var(--brass); animation: sealstamp .5s ease .5s backwards; }
+@keyframes sealstamp { 0% { transform: scale(3); opacity: 0; } 70% { transform: scale(.9); } 100% { transform: scale(1); opacity: 1; } }
+.ceremony-hint { color: #8a795a; font-style: italic; font-size: 13px; margin-top: 26px; }
+#doors { position: fixed; inset: 0; z-index: 99; display: flex; pointer-events: none; }
+.door {
+  flex: 1; position: relative;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.15) 0 3px, transparent 3px 60px),
+    linear-gradient(180deg, #55402c, var(--wood-deep));
+  border-top: 6px solid var(--brass);
+  border-bottom: 6px solid var(--brass);
+  transition: transform 1.4s cubic-bezier(.6, 0, .3, 1);
+  box-shadow: inset 0 0 60px rgba(0,0,0,.6);
+}
+.door-left { border-right: 3px solid var(--brass); }
+.door-right { border-left: 3px solid var(--brass); }
+.door-handle {
+  position: absolute; top: 50%; width: 16px; height: 40px;
+  background: linear-gradient(180deg, var(--brass-bright), var(--brass));
+  border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.6);
+}
+.door-left .door-handle { right: 14px; }
+.door-right .door-handle { left: 14px; }
+.doors-open .door-left { transform: translateX(-101%); }
+.doors-open .door-right { transform: translateX(101%); }
+.card-hot {
+  border-color: #e8a650 !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,.5), 0 0 24px rgba(232,166,80,.45) !important;
+  animation: hotpulse 1.4s ease-in-out infinite;
+}
+@keyframes hotpulse {
+  0%, 100% { box-shadow: 0 6px 16px rgba(0,0,0,.5), 0 0 16px rgba(232,166,80,.35); }
+  50% { box-shadow: 0 6px 16px rgba(0,0,0,.5), 0 0 30px rgba(232,166,80,.55); }
+}
+
 /* toast */
 #toast {
   position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px);
@@ -2376,7 +2437,9 @@ const SFX = (function(){
     reward(){ tone(523, .15, 'sine', .05); tone(659, .15, 'sine', .05, .09); tone(784, .3, 'sine', .06, .18); },
     page(){ tone(2400, .04, 'triangle', .015); tone(1800, .05, 'triangle', .012, .02); },
     tick(){ tone(1200, .03, 'sine', .02); },
-    combo(n){ const f = 523 * Math.pow(2, Math.min(n, 12) / 12); tone(f, .12, 'sine', .05); tone(f * 1.5, .16, 'sine', .04, .06); }
+    combo(n){ const f = 523 * Math.pow(2, Math.min(n, 12) / 12); tone(f, .12, 'sine', .05); tone(f * 1.5, .16, 'sine', .04, .06); },
+    fanfare(){ [523, 659, 784, 1047].forEach((f, i) => tone(f, .5, 'sine', .06, i * .13)); tone(1319, .8, 'sine', .05, .55); },
+    drumroll(dur){ const n = Math.floor((dur || .7) / .05); for (let i = 0; i < n; i++) tone(900 + Math.random() * 200, .03, 'triangle', .02, i * .05); }
   };
 })();
 
@@ -2563,6 +2626,63 @@ function makeFactCard(text, domainKey, title){
 
 </script>
 <script>
+// Juice: celebrations, ceremonies, and the opening of the doors.
+
+function confetti(count){
+  count = count || 60;
+  const colors = ['#e8cf8f', '#b08d4a', '#8a6d3b', '#f5ecd9', '#c9a24a'];
+  for (let i = 0; i < count; i++){
+    const p = document.createElement('span');
+    p.className = 'confetti';
+    const size = 5 + Math.random() * 7;
+    p.style.cssText = `
+      left:${Math.random() * 100}vw;
+      width:${size}px; height:${size * (0.4 + Math.random() * 0.8)}px;
+      background:${colors[Math.floor(Math.random() * colors.length)]};
+      animation-duration:${1.6 + Math.random() * 1.6}s;
+      animation-delay:${Math.random() * 0.5}s;
+      transform: rotate(${Math.random() * 360}deg);
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 3800);
+  }
+}
+
+function rankCeremony(title){
+  const ov = document.createElement('div');
+  ov.className = 'ceremony';
+  ov.innerHTML = `
+    <div class="ceremony-inner">
+      <div class="ceremony-label">The cabinet bestows a new title</div>
+      <div class="ceremony-title">${title}</div>
+      <div class="ceremony-seal">❦</div>
+      <div class="ceremony-hint">tap to continue</div>
+    </div>`;
+  document.body.appendChild(ov);
+  confetti(90);
+  if (typeof SFX !== 'undefined') SFX.fanfare();
+  ov.addEventListener('click', () => { ov.classList.add('ceremony-out'); setTimeout(() => ov.remove(), 400); });
+  setTimeout(() => { if (ov.parentNode) { ov.classList.add('ceremony-out'); setTimeout(() => ov.remove(), 400); } }, 6000);
+}
+
+// the doors open once per visit
+(function(){
+  try {
+    if (sessionStorage.getItem('doors_opened')) return;
+    sessionStorage.setItem('doors_opened', '1');
+  } catch(e){}
+  const doors = document.createElement('div');
+  doors.id = 'doors';
+  doors.innerHTML = `
+    <div class="door door-left"><span class="door-handle"></span></div>
+    <div class="door door-right"><span class="door-handle"></span></div>`;
+  document.body.appendChild(doors);
+  setTimeout(() => doors.classList.add('doors-open'), 500);
+  setTimeout(() => doors.remove(), 2400);
+})();
+
+</script>
+<script>
 // The Polymath Cabinet
 (function(){
 'use strict';
@@ -2622,7 +2742,9 @@ function weekKey(){ return 'w' + Math.floor(Date.now() / (7 * 86400000)); }
 
 function recordAnswer(domain, right){
   if (!S.domainStats[domain]) S.domainStats[domain] = { right:0, wrong:0 };
+  const rankBefore = rankIndex();
   if (right) { S.domainStats[domain].right++; S.totalRight++; }
+  if (right && rankIndex() > rankBefore) setTimeout(() => rankCeremony(rankTitle()), 700);
   else { S.domainStats[domain].wrong++; S.totalWrong++; }
   if (!S.recent[domain]) S.recent[domain] = [];
   S.recent[domain].push(right ? 1 : 0);
@@ -2653,6 +2775,7 @@ function checkAchievements(){
       save();
       toast(`${a.icon} Plaque earned: ${a.name}`);
       SFX.reward();
+      confetti(30);
     }
   });
 }
@@ -3220,6 +3343,8 @@ function finishSkill(){
   if (first) {
     S.skills[sk.id] = true;
     earned = awardLumens(40);
+    confetti(70);
+    SFX.fanfare();
   }
   save();
   const body = $('#skill-body');
@@ -3583,6 +3708,7 @@ function renderDailyQuestion(){
   if (daily.idx >= daily.qs.length) { finishDaily(); return; }
   $('#daily-progress').textContent = `${daily.idx + 1} / ${daily.qs.length}${(daily.combo||0) >= 3 ? ` 🔥${daily.combo}` : ''}`;
   body.appendChild(el(`<div class="run-progress"><span style="width:${Math.round(100 * daily.idx / daily.qs.length)}%"></span></div>`));
+  if ((daily.combo || 0) >= 5) setTimeout(() => { const c = body.querySelector('.qcard'); if (c) c.classList.add('card-hot'); }, 0);
   const q = daily.qs[daily.idx];
   body.appendChild(questionCard({
     domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
@@ -3659,6 +3785,8 @@ function finishDaily(){
   }
   const ta = takeAwayCard(daily.qs);
   if (ta) body.querySelector('.result-card').insertBefore(ta, body.querySelector('.btn-primary'));
+  SFX.drumroll(0.7);
+  if (score === daily.qs.length) setTimeout(() => confetti(80), 750);
   countUp(body.querySelector('.result-score'), score, ` / ${daily.qs.length}`);
   $('#daily-progress').textContent = '';
 }
@@ -3782,6 +3910,8 @@ function finishExam(){
     if (passed) {
       S.examiner[exam.examiner] = exam.right;
       earned = awardLumens(150);
+      confetti(100);
+      SFX.fanfare();
     }
     save();
     body.innerHTML = `
@@ -3802,6 +3932,8 @@ function finishExam(){
   if (passed && !S.exams[exam.d]) {
     S.exams[exam.d] = true;
     earned = awardLumens(100);
+    confetti(80);
+    SFX.fanfare();
   }
   save();
   body.innerHTML = `
@@ -4027,6 +4159,8 @@ function finishLightning(){
     </div>`;
   const lta = takeAwayCard(lightning.deck.slice(0, lightning.idx));
   if (lta) body.querySelector('.result-card').insertBefore(lta, body.querySelector('.btn-primary'));
+  SFX.drumroll(0.7);
+  if (isBest && score > 5) setTimeout(() => confetti(60), 750);
   countUp(body.querySelector('.result-score'), score);
   updateLightningStatus();
 }
@@ -4058,6 +4192,7 @@ function renderGauntletQuestion(){
   body.innerHTML = '';
   if (gauntlet.strikes >= 3 || gauntlet.idx >= gauntlet.deck.length) { finishGauntlet(); return; }
   $('#gauntlet-status').textContent = `${gauntlet.score} ✦  ${'✗'.repeat(gauntlet.strikes)}${'·'.repeat(3 - gauntlet.strikes)}${(gauntlet.combo||0) >= 3 ? ` 🔥${gauntlet.combo}` : ''}`;
+  if ((gauntlet.combo || 0) >= 5) setTimeout(() => { const c = body.querySelector('.qcard'); if (c) c.classList.add('card-hot'); }, 0);
   const q = gauntlet.deck[gauntlet.idx];
   body.appendChild(questionCard({
     domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
@@ -4103,6 +4238,8 @@ function finishGauntlet(){
     </div>`;
   const gta = takeAwayCard(gauntlet.deck.slice(0, gauntlet.idx));
   if (gta) body.querySelector('.result-card').insertBefore(gta, body.querySelector('.btn-primary'));
+  SFX.drumroll(0.7);
+  if (isBest && score > 5) setTimeout(() => confetti(60), 750);
   countUp(body.querySelector('.result-score'), score);
   $('#gauntlet-status').textContent = '';
 }
