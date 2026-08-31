@@ -383,6 +383,116 @@ body {
 .iod-title { font-size: 18px; font-weight: bold; color: var(--wood); margin: 2px 0; }
 .iod-hint { font-size: 12px; font-style: italic; color: var(--ink-soft); }
 
+/* atmosphere: dust motes + candle glow */
+#dust-layer { position: fixed; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
+.mote {
+  position: absolute; bottom: -10px; border-radius: 50%;
+  background: #e8cf8f;
+  box-shadow: 0 0 6px rgba(232,207,143,.8);
+  animation: drift linear infinite;
+}
+@keyframes drift {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(24px, -28vh); }
+  50%  { transform: translate(-16px, -55vh); }
+  75%  { transform: translate(20px, -80vh); }
+  100% { transform: translate(-8px, -108vh); }
+}
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 4;
+  background: radial-gradient(ellipse at 85% 92%, rgba(232,166,80,.13), transparent 45%),
+              radial-gradient(ellipse at 12% 88%, rgba(232,166,80,.09), transparent 40%);
+  animation: candle 5s ease-in-out infinite alternate;
+}
+@keyframes candle {
+  0%   { opacity: .75; }
+  30%  { opacity: 1; }
+  55%  { opacity: .82; }
+  80%  { opacity: .95; }
+  100% { opacity: .8; }
+}
+#ambient-toggle {
+  position: absolute; top: 14px; right: 64px;
+  font-size: 18px; background: transparent; border: 1px solid var(--brass);
+  border-radius: 50%; width: 42px; height: 42px; cursor: pointer; opacity: .6;
+}
+#ambient-toggle.ambient-on { opacity: 1; box-shadow: 0 0 12px rgba(232,166,80,.5); }
+#ambient-toggle:hover { background: rgba(176,141,74,.2); }
+
+/* the curator */
+#curator-card {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: rgba(239,228,205,.07);
+  border: 1px solid rgba(176,141,74,.5);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 0 0 16px;
+}
+.curator-face { font-size: 34px; line-height: 1; margin-top: 2px; }
+.curator-name { font-variant: small-caps; letter-spacing: 2px; font-size: 12px; color: var(--brass-bright); font-weight: bold; }
+.curator-line { color: #e0d0aa; font-style: italic; font-size: 15px; line-height: 1.5; margin-top: 2px; }
+.curator-moon { color: #a99a76; font-size: 13px; margin-top: 6px; }
+
+/* mystery drawer + examiner */
+#mystery-card, #examiner-card {
+  cursor: pointer;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232,166,80,.35), transparent 60%),
+    linear-gradient(180deg, #3a2c1c, var(--wood-deep));
+  border: 1px solid var(--brass-bright);
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  text-align: center;
+  color: var(--paper);
+  box-shadow: 0 4px 14px rgba(0,0,0,.5), 0 0 18px rgba(232,166,80,.25);
+  animation: mystpulse 2.6s ease-in-out infinite;
+}
+@keyframes mystpulse {
+  0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,.5), 0 0 12px rgba(232,166,80,.2); }
+  50% { box-shadow: 0 4px 14px rgba(0,0,0,.5), 0 0 26px rgba(232,166,80,.45); }
+}
+.mystery-title { font-size: 20px; font-weight: bold; font-variant: small-caps; letter-spacing: 1px; color: #ffe9b0; margin: 4px 0; }
+#mystery-card .qcard { text-align: left; margin-top: 10px; cursor: default; animation: none; }
+
+/* the wheel */
+.wheel-wrap { position: relative; width: 300px; margin: 10px auto; }
+.wheel-pointer {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  color: #ffe9b0; font-size: 26px; z-index: 3;
+  text-shadow: 0 2px 6px rgba(0,0,0,.8);
+}
+.wheel {
+  width: 300px; height: 300px; border-radius: 50%;
+  border: 8px solid var(--brass);
+  box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 0 30px rgba(0,0,0,.45);
+  position: relative;
+}
+.wheel-emblem {
+  position: absolute; top: 50%; left: 50%;
+  margin: -12px 0 0 -12px; width: 24px; height: 24px;
+  text-align: center; font-size: 17px; color: rgba(255,255,255,.9);
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
+.wheel-hub {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 62px; height: 62px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--brass-bright), var(--brass));
+  border: 3px solid var(--wood-deep);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: var(--wood-deep);
+  box-shadow: 0 3px 10px rgba(0,0,0,.5);
+}
+.wheel-spin-btn { max-width: 300px; margin: 18px auto 0; }
+.wheel-result { text-align: center; color: var(--paper); font-size: 20px; margin-top: 14px; min-height: 30px; font-variant: small-caps; letter-spacing: 1px; }
+
+/* drawer opening */
+.drawer-opening { animation: drawerslide .22s ease forwards; }
+@keyframes drawerslide {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(6px) scale(1.03); box-shadow: 0 10px 18px rgba(0,0,0,.55); }
+}
+
 /* wow reveals + take-away */
 .qcard-wow {
   border-left-color: var(--brass-bright);
@@ -578,10 +688,22 @@ body {
     </header>
 
     <button id="sound-toggle" title="Sound on or off">🔔</button>
+    <button id="ambient-toggle" title="Library room tone on or off">🕯️</button>
+
+    <div id="curator-card">
+      <span class="curator-face">🦉</span>
+      <div class="curator-speech">
+        <div class="curator-name">The Curator</div>
+        <div class="curator-line" id="curator-line"></div>
+        <div class="curator-moon" id="curator-moon"></div>
+      </div>
+    </div>
 
     <div class="home-stats" id="home-stats"></div>
 
     <div id="idea-of-day"></div>
+    <div id="mystery-card"></div>
+    <div id="examiner-card"></div>
     <div id="field-quest"></div>
     <div id="book-echo"></div>
 
@@ -609,6 +731,11 @@ body {
         <span class="menu-title">Study Chains</span>
         <span class="menu-desc">Five linked steps that build one big idea, start to finish.</span>
         <span class="menu-badge" id="chains-badge"></span>
+      </button>
+      <button class="menu-card" data-go="wheel">
+        <span class="menu-emblem">&#127919;</span>
+        <span class="menu-title">The Wheel</span>
+        <span class="menu-desc">Spin the brass wheel. Fate picks your subject.</span>
       </button>
       <button class="menu-card" data-go="lightning">
         <span class="menu-emblem">&#9889;</span>
@@ -718,6 +845,16 @@ body {
       <div class="topbar-right" id="lightning-status"></div>
     </div>
     <div id="lightning-body"></div>
+  </section>
+
+  <!-- WHEEL -->
+  <section id="screen-wheel" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">The Wheel</div>
+      <div class="topbar-right"></div>
+    </div>
+    <div id="wheel-body"></div>
   </section>
 
   <!-- EXAM -->
@@ -1821,6 +1958,187 @@ const SFX = (function(){
 
 </script>
 <script>
+// The Curator: the cabinet's resident voice. Also: real moon phase math.
+
+function moonPhase(){
+  // days since a known new moon (2000-01-06), modulo the synodic month
+  const synodic = 29.53058867;
+  const days = (Date.now() / 86400000 - 10957.77) % synodic;
+  const d = days < 0 ? days + synodic : days;
+  if (d < 1.85)  return { icon:'🌑', name:'New Moon', tip:'Darkest skies of the month. The best night for stars.' };
+  if (d < 5.54)  return { icon:'🌒', name:'Waxing Crescent', tip:'Look west after sunset for a thin silver smile.' };
+  if (d < 9.23)  return { icon:'🌓', name:'First Quarter', tip:'Half lit. The line between light and dark shows the craters best.' };
+  if (d < 12.92) return { icon:'🌔', name:'Waxing Gibbous', tip:'Growing brighter each night on its way to full.' };
+  if (d < 16.61) return { icon:'🌕', name:'Full Moon', tip:'Rises at sunset. Notice how it looks bigger near the horizon: a pure illusion.' };
+  if (d < 20.30) return { icon:'🌖', name:'Waning Gibbous', tip:'Rises late. Catch it hanging in the morning sky.' };
+  if (d < 23.99) return { icon:'🌗', name:'Last Quarter', tip:'A morning moon. Half lit, fading toward new.' };
+  return { icon:'🌘', name:'Waning Crescent', tip:'A thin sliver before dawn. New moon, and dark skies, are coming.' };
+}
+
+const CURATOR = {
+  greeting(){
+    const h = new Date().getHours();
+    const pool =
+      h < 5  ? ['The cabinet keeps late hours too.', 'Only the owls and the curious are awake.', 'Knowledge tastes different at this hour.'] :
+      h < 12 ? ['Back before the dust has settled. The drawers approve.', 'A morning mind is a sharp mind.', 'The cabinet opens its curtains for you.'] :
+      h < 18 ? ['Ah, the afternoon scholar returns.', 'The light is good for reading. Come in.', 'The drawers have been whispering. They missed you.'] :
+               ['Evening. The candles are lit for you.', 'The best ideas visit after dark.', 'Come in, the night shelf is open.'];
+    return pool[Math.floor(Math.random() * pool.length)];
+  },
+  observation(s, stats){
+    const lines = [];
+    if (s.streak >= 7) lines.push(`A ${s.streak} day streak. I have seen scholars with less discipline and better funding.`);
+    else if (s.streak >= 3) lines.push(`${s.streak} days running. The flame likes you.`);
+    if (stats.weakest) lines.push(`Between us: the ${stats.weakest} shelf thinks you are avoiding it.`);
+    if (stats.toGo && stats.toGo <= 15) lines.push(`Only ${stats.toGo} correct answers until they must call you ${stats.nextName}. I have already warmed the seal.`);
+    if (s.gauntletBest >= 25) lines.push(`Gauntlet best of ${s.gauntletBest}. The vault still talks about it.`);
+    if (Object.keys(s.journal || {}).length >= 10) lines.push('Your Commonplace Book is becoming a rival to my shelves. Good.');
+    lines.push(
+      'Everything in here was once unknown to everyone.',
+      'A drawer a day and no library can hold you.',
+      'I collect curiosities. You are becoming one: a person who knows things.',
+      'Somewhere in here is the fact you will retell for the rest of your life.',
+      'Slow is fine. Stopped is the only failure I shelve.'
+    );
+    return lines[Math.floor(Math.random() * lines.length)];
+  }
+};
+
+</script>
+<script>
+// Atmosphere: drifting dust motes in candlelight, and an optional library room tone.
+
+(function(){
+  // dust motes
+  const layer = document.createElement('div');
+  layer.id = 'dust-layer';
+  document.body.appendChild(layer);
+  for (let i = 0; i < 16; i++){
+    const m = document.createElement('span');
+    m.className = 'mote';
+    const size = 1.5 + Math.random() * 2.5;
+    m.style.cssText = `
+      left:${Math.random() * 100}vw;
+      width:${size}px; height:${size}px;
+      animation-duration:${18 + Math.random() * 26}s;
+      animation-delay:-${Math.random() * 30}s;
+      opacity:${0.15 + Math.random() * 0.3};
+    `;
+    layer.appendChild(m);
+  }
+})();
+
+// ambient room tone: filtered brown noise, like a quiet library with weather outside
+const AMBIENT = (function(){
+  let ctx = null, nodes = null;
+  function start(){
+    if (nodes) return;
+    try {
+      ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+      if (ctx.state === 'suspended') ctx.resume();
+      const len = ctx.sampleRate * 4;
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < len; i++){
+        const white = Math.random() * 2 - 1;
+        last = (last + 0.02 * white) / 1.02;
+        data[i] = last * 3.5;
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buf; src.loop = true;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass'; filter.frequency.value = 320;
+      const gain = ctx.createGain();
+      gain.gain.value = 0;
+      gain.gain.linearRampToValueAtTime(0.035, ctx.currentTime + 2.5);
+      // slow breathing swell, like wind against the window
+      const lfo = ctx.createOscillator();
+      lfo.frequency.value = 0.05;
+      const lfoGain = ctx.createGain();
+      lfoGain.gain.value = 0.012;
+      lfo.connect(lfoGain); lfoGain.connect(gain.gain);
+      src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      src.start(); lfo.start();
+      nodes = { src, lfo, gain };
+    } catch(e){}
+  }
+  function stop(){
+    if (!nodes) return;
+    try {
+      nodes.gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1);
+      const n = nodes;
+      setTimeout(() => { try { n.src.stop(); n.lfo.stop(); } catch(e){} }, 1200);
+    } catch(e){}
+    nodes = null;
+  }
+  return { start, stop, playing: () => !!nodes };
+})();
+
+</script>
+<script>
+// Shareable fact cards: draws an engraved-style image and downloads it.
+function makeFactCard(text, domainKey, title){
+  const dom = (typeof DOMAINS !== 'undefined' && DOMAINS[domainKey]) || { name:'', emblem:'✦', color:'#8a6d3b' };
+  const W = 1080, H = 1350;
+  const cv = document.createElement('canvas');
+  cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+
+  // parchment ground
+  const bg = g.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#f5ecd9'); bg.addColorStop(1, '#e4d5b6');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const glow = g.createRadialGradient(W/2, 0, 100, W/2, 0, H);
+  glow.addColorStop(0, 'rgba(232,207,143,.5)'); glow.addColorStop(1, 'rgba(232,207,143,0)');
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+
+  // double border
+  g.strokeStyle = '#8a6d3b'; g.lineWidth = 6; g.strokeRect(40, 40, W-80, H-80);
+  g.lineWidth = 2; g.strokeRect(60, 60, W-120, H-120);
+
+  g.textAlign = 'center'; g.fillStyle = '#8a6d3b';
+  g.font = '52px Georgia';
+  g.fillText(dom.emblem + '  ' + dom.name.toUpperCase(), W/2, 170);
+  g.font = 'italic 30px Georgia';
+  g.fillText('— worth retelling —', W/2, 225);
+
+  // wrapped fact text
+  g.fillStyle = '#2e2417';
+  g.font = '46px Georgia';
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  words.forEach(w => {
+    const test = line ? line + ' ' + w : w;
+    if (g.measureText(test).width > W - 220) { lines.push(line); line = w; }
+    else line = test;
+  });
+  if (line) lines.push(line);
+  const lh = 66;
+  let y = H/2 - (lines.length - 1) * lh / 2 + (title ? 20 : 0);
+  if (title) {
+    g.font = 'italic 34px Georgia'; g.fillStyle = '#5d4e38';
+    g.fillText(title.length > 60 ? title.slice(0, 57) + '...' : title, W/2, y - lh - 20);
+    g.fillStyle = '#2e2417'; g.font = '46px Georgia';
+  }
+  lines.forEach(l => { g.fillText(l, W/2, y); y += lh; });
+
+  // footer
+  g.fillStyle = '#8a6d3b';
+  g.font = '30px Georgia';
+  g.fillText('❦', W/2, H - 190);
+  g.font = 'small-caps 34px Georgia';
+  g.fillText('The Polymath Cabinet', W/2, H - 130);
+
+  const a = document.createElement('a');
+  a.download = 'polymath-card.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+}
+
+</script>
+<script>
 // The Polymath Cabinet
 (function(){
 'use strict';
@@ -1845,6 +2163,9 @@ function freshSave(){
     recent: {},             // domain -> array of 1/0 for last 20 answers (mastery stars)
     achievements: {},       // achievement id -> true once earned
     sound: true,
+    ambient: false,
+    mysteryClaimed: null,   // day string of last opened mystery drawer
+    examiner: {},           // month key -> score when passed
     journal: [],            // starred ideas: {t: title, x: text, d: domain, ts, mine?}
     exams: {},              // domain -> true once diploma earned
     questsDone: {},         // week key -> true
@@ -1945,6 +2266,9 @@ function takeAwayCard(qs){
     <div class="takeaway-hint">Tell one person today. Telling is keeping.</div>
   </div>`);
   card.querySelector('.takeaway-text').appendChild(starButton(q.q, q.why, q.d));
+  const shareBtn = el(`<button class="star-btn">🖼 make a card</button>`);
+  shareBtn.addEventListener('click', () => { makeFactCard(q.why, q.d, q.q); toast('Card saved. Send it to someone.'); });
+  card.querySelector('.takeaway-text').appendChild(shareBtn);
   return card;
 }
 function comboTick(run){
@@ -2055,6 +2379,7 @@ function go(name){
   if (name === 'lightning') startLightning();
   if (name === 'honors') renderHonors();
   if (name === 'journal') renderJournal();
+  if (name === 'wheel') renderWheel();
   SFX.page();
 }
 document.addEventListener('click', e => {
@@ -2170,8 +2495,13 @@ function renderJournal(){
       <div class="journal-domain" style="color:${dom.color}">${dom.emblem} ${dom.name}</div>
       <div class="journal-title">${entry.t}</div>
       <div class="journal-text">${entry.x}</div>
+      <button class="star-btn journal-share">🖼 make a card</button>
       <button class="journal-remove" title="Remove">✕</button>
     </div>`);
+    card.querySelector('.journal-share').addEventListener('click', () => {
+      makeFactCard(entry.x, entry.d, entry.mine ? null : entry.t);
+      toast('Card saved. Send it to someone.');
+    });
     card.querySelector('.journal-remove').addEventListener('click', () => {
       S.journal = S.journal.filter(e => e !== entry);
       save();
@@ -2216,6 +2546,43 @@ function renderHome(){
     <div class="iod-hint">One minute to read. Tap to open.</div>`;
   iod.onclick = () => openNode(idea);
 
+  // the curator speaks
+  const tried = Object.keys(DOMAINS).filter(dk => {
+    const st0 = S.domainStats[dk]; return st0 && (st0.right + st0.wrong) >= 3;
+  });
+  const weakestKey = tried.length ? tried.sort((a,b) => accuracy(a) - accuracy(b))[0] : null;
+  const rp = rankProgress();
+  $('#curator-line').textContent = CURATOR.greeting() + ' ' + CURATOR.observation(S, {
+    weakest: weakestKey && accuracy(weakestKey) < 0.75 ? DOMAINS[weakestKey].name : null,
+    toGo: rp.next ? rp.toGo : null,
+    nextName: rp.next ? rp.next.name : null
+  });
+  const mp = moonPhase();
+  $('#curator-moon').textContent = `${mp.icon} ${mp.name} tonight. ${mp.tip}`;
+
+  // the mystery drawer: some days it simply appears
+  const todayN = Math.floor(Date.now() / 86400000);
+  const mysteryToday = ((todayN * 2654435761) % 7) < 3; // roughly 3 days in 7
+  const myst = $('#mystery-card');
+  if (mysteryToday && S.mysteryClaimed !== todayStr()) {
+    myst.style.display = '';
+    myst.innerHTML = `<div class="iod-label">A drawer you have never seen before</div>
+      <div class="mystery-title">🗝️ The Mystery Drawer</div>
+      <div class="iod-hint">It was not here yesterday. Open it.</div>`;
+    myst.onclick = () => openMystery();
+  } else { myst.style.display = 'none'; myst.onclick = null; }
+
+  // the examiner: arrives once a month
+  const mKey = 'm' + new Date().getFullYear() + '-' + (new Date().getMonth() + 1);
+  const exm = $('#examiner-card');
+  if (!S.examiner[mKey]) {
+    exm.style.display = '';
+    exm.innerHTML = `<div class="iod-label">A visitor waits by the door</div>
+      <div class="mystery-title">🎩 The Examiner</div>
+      <div class="iod-hint">Twenty questions, every wing, once a month. Pass 16 and earn this month's medal.</div>`;
+    exm.onclick = () => startExaminer(mKey);
+  } else { exm.style.display = 'none'; exm.onclick = null; }
+
   // field quest of the week
   const wk = weekKey();
   const quest = QUESTS[Math.floor(Date.now() / (7 * 86400000)) % QUESTS.length];
@@ -2259,7 +2626,118 @@ function renderHome(){
     st.textContent = S.sound ? '🔔' : '🔕';
     if (S.sound) SFX.correct();
   };
+  const at = $('#ambient-toggle');
+  at.classList.toggle('ambient-on', AMBIENT.playing());
+  at.onclick = (e) => {
+    e.stopPropagation();
+    if (AMBIENT.playing()) { AMBIENT.stop(); S.ambient = false; toast('The room falls quiet.'); }
+    else { AMBIENT.start(); S.ambient = true; toast('The library breathes around you.'); }
+    save();
+    at.classList.toggle('ambient-on', AMBIENT.playing());
+  };
   checkAchievements();
+}
+
+// ---------- MYSTERY DRAWER ----------
+function openMystery(){
+  S.mysteryClaimed = todayStr();
+  save();
+  const myst = $('#mystery-card');
+  const roll = Math.random();
+  SFX.reward();
+  const unowned = CURIOSITIES.filter(c => !S.owned[c.id]);
+  if (roll < 0.3 && unowned.length) {
+    const gift = unowned[Math.floor(Math.random() * unowned.length)];
+    S.owned[gift.id] = true;
+    save();
+    myst.innerHTML = `<div class="iod-label">Inside the drawer...</div>
+      <div class="mystery-title">${gift.icon} ${gift.name}</div>
+      <div class="iod-hint">A gift for your collection. ${gift.story}</div>`;
+    myst.onclick = null;
+    toast('A curiosity, free. The cabinet is in a giving mood.');
+  } else if (roll < 0.6) {
+    const q = QUESTIONS.filter(x => x.w)[Math.floor(Math.random() * QUESTIONS.filter(x => x.w).length)];
+    myst.innerHTML = `<div class="iod-label">Inside: a single question, worth 25 lumens</div>`;
+    myst.onclick = null;
+    myst.appendChild(questionCard({
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: true,
+      onDone(right){
+        if (right) { const got = awardLumens(25); toast(`+${got} lumens from the mystery drawer.`); }
+        else toast('The drawer keeps its lumens, but you keep the fact.');
+        renderHome();
+        $('#mystery-card').style.display = 'none';
+      }
+    }));
+  } else {
+    const amount = 20 + Math.floor(Math.random() * 61);
+    const got = awardLumens(amount);
+    myst.innerHTML = `<div class="iod-label">Inside the drawer...</div>
+      <div class="mystery-title">✦ ${got} lumens</div>
+      <div class="iod-hint">Loose light, left by whoever owned this cabinet before you.</div>`;
+    myst.onclick = null;
+  }
+}
+
+// ---------- THE WHEEL ----------
+function renderWheel(){
+  const body = $('#wheel-body');
+  const keys = Object.keys(DOMAINS);
+  const n = keys.length;
+  const seg = 360 / n;
+  const colors = keys.map((k, i) => `${DOMAINS[k].color} ${i * seg}deg ${(i + 1) * seg}deg`).join(', ');
+  body.innerHTML = `
+    <p class="helper-text">Spin. Fate picks your wing, then you run ten of its questions.</p>
+    <div class="wheel-wrap">
+      <div class="wheel-pointer">▼</div>
+      <div class="wheel" id="the-wheel" style="background: conic-gradient(${colors})">
+        ${keys.map((k, i) => `<span class="wheel-emblem" style="transform: rotate(${i * seg + seg / 2}deg) translateY(-118px)">${DOMAINS[k].emblem}</span>`).join('')}
+        <div class="wheel-hub">❦</div>
+      </div>
+    </div>
+    <button class="btn-primary wheel-spin-btn" id="spin-btn">Spin the wheel</button>
+    <div class="wheel-result" id="wheel-result"></div>`;
+  let spinning = false;
+  let rotation = 0;
+  $('#spin-btn').addEventListener('click', () => {
+    if (spinning) return;
+    spinning = true;
+    $('#wheel-result').textContent = '';
+    const pick = Math.floor(Math.random() * n);
+    // land the chosen segment's center under the top pointer
+    const target = 360 * (5 + Math.floor(Math.random() * 3)) + (360 - (pick * seg + seg / 2));
+    rotation += target;
+    const wheel = $('#the-wheel');
+    wheel.style.transition = 'transform 4s cubic-bezier(.12,.72,.12,1)';
+    wheel.style.transform = `rotate(${rotation}deg)`;
+    let ticks = 0;
+    const tickTimer = setInterval(() => {
+      ticks++;
+      SFX.tick();
+      if (ticks > 30) clearInterval(tickTimer);
+    }, 120);
+    setTimeout(() => {
+      clearInterval(tickTimer);
+      const dk = keys[pick];
+      SFX.reward();
+      $('#wheel-result').innerHTML = `Fate says: <b style="color:${DOMAINS[dk].color}">${DOMAINS[dk].emblem} ${DOMAINS[dk].name}</b>`;
+      setTimeout(() => { spinning = false; startFocus(dk); }, 1400);
+    }, 4100);
+  });
+}
+
+// ---------- THE EXAMINER ----------
+function startExaminer(mKey){
+  const byDomain = {};
+  QUESTIONS.forEach(q => { (byDomain[q.d] = byDomain[q.d] || []).push(q); });
+  let qs = shuffle(Object.keys(byDomain).map(k => shuffle(byDomain[k])[0]));
+  const rest = shuffle(QUESTIONS.filter(q => !qs.includes(q)));
+  qs = qs.concat(rest).slice(0, 20);
+  exam = { d: null, examiner: mKey, qs: shuffle(qs), idx: 0, right: 0 };
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#screen-exam').classList.add('active');
+  window.scrollTo(0,0);
+  $('#exam-topbar').textContent = 'The Examiner';
+  renderExamQuestion();
 }
 
 // ---------- DAILY RUN ----------
@@ -2432,7 +2910,9 @@ function renderCabinet(){
       </button>`);
       drawer.addEventListener('click', () => {
         if (locked) { toast('Finish the top drawers on this shelf to unlock it.'); return; }
-        openNode(node);
+        drawer.classList.add('drawer-opening');
+        SFX.page();
+        setTimeout(() => openNode(node), 200);
       });
       drawersBox.appendChild(drawer);
     });
@@ -2506,6 +2986,27 @@ function renderExamQuestion(){
 }
 function finishExam(){
   const body = $('#exam-body');
+  if (exam.examiner) {
+    const passed = exam.right >= 16;
+    let earned = 0;
+    if (passed) {
+      S.examiner[exam.examiner] = exam.right;
+      earned = awardLumens(150);
+    }
+    save();
+    body.innerHTML = `
+      <div class="result-card">
+        <div class="result-title">${passed ? 'The Examiner Bows' : 'The Examiner Tips His Hat'}</div>
+        <div class="result-score">${passed ? '🎖️' : exam.right + ' / 20'}</div>
+        <div class="result-verdict">${passed
+          ? `"${exam.right} of twenty, across every wing. It is rare that I bow. This month's medal is yours."`
+          : '"Sixteen of twenty earns the medal. I return every month. Study broadly; I ask about everything."'}</div>
+        ${earned ? `<div class="result-earn">+${earned} lumens</div>` : ''}
+        <button class="btn-primary" data-go="home">Back to the cabinet</button>
+      </div>`;
+    $('#exam-progress').textContent = '';
+    return;
+  }
   const passed = exam.right >= 10;
   let earned = 0;
   if (passed && !S.exams[exam.d]) {
