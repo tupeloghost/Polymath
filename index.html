@@ -383,6 +383,44 @@ body {
 .iod-title { font-size: 18px; font-weight: bold; color: var(--wood); margin: 2px 0; }
 .iod-hint { font-size: 12px; font-style: italic; color: var(--ink-soft); }
 
+/* expedition */
+#expedition-map {
+  text-align: center; margin-bottom: 14px; line-height: 2;
+  color: #6b5a40; font-size: 15px;
+}
+.map-path { color: #4a3c28; margin: 0 1px; }
+.map-stop {
+  display: inline-block; width: 28px; height: 28px; line-height: 26px;
+  border: 1px solid #6b5a40; border-radius: 50%;
+  background: rgba(0,0,0,.3); text-align: center; font-size: 13px;
+}
+.map-done { opacity: .45; border-color: var(--green); }
+.map-cur {
+  border-color: #ffe9b0; color: #ffe9b0;
+  box-shadow: 0 0 12px rgba(232,207,143,.6);
+  transform: scale(1.2);
+}
+.boss-banner {
+  text-align: center; font-variant: small-caps; letter-spacing: 2px;
+  color: #ffe9b0; font-size: 18px; font-weight: bold; margin-bottom: 10px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.7);
+}
+
+/* duel */
+.duel-name {
+  display: block; width: 100%; max-width: 320px; margin: 10px auto;
+  font-family: inherit; font-size: 16px; text-align: center;
+  background: rgba(255,255,255,.6); color: var(--ink);
+  border: 1px solid var(--brass); border-radius: 6px; padding: 10px;
+}
+.duel-turn {
+  text-align: center; font-variant: small-caps; letter-spacing: 1px;
+  font-size: 18px; font-weight: bold; margin-bottom: 10px;
+  padding: 8px; border-radius: 6px;
+}
+.duel-p0 { color: #ffd9a0; background: rgba(176,110,40,.25); border: 1px solid rgba(176,141,74,.6); }
+.duel-p1 { color: #b8d4ff; background: rgba(60,90,140,.25); border: 1px solid rgba(90,120,170,.6); }
+
 /* atmosphere: dust motes + candle glow */
 #dust-layer { position: fixed; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
 .mote {
@@ -732,6 +770,17 @@ body::after {
         <span class="menu-desc">Five linked steps that build one big idea, start to finish.</span>
         <span class="menu-badge" id="chains-badge"></span>
       </button>
+      <button class="menu-card" data-go="expedition">
+        <span class="menu-emblem">&#128506;</span>
+        <span class="menu-title">The Expedition</span>
+        <span class="menu-desc">A journey with three hearts, forked paths, treasure, and a Guardian at the end.</span>
+        <span class="menu-badge" id="expedition-badge"></span>
+      </button>
+      <button class="menu-card" data-go="duel">
+        <span class="menu-emblem">&#9876;</span>
+        <span class="menu-title">The Duel</span>
+        <span class="menu-desc">Two players, one device. Pass it back and forth. Winner takes the glory.</span>
+      </button>
       <button class="menu-card" data-go="wheel">
         <span class="menu-emblem">&#127919;</span>
         <span class="menu-title">The Wheel</span>
@@ -845,6 +894,27 @@ body::after {
       <div class="topbar-right" id="lightning-status"></div>
     </div>
     <div id="lightning-body"></div>
+  </section>
+
+  <!-- EXPEDITION -->
+  <section id="screen-expedition" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">The Expedition</div>
+      <div class="topbar-right" id="expedition-status"></div>
+    </div>
+    <div id="expedition-map"></div>
+    <div id="expedition-body"></div>
+  </section>
+
+  <!-- DUEL -->
+  <section id="screen-duel" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">The Duel</div>
+      <div class="topbar-right" id="duel-status"></div>
+    </div>
+    <div id="duel-body"></div>
   </section>
 
   <!-- WHEEL -->
@@ -2166,6 +2236,7 @@ function freshSave(){
     ambient: false,
     mysteryClaimed: null,   // day string of last opened mystery drawer
     examiner: {},           // month key -> score when passed
+    expeditionBest: 0,      // most loot brought home
     journal: [],            // starred ideas: {t: title, x: text, d: domain, ts, mine?}
     exams: {},              // domain -> true once diploma earned
     questsDone: {},         // week key -> true
@@ -2380,6 +2451,8 @@ function go(name){
   if (name === 'honors') renderHonors();
   if (name === 'journal') renderJournal();
   if (name === 'wheel') renderWheel();
+  if (name === 'expedition') startExpedition();
+  if (name === 'duel') renderDuelSetup();
   SFX.page();
 }
 document.addEventListener('click', e => {
@@ -2535,6 +2608,7 @@ function renderHome(){
   $('#lightning-badge').textContent = S.lightningBest ? `best: ${S.lightningBest}` : 'untried';
   $('#honors-badge').textContent = `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} plaques`;
   $('#journal-badge').textContent = S.journal.length ? `${S.journal.length} kept` : 'empty';
+  $('#expedition-badge').textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
 
   // idea of the day: one drawer, chosen by the calendar
   const dayN = Math.floor(Date.now() / 86400000);
@@ -2676,6 +2750,239 @@ function openMystery(){
       <div class="iod-hint">Loose light, left by whoever owned this cabinet before you.</div>`;
     myst.onclick = null;
   }
+}
+
+// ---------- THE EXPEDITION ----------
+let exp = null;
+function randDomain(){ const k = Object.keys(DOMAINS); return k[Math.floor(Math.random() * k.length)]; }
+function pickQ(domain, advanced){
+  let pool = QUESTIONS.filter(q => q.d === domain && (advanced ? q.t === 2 : q.t !== 2));
+  if (!pool.length) pool = QUESTIONS.filter(q => q.d === domain);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function startExpedition(){
+  const route = [
+    { type:'q' }, { type:'q' }, { type:'fork' }, { type:'treasure' },
+    { type:'q' }, { type:'q' }, { type:'heart' }, { type:'fork' },
+    { type:'q' }, { type:'treasure' }, { type:'q' }, { type:'boss', left:3 }
+  ];
+  route.forEach(s => { if (s.type === 'q') s.d = randDomain(); });
+  exp = { route, i: 0, hearts: 3, loot: 0 };
+  renderExpedition();
+}
+function expIcon(stop, idx){
+  const cur = idx === exp.i, done = idx < exp.i;
+  const icon = stop.type === 'q' ? DOMAINS[stop.d || 'astronomy'].emblem
+    : stop.type === 'fork' ? '⑂' : stop.type === 'treasure' ? '🎁' : stop.type === 'heart' ? '♥' : '🗿';
+  return `<span class="map-stop ${cur ? 'map-cur' : ''} ${done ? 'map-done' : ''}">${icon}</span>`;
+}
+function renderExpedition(){
+  $('#expedition-status').textContent = `${'♥'.repeat(exp.hearts)}${'·'.repeat(3 - exp.hearts)}  ✦${exp.loot}`;
+  $('#expedition-map').innerHTML = exp.route.map((s, i) => expIcon(s, i)).join('<span class="map-path">—</span>');
+  const body = $('#expedition-body');
+  body.innerHTML = '';
+  if (exp.hearts <= 0) { endExpedition(false); return; }
+  if (exp.i >= exp.route.length) { endExpedition(true); return; }
+  const stop = exp.route[exp.i];
+
+  if (stop.type === 'q') {
+    const q = pickQ(stop.d, false);
+    body.appendChild(questionCard({
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
+      onDone(right){
+        if (right) { exp.loot += 6; toast('+6 loot'); }
+        else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
+        exp.i++;
+        renderExpedition();
+      }
+    }));
+  } else if (stop.type === 'fork') {
+    const d1 = randDomain(); let d2 = randDomain();
+    while (d2 === d1) d2 = randDomain();
+    body.appendChild(el(`<div class="lesson-card" style="text-align:center">
+      <h2 class="lesson-title">The Path Forks</h2>
+      <p class="lesson-text">The steady road asks an ordinary question. The dark road asks a hard one, and pays double.</p>
+      <button class="btn-primary" id="fork-safe">Steady road: ${DOMAINS[d1].emblem} ${DOMAINS[d1].name} (+6 loot)</button>
+      <button class="btn-secondary" id="fork-risky">Dark road: ${DOMAINS[d2].emblem} ${DOMAINS[d2].name}, advanced (+14 loot)</button>
+    </div>`));
+    const walk = (d, adv, reward) => {
+      const q = pickQ(d, adv);
+      body.innerHTML = '';
+      body.appendChild(questionCard({
+        domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
+        tag: adv ? 'advanced' : '',
+        onDone(right){
+          if (right) { exp.loot += reward; toast(`+${reward} loot`); }
+          else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
+          exp.i++;
+          renderExpedition();
+        }
+      }));
+    };
+    $('#fork-safe').addEventListener('click', () => walk(d1, false, 6));
+    $('#fork-risky').addEventListener('click', () => walk(d2, true, 14));
+  } else if (stop.type === 'treasure') {
+    const found = 8 + Math.floor(Math.random() * 13);
+    exp.loot += found;
+    SFX.reward();
+    body.appendChild(el(`<div class="lesson-card" style="text-align:center">
+      <h2 class="lesson-title">🎁 A Cache in the Rocks</h2>
+      <p class="lesson-text">You find ${found} loot tucked away by an earlier traveler.</p>
+      <button class="btn-primary" id="exp-next">Walk on</button>
+    </div>`));
+    $('#exp-next').addEventListener('click', () => { exp.i++; renderExpedition(); });
+  } else if (stop.type === 'heart') {
+    const healed = exp.hearts < 3;
+    if (healed) exp.hearts++;
+    SFX.reward();
+    body.appendChild(el(`<div class="lesson-card" style="text-align:center">
+      <h2 class="lesson-title">♥ A Spring in the Woods</h2>
+      <p class="lesson-text">${healed ? 'You rest, and a cracked heart mends.' : 'You rest. Your hearts were already whole, so you pocket 10 loot instead.'}</p>
+      <button class="btn-primary" id="exp-next">Walk on</button>
+    </div>`));
+    if (!healed) exp.loot += 10;
+    $('#exp-next').addEventListener('click', () => { exp.i++; renderExpedition(); });
+  } else if (stop.type === 'boss') {
+    if (stop.left === 3) {
+      body.appendChild(el(`<div class="lesson-card" style="text-align:center">
+        <h2 class="lesson-title">🗿 The Guardian</h2>
+        <p class="lesson-text">"Three questions, traveler. Hard ones. Answer them and the road home is paved with what you carry, plus my tribute."</p>
+        <button class="btn-primary" id="exp-boss-go">Face the Guardian</button>
+      </div>`));
+      $('#exp-boss-go').addEventListener('click', () => { stop.left = 2.99; renderExpedition(); });
+      return;
+    }
+    const q = pickQ(randDomain(), true);
+    body.appendChild(el(`<div class="boss-banner">🗿 The Guardian asks (${Math.ceil(stop.left)} left)</div>`));
+    body.appendChild(questionCard({
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why,
+      tag: 'advanced',
+      onDone(right){
+        if (right) { exp.loot += 15; toast('+15 loot. The Guardian nods slowly.'); }
+        else { exp.hearts--; SFX.wrong(); toast('The Guardian frowns. A heart cracks.'); }
+        stop.left = Math.ceil(stop.left) - 1;
+        if (stop.left <= 0) exp.i++;
+        renderExpedition();
+      }
+    }));
+  }
+}
+function endExpedition(survived){
+  const body = $('#expedition-body');
+  const keep = survived ? exp.loot + 25 : Math.floor(exp.loot / 2);
+  const isBest = keep > S.expeditionBest;
+  if (isBest) S.expeditionBest = keep;
+  const earned = awardLumens(keep);
+  body.innerHTML = `
+    <div class="result-card">
+      <div class="result-title">${survived ? 'The Road Home' : 'Carried Back on a Cart'}</div>
+      <div class="result-score">${survived ? '🏕️' : '💔'}</div>
+      <div class="result-verdict">${survived
+        ? 'You walked the whole road, faced the Guardian, and came home heavier with loot and lighter with knowing.'
+        : 'Your hearts gave out on the road. Half your loot made it home with you. The road will be there tomorrow.'}</div>
+      ${isBest ? '<div class="result-earn">New best expedition!</div>' : ''}
+      <div class="result-earn">+${earned} lumens</div>
+      <button class="btn-primary" data-go="expedition">Set out again</button>
+      <button class="btn-secondary" data-go="home">Back to the cabinet</button>
+    </div>`;
+  $('#expedition-map').innerHTML = '';
+  $('#expedition-status').textContent = '';
+}
+
+// ---------- THE DUEL ----------
+let duel = null;
+function renderDuelSetup(){
+  const body = $('#duel-body');
+  $('#duel-status').textContent = '';
+  body.innerHTML = `
+    <div class="lesson-card" style="text-align:center">
+      <h2 class="lesson-title">⚔ The Duel</h2>
+      <p class="lesson-text">Ten questions, five each, taking turns on this device. Highest score claims the crown. Ties go to sudden death.</p>
+      <input class="duel-name" id="duel-p1" maxlength="14" placeholder="Player 1 name" value="">
+      <input class="duel-name" id="duel-p2" maxlength="14" placeholder="Player 2 name" value="">
+      <button class="btn-primary" id="duel-start">Begin the duel</button>
+    </div>`;
+  $('#duel-start').addEventListener('click', () => {
+    duel = {
+      names: [($('#duel-p1').value.trim() || 'Player 1'), ($('#duel-p2').value.trim() || 'Player 2')],
+      scores: [0, 0],
+      turn: 0, asked: 0, total: 10,
+      deck: shuffle(QUESTIONS.filter(q => q.t !== 2)),
+      sudden: false
+    };
+    renderDuelQuestion();
+  });
+}
+function renderDuelQuestion(){
+  const body = $('#duel-body');
+  body.innerHTML = '';
+  $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+  if (!duel.sudden && duel.asked >= duel.total) { finishDuel(); return; }
+  const p = duel.turn;
+  const q = duel.deck[duel.asked % duel.deck.length];
+  body.appendChild(el(`<div class="duel-turn duel-p${p}">${duel.sudden ? '☠️ Sudden death: ' : ''}${duel.names[p]}, your question</div>`));
+  const order = shuffle(q.a.map((text, i) => ({ text, right: i === q.c })));
+  const dom = DOMAINS[q.d];
+  const card = el(`<div class="qcard">
+    <div class="qcard-domain" style="color:${dom.color}">${dom.emblem} ${dom.name}</div>
+    <div class="qcard-question">${q.q}</div>
+    <div class="qcard-answers"></div>
+    <div class="qcard-why hidden"></div>
+    <button class="btn-primary qcard-next hidden">Pass the device</button>
+  </div>`);
+  const box = card.querySelector('.qcard-answers');
+  let answered = false;
+  order.forEach(opt => {
+    const btn = el(`<button class="answer-btn">${opt.text}</button>`);
+    btn.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      if (opt.right) { duel.scores[p]++; SFX.correct(); }
+      else SFX.wrong();
+      box.querySelectorAll('.answer-btn').forEach((b, i) => {
+        if (order[i].right) b.classList.add('correct'); else b.classList.add('faded');
+      });
+      if (!opt.right) { btn.classList.remove('faded'); btn.classList.add('wrong'); }
+      const why = card.querySelector('.qcard-why');
+      if (q.why) { why.textContent = q.why; why.classList.remove('hidden'); }
+      const next = card.querySelector('.qcard-next');
+      next.classList.remove('hidden');
+      next.addEventListener('click', () => {
+        duel.asked++;
+        if (duel.sudden && duel.turn === 1) {
+          if (duel.scores[0] !== duel.scores[1]) { finishDuel(); return; }
+        }
+        duel.turn = 1 - duel.turn;
+        $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+        renderDuelQuestion();
+      }, { once: true });
+    });
+    box.appendChild(btn);
+  });
+  body.appendChild(card);
+}
+function finishDuel(){
+  const body = $('#duel-body');
+  if (duel.scores[0] === duel.scores[1]) {
+    duel.sudden = true;
+    duel.turn = 0;
+    toast('☠️ A tie. Sudden death begins.');
+    renderDuelQuestion();
+    return;
+  }
+  const w = duel.scores[0] > duel.scores[1] ? 0 : 1;
+  SFX.reward();
+  const earned = awardLumens(15);
+  body.innerHTML = `
+    <div class="result-card">
+      <div class="result-title">The Duel Is Decided</div>
+      <div class="result-score">👑</div>
+      <div class="result-verdict"><b>${duel.names[w]}</b> takes the crown, ${duel.scores[w]} to ${duel.scores[1 - w]}. ${duel.names[1 - w]}, the cabinet demands a rematch.</div>
+      <div class="result-earn">+${earned} lumens to the cabinet for hosting</div>
+      <button class="btn-primary" data-go="duel">Rematch</button>
+      <button class="btn-secondary" data-go="home">Back to the cabinet</button>
+    </div>`;
+  $('#duel-status').textContent = '';
 }
 
 // ---------- THE WHEEL ----------
