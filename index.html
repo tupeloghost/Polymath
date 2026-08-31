@@ -79,38 +79,82 @@ body {
 .stat-rank { display: block; font-size: 15px; font-weight: bold; color: var(--brass); font-variant: small-caps; letter-spacing: 1px; padding-top: 4px; }
 .stat-label { display: block; font-size: 12px; color: var(--ink-soft); font-style: italic; }
 
-/* home menu */
-.home-menu { display: grid; gap: 14px; }
-@media (min-width: 700px) {
-  .home-menu { grid-template-columns: 1fr 1fr; }
+/* home menu: sectioned tile grid */
+.home-menu { display: grid; gap: 20px; }
+.menu-head {
+  font-variant: small-caps; letter-spacing: 3px; font-size: 14px;
+  color: var(--brass-bright); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px;
 }
+.menu-head::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--brass), transparent); opacity: .5; }
+.menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 480px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
 .menu-card {
-  display: block; width: 100%; text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; min-height: 96px; cursor: pointer;
   font-family: inherit; color: var(--ink);
   background:
-    radial-gradient(ellipse at 20% 0%, rgba(255,255,255,.5), transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 60%),
     linear-gradient(180deg, var(--card), var(--paper-deep));
   border: 1px solid var(--brass);
-  border-radius: 8px;
-  padding: 16px 18px;
+  border-radius: 12px;
+  padding: 12px 8px;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0,0,0,.45);
+  box-shadow: 0 4px 10px rgba(0,0,0,.4);
   transition: transform .12s ease, box-shadow .12s ease;
 }
-.menu-card { outline: 1px solid rgba(138,109,59,.45); outline-offset: -5px; }
-.menu-card:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.55), 0 0 14px rgba(176,141,74,.25); border-color: var(--brass-bright); }
+.menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,.55), 0 0 14px rgba(176,141,74,.25); border-color: var(--brass-bright); }
 .menu-card:active { transform: translateY(0); }
-.menu-emblem { font-size: 24px; color: var(--brass); float: left; margin-right: 14px; line-height: 1.2; }
-.menu-title { display: block; font-size: 20px; font-variant: small-caps; letter-spacing: 1px; color: var(--wood); font-weight: bold; }
-.menu-desc { display: block; font-size: 14px; color: var(--ink-soft); }
+.menu-emblem { font-size: 26px; color: var(--brass); line-height: 1.1; }
+.menu-title { font-size: 15px; font-variant: small-caps; letter-spacing: .5px; color: var(--wood); font-weight: bold; text-align: center; }
 .menu-badge {
-  position: absolute; top: 10px; right: 12px;
-  font-size: 12px; font-style: italic; color: var(--brass);
-  border: 1px solid var(--brass); border-radius: 12px; padding: 2px 10px;
+  font-size: 10.5px; font-style: italic; color: var(--brass);
+  border: 1px solid rgba(138,109,59,.6); border-radius: 10px; padding: 1px 8px;
   background: rgba(255,255,255,.4);
+  max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .menu-badge:empty { display: none; }
 .badge-done { color: var(--green); border-color: var(--green); }
+
+/* today panel */
+#today-panel {
+  background: linear-gradient(180deg, var(--card), var(--paper-deep));
+  border: 1px solid var(--brass);
+  border-radius: 12px;
+  margin: 0 0 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.45);
+  overflow: hidden;
+}
+.today-head {
+  font-variant: small-caps; letter-spacing: 3px; font-size: 13px; text-align: center;
+  color: var(--brass); padding: 8px 0 6px;
+  border-bottom: 1px solid rgba(138,109,59,.35);
+  background: rgba(255,255,255,.25);
+}
+.today-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; cursor: pointer;
+  border-bottom: 1px solid rgba(138,109,59,.25);
+  transition: background .12s ease;
+}
+.today-row:last-child { border-bottom: none; }
+.today-row:hover { background: rgba(255,255,255,.35); }
+.row-icon { font-size: 22px; flex: 0 0 auto; width: 28px; text-align: center; }
+.row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.row-label { font-size: 11px; font-variant: small-caps; letter-spacing: 1.5px; color: var(--brass); font-weight: bold; }
+.row-main { font-size: 16px; font-weight: bold; color: var(--wood); }
+.row-sub { font-size: 13px; color: var(--ink-soft); line-height: 1.4; }
+.row-echo { font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.row-go { font-size: 22px; color: var(--brass); flex: 0 0 auto; }
+.row-done { font-size: 13px; color: var(--green); font-style: italic; flex: 0 0 auto; }
+.row-btn {
+  flex: 0 0 auto; font-family: inherit; cursor: pointer;
+  font-size: 13px; line-height: 1.15; font-variant: small-caps; letter-spacing: .5px;
+  color: var(--paper); background: linear-gradient(180deg, var(--brass-bright), var(--brass));
+  border: 1px solid var(--wood); border-radius: 8px; padding: 8px 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.35);
+}
+.row-btn:hover { filter: brightness(1.08); }
 
 /* topbar */
 .topbar {
@@ -365,23 +409,8 @@ body {
 }
 #sound-toggle:hover { background: rgba(176,141,74,.2); }
 #screen-home { position: relative; }
-#idea-of-day {
-  cursor: pointer;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(232,207,143,.25), transparent 60%),
-    linear-gradient(180deg, var(--card), var(--paper-deep));
-  border: 1px solid var(--brass-bright);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 0 0 16px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,.45), 0 0 16px rgba(176,141,74,.15);
-  transition: transform .12s ease;
-}
-#idea-of-day:hover { transform: translateY(-2px); }
 .iod-label { font-size: 12px; font-variant: small-caps; letter-spacing: 2px; color: var(--brass); }
-.iod-title { font-size: 18px; font-weight: bold; color: var(--wood); margin: 2px 0; }
-.iod-hint { font-size: 12px; font-style: italic; color: var(--ink-soft); }
+.iod-hint { font-size: 12px; font-style: italic; color: inherit; opacity: .8; }
 
 /* expedition */
 #expedition-map {
@@ -559,30 +588,7 @@ body::after {
 .takeaway-text { font-size: 16px; color: var(--ink); margin: 6px 0; line-height: 1.6; }
 .takeaway-hint { font-size: 12px; font-style: italic; color: var(--ink-soft); }
 
-/* field quest + book echo */
-#field-quest {
-  background: linear-gradient(180deg, var(--card), var(--paper-deep));
-  border: 1px solid var(--brass);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 0 0 16px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,.45);
-}
-.fq-text { font-size: 14px; color: var(--ink-soft); margin: 4px 0 8px; }
-.fq-btn { max-width: 320px; margin: 6px auto 2px; padding: 8px; font-size: 14px; }
-.fq-done { color: var(--green); font-style: italic; font-size: 14px; }
-#book-echo {
-  cursor: pointer;
-  border-left: 4px solid var(--brass);
-  background: rgba(239,228,205,.08);
-  border-radius: 0 8px 8px 0;
-  padding: 10px 16px;
-  margin: 0 0 16px;
-  color: #cbb98f;
-}
-.echo-label { font-size: 12px; font-variant: small-caps; letter-spacing: 1px; color: var(--brass-bright); }
-.echo-text { font-style: italic; font-size: 14px; margin-top: 3px; line-height: 1.55; }
+/* (field quest and book echo now live as rows inside #today-panel) */
 
 /* shelf extras: spines, actions, exams */
 .spines { margin-left: 10px; display: inline-flex; gap: 2px; vertical-align: middle; filter: none; }
@@ -739,88 +745,93 @@ body::after {
 
     <div class="home-stats" id="home-stats"></div>
 
-    <div id="idea-of-day"></div>
     <div id="mystery-card"></div>
     <div id="examiner-card"></div>
-    <div id="field-quest"></div>
-    <div id="book-echo"></div>
+    <div id="today-panel">
+      <div class="today-head">Today in the Cabinet</div>
+      <div id="idea-of-day" class="today-row"></div>
+      <div id="field-quest" class="today-row"></div>
+      <div id="book-echo" class="today-row"></div>
+    </div>
 
     <nav class="home-menu">
-      <button class="menu-card" data-go="daily">
-        <span class="menu-emblem">&#9788;</span>
-        <span class="menu-title">Daily Run</span>
-        <span class="menu-desc">Answer 10 questions from all over. Keep your streak alive.</span>
-        <span class="menu-badge" id="daily-badge"></span>
-      </button>
-      <button class="menu-card" data-go="cabinet">
-        <span class="menu-emblem">&#128452;</span>
-        <span class="menu-title">The Cabinet</span>
-        <span class="menu-desc">Open drawers. Learn one small idea, then prove you know it.</span>
-        <span class="menu-badge" id="cabinet-badge"></span>
-      </button>
-      <button class="menu-card" data-go="bridges">
-        <span class="menu-emblem">&#9878;</span>
-        <span class="menu-title">Bridges</span>
-        <span class="menu-desc">Two subjects, one hidden link. Guess it, then learn the real one.</span>
-        <span class="menu-badge" id="bridges-badge"></span>
-      </button>
-      <button class="menu-card" data-go="chains">
-        <span class="menu-emblem">&#128279;</span>
-        <span class="menu-title">Study Chains</span>
-        <span class="menu-desc">Five linked steps that build one big idea, start to finish.</span>
-        <span class="menu-badge" id="chains-badge"></span>
-      </button>
-      <button class="menu-card" data-go="expedition">
-        <span class="menu-emblem">&#128506;</span>
-        <span class="menu-title">The Expedition</span>
-        <span class="menu-desc">A journey with three hearts, forked paths, treasure, and a Guardian at the end.</span>
-        <span class="menu-badge" id="expedition-badge"></span>
-      </button>
-      <button class="menu-card" data-go="duel">
-        <span class="menu-emblem">&#9876;</span>
-        <span class="menu-title">The Duel</span>
-        <span class="menu-desc">Two players, one device. Pass it back and forth. Winner takes the glory.</span>
-      </button>
-      <button class="menu-card" data-go="wheel">
-        <span class="menu-emblem">&#127919;</span>
-        <span class="menu-title">The Wheel</span>
-        <span class="menu-desc">Spin the brass wheel. Fate picks your subject.</span>
-      </button>
-      <button class="menu-card" data-go="lightning">
-        <span class="menu-emblem">&#9889;</span>
-        <span class="menu-title">Lightning Round</span>
-        <span class="menu-desc">60 seconds. Answer as many as you can. Go.</span>
-        <span class="menu-badge" id="lightning-badge"></span>
-      </button>
-      <button class="menu-card" data-go="gauntlet">
-        <span class="menu-emblem">&#128293;</span>
-        <span class="menu-title">The Gauntlet</span>
-        <span class="menu-desc">Endless questions. Three strikes and it ends. How far can you go?</span>
-        <span class="menu-badge" id="gauntlet-badge"></span>
-      </button>
-      <button class="menu-card" data-go="collection">
-        <span class="menu-emblem">&#127963;</span>
-        <span class="menu-title">Collection Room</span>
-        <span class="menu-desc">Spend your lumens on curiosities. Every piece has a story.</span>
-        <span class="menu-badge" id="collection-badge"></span>
-      </button>
-      <button class="menu-card" data-go="journal">
-        <span class="menu-emblem">&#11088;</span>
-        <span class="menu-title">Commonplace Book</span>
-        <span class="menu-desc">Star any idea you meet and it is kept here, in your own book of keepers.</span>
-        <span class="menu-badge" id="journal-badge"></span>
-      </button>
-      <button class="menu-card" data-go="honors">
-        <span class="menu-emblem">&#127942;</span>
-        <span class="menu-title">Hall of Honors</span>
-        <span class="menu-desc">Plaques for your feats. Earn them all.</span>
-        <span class="menu-badge" id="honors-badge"></span>
-      </button>
-      <button class="menu-card" data-go="ledger">
-        <span class="menu-emblem">&#128220;</span>
-        <span class="menu-title">The Ledger</span>
-        <span class="menu-desc">See your progress, your strong subjects, and your weak ones.</span>
-      </button>
+      <div class="menu-section">
+        <div class="menu-head">Play</div>
+        <div class="menu-grid">
+          <button class="menu-card" data-go="daily" title="Ten questions from every wing. Keeps your streak alive.">
+            <span class="menu-emblem">&#9788;</span>
+            <span class="menu-title">Daily Run</span>
+            <span class="menu-badge" id="daily-badge"></span>
+          </button>
+          <button class="menu-card" data-go="expedition" title="Three hearts, forked paths, treasure, and a Guardian.">
+            <span class="menu-emblem">&#128506;</span>
+            <span class="menu-title">Expedition</span>
+            <span class="menu-badge" id="expedition-badge"></span>
+          </button>
+          <button class="menu-card" data-go="gauntlet" title="Endless questions. Three strikes and it ends.">
+            <span class="menu-emblem">&#128293;</span>
+            <span class="menu-title">Gauntlet</span>
+            <span class="menu-badge" id="gauntlet-badge"></span>
+          </button>
+          <button class="menu-card" data-go="lightning" title="60 seconds, as many answers as you can.">
+            <span class="menu-emblem">&#9889;</span>
+            <span class="menu-title">Lightning</span>
+            <span class="menu-badge" id="lightning-badge"></span>
+          </button>
+          <button class="menu-card" data-go="wheel" title="Spin the wheel. Fate picks your subject.">
+            <span class="menu-emblem">&#127919;</span>
+            <span class="menu-title">The Wheel</span>
+          </button>
+          <button class="menu-card" data-go="duel" title="Two players, one device, sudden death on ties.">
+            <span class="menu-emblem">&#9876;</span>
+            <span class="menu-title">Duel</span>
+          </button>
+        </div>
+      </div>
+      <div class="menu-section">
+        <div class="menu-head">Study</div>
+        <div class="menu-grid">
+          <button class="menu-card" data-go="cabinet" title="Open drawers: one small idea, then one question.">
+            <span class="menu-emblem">&#128452;</span>
+            <span class="menu-title">The Cabinet</span>
+            <span class="menu-badge" id="cabinet-badge"></span>
+          </button>
+          <button class="menu-card" data-go="chains" title="Five linked steps that build one big idea.">
+            <span class="menu-emblem">&#128279;</span>
+            <span class="menu-title">Chains</span>
+            <span class="menu-badge" id="chains-badge"></span>
+          </button>
+          <button class="menu-card" data-go="bridges" title="Two subjects, one hidden link.">
+            <span class="menu-emblem">&#9878;</span>
+            <span class="menu-title">Bridges</span>
+            <span class="menu-badge" id="bridges-badge"></span>
+          </button>
+        </div>
+      </div>
+      <div class="menu-section">
+        <div class="menu-head">Your Things</div>
+        <div class="menu-grid">
+          <button class="menu-card" data-go="collection" title="Spend lumens on curiosities. Each has a story.">
+            <span class="menu-emblem">&#127963;</span>
+            <span class="menu-title">Collection</span>
+            <span class="menu-badge" id="collection-badge"></span>
+          </button>
+          <button class="menu-card" data-go="journal" title="Every idea you starred, kept in your own book.">
+            <span class="menu-emblem">&#11088;</span>
+            <span class="menu-title">Your Book</span>
+            <span class="menu-badge" id="journal-badge"></span>
+          </button>
+          <button class="menu-card" data-go="honors" title="Plaques for your feats.">
+            <span class="menu-emblem">&#127942;</span>
+            <span class="menu-title">Honors</span>
+            <span class="menu-badge" id="honors-badge"></span>
+          </button>
+          <button class="menu-card" data-go="ledger" title="Your stats, stars, and the ladder of titles.">
+            <span class="menu-emblem">&#128220;</span>
+            <span class="menu-title">Ledger</span>
+          </button>
+        </div>
+      </div>
     </nav>
   </section>
 
@@ -1962,6 +1973,43 @@ QUESTIONS.push(
 
 </script>
 <script>
+// Revelations, second printing.
+QUESTIONS.push(
+  { d:'astronomy', w:1, q:'How fast are you moving right now, sitting still?', a:['Not at all','About 60 mph','Around 1.3 million mph through space','Unknowable'], c:2, why:'Earth spins, orbits the Sun, the Sun orbits the galaxy, the galaxy falls toward Andromeda. Add it up: you are a projectile reading quietly.' },
+  { d:'astronomy', w:1, q:'There are more stars in the universe than...', a:['people on Earth','grains of sand on all Earth’s beaches','both, easily','neither'], c:2, why:'Estimates run to a septillion stars: thousands of stars for every grain of sand on every beach and desert on Earth.' },
+  { d:'astronomy', w:1, q:'On a clear night, the farthest thing your naked eye can see is...', a:['the Moon','Saturn','the Andromeda galaxy, 2.5 million light-years away','the space station'], c:2, why:'That faint smudge is 2.5 million years old light from a trillion stars. Your eye is a time machine with no moving parts.' },
+  { d:'biology', w:1, q:'Sharks are older than...', a:['dinosaurs','trees','Saturn’s rings, possibly','all of these'], c:3, why:'Sharks predate trees by ~50 million years, dinosaurs by ~200 million, and Saturn’s rings may be younger than all of it.' },
+  { d:'biology', w:1, q:'Wearing you down daily, your heart’s lifetime output could...', a:['fill a bathtub','fill an oil tanker fleet','lift a battleship','power a city'], c:1, why:'Around 200 million liters pumped in a lifetime, enough to fill dozens of supertankers, from a muscle the size of your fist.' },
+  { d:'biology', w:1, q:'A single teaspoon of soil contains...', a:['dozens of organisms','thousands','more microbes than there are humans on Earth','it is sterile'], c:2, why:'Billions of bacteria, miles of fungal threads. Every garden is a megacity you have never been introduced to.' },
+  { d:'history', w:1, q:'Woolly mammoths were still alive when...', a:['Rome fell','the pyramids were being built','writing was invented','both B and C'], c:3, why:'A dwarf mammoth population survived on Wrangel Island until ~1650 BCE, a millennium after Giza rose.' },
+  { d:'history', w:1, q:'The fax machine was invented in the same era as...', a:['the internet','the telephone','the Oregon Trail wagon crossings','television'], c:2, why:'Alexander Bain patented a fax concept in 1843, while wagons still creaked west. Technologies overlap in ways textbooks flatten.' },
+  { d:'history', w:1, q:'Nintendo was founded in...', a:['1989','1950','1889, as a playing card company','1975'], c:2, why:'Nintendo made hanafuda cards in the age of samurai-born grandfathers. It is older than the Eiffel Tower’s paint.' },
+  { d:'art', w:1, q:'The LEGO company produces more of what than anyone on Earth?', a:['plastic','tires','yellow paint','toys by weight'], c:1, why:'Tiny LEGO wheels make it the world’s largest tire manufacturer by count: hundreds of millions a year.' },
+  { d:'art', w:1, q:'Van Gogh sold how many paintings in his lifetime?', a:['Hundreds','Dozens','Likely just one','None at all'], c:2, why:'One confirmed sale. He wrote to his brother of feeling like a failure. His works now anchor entire museums. Judge your own work gently.' },
+  { d:'music', w:1, q:'The world’s longest currently-playing piece of music is scheduled to end in...', a:['2030','2100','2640','it ended'], c:2, why:'John Cage’s "As Slow As Possible" is being performed on a German church organ for 639 years. Chord changes draw crowds.' },
+  { d:'music', w:1, q:'Cows produce more milk when...', a:['fed at night','played slow, calming music','alone','it is cold'], c:1, why:'Studies found slow tunes measurably raised milk yield. Everything with a nervous system responds to music.' },
+  { d:'math', w:1, q:'Fold a paper 42 times (if you could) and it would reach...', a:['the ceiling','a skyscraper’s top','the Moon','across town'], c:2, why:'Doubling 42 times turns 0.1mm into 440,000 km. Exponential growth is not intuition-shaped.' },
+  { d:'math', w:1, q:'In a room of 70 people, the odds two share a birthday are...', a:['about 20%','about 50%','99.9%','70/365'], c:2, why:'Virtually certain. Coincidences are mathematically cheap, which is worth remembering whenever one feels like fate.' },
+  { d:'philosophy', w:1, q:'The word "school" comes from the Greek "scholē", meaning...', a:['discipline','leisure','building','teacher'], c:1, why:'To the Greeks, learning was what free time was FOR. School literally means leisure. Consider how that inverted.' },
+  { d:'philosophy', w:1, q:'Diogenes, asked what he wanted from Alexander the Great, replied...', a:['gold','a city','"stand out of my sunlight"','a library'], c:2, why:'The most powerful man alive offered anything. The philosopher wanted his sunbeam back. Alexander said: were I not Alexander, I would wish to be Diogenes.' },
+  { d:'earth', w:1, q:'Antarctica is the world’s largest...', a:['forest remnant','desert','ocean','glacier only'], c:1, why:'Deserts are defined by precipitation, not heat. The driest continent is the frozen one; some valleys have seen no rain for 2 million years.' },
+  { d:'earth', w:1, q:'There is enough gold in Earth’s core to...', a:['fill a vault','coat the entire planet’s surface knee-deep','make one ring each','none there'], c:1, why:'Most of Earth’s gold sank into the core during formation. The wedding rings we mine are the crumbs that arrived late by meteorite.' },
+  { d:'psychology', w:1, q:'Smiling, even a forced one, tends to...', a:['fool no one','slightly improve your actual mood','strain muscles','nothing'], c:1, why:'The face reports TO the brain as well as for it. Body first, feeling follows, works for posture and breathing too.' },
+  { d:'psychology', w:1, q:'You cannot actually multitask on two thinking tasks. Your brain...', a:['does both at half power','switches rapidly, paying a toll each switch','uses both halves','can with practice'], c:1, why:'Task-switching costs up to 40% of productive time. The people who seem great at multitasking test worst at it.' },
+  { d:'economics', w:1, q:'A $1 bill costs about how much to make?', a:['1 cent','3 cents','9 cents','50 cents'], c:1, why:'About 3 cents of cotton-linen paper is worth a dollar purely because everyone agrees it is. All money is a shared story.' },
+  { d:'economics', w:1, q:'The richest person in history, adjusted for era, was likely...', a:['a modern tech founder','Mansa Musa of Mali','a Roman emperor','a railroad baron'], c:1, why:'His gold gifts en route to Mecca crashed regional economies for a decade. Wealth so vast it broke the price of money itself.' },
+  { d:'physics', w:1, q:'Glass is...', a:['a slow liquid','a solid whose atoms froze in liquid-like disorder','alive','crystallized air'], c:1, why:'The "old windows flow" story is a myth, but the truth is stranger: glass is matter caught between states, disorder locked solid.' },
+  { d:'physics', w:1, q:'Every breath you take likely contains atoms once breathed by...', a:['nobody','your grandparents only','Julius Caesar, Cleopatra, and everyone else','only recent people'], c:2, why:'Atmospheric mixing plus the sheer number of molecules per breath makes it nearly certain. The air is a shared inheritance.' },
+  { d:'literature', w:1, q:'The dictionary word count of an average adult vocabulary vs Shakespeare’s written works?', a:['We know far fewer','Roughly comparable: ~20,000-30,000','He knew 10x more','Cannot compare'], c:1, why:'You command a Shakespeare-scale vocabulary. He was not superhuman in words; he was fearless in combining them.' },
+  { d:'technology', w:1, q:'More people on Earth have access to a mobile phone than to...', a:['television','a working toilet','radio','electricity in cities'], c:1, why:'A defining fact of our era: connection outran sanitation. Infrastructure follows desire, not need.' },
+  { d:'mythology', w:1, q:'The Cyclops myth may have started when Greeks found...', a:['one-eyed people','fossil elephant skulls with a giant central nasal hole','cave paintings','nothing real'], c:1, why:'A dwarf-elephant skull’s trunk hole looks exactly like one huge eye socket. Myths are often fossils, misread brilliantly.' },
+  { d:'body', w:1, q:'Your bones are, pound for pound, stronger than...', a:['wood','concrete and some steel','only plastic','nothing modern'], c:1, why:'Bone withstands compression better than concrete at a fraction of the weight, and rebuilds itself. Engineers still study it jealously.' },
+  { d:'language', w:1, q:'The most common letter in English, appearing in ~11% of all text, is...', a:['A','T','E','S'], c:2, why:'"E" is so dominant that a famous 1939 novel, Gadsby, was written entirely without it, as a 50,000-word stunt.' },
+  { d:'practical', w:1, q:'Studies of lottery winners a year later find their happiness is...', a:['doubled','roughly back to their old baseline','permanently higher','destroyed'], c:1, why:'Hedonic adaptation: we reset to baseline after good and bad alike. Buying experiences and giving resist the reset better than buying things.' }
+);
+
+</script>
+<script>
 // The Hall of Honors. test(S) returns true when the plaque is earned.
 const ACHIEVEMENTS = [
   { id:'a1',  icon:'🕯️', name:'First Light',        desc:'Complete a daily run', test:s => s.dailyBest > 0 },
@@ -2615,9 +2663,9 @@ function renderHome(){
   const idea = NODES[dayN % NODES.length];
   const ideaDom = DOMAINS[idea.d];
   const iod = $('#idea-of-day');
-  iod.innerHTML = `<div class="iod-label">Idea of the Day</div>
-    <div class="iod-title"><span style="color:${ideaDom.color}">${ideaDom.emblem}</span> ${idea.title}</div>
-    <div class="iod-hint">One minute to read. Tap to open.</div>`;
+  iod.innerHTML = `<span class="row-icon" style="color:${ideaDom.color}">${ideaDom.emblem}</span>
+    <span class="row-body"><span class="row-label">Idea of the day</span><span class="row-main">${idea.title}</span></span>
+    <span class="row-go">›</span>`;
   iod.onclick = () => openNode(idea);
 
   // the curator speaks
@@ -2663,12 +2711,13 @@ function renderHome(){
   const questDone = !!S.questsDone[wk];
   const qDom = DOMAINS[quest.d];
   const fq = $('#field-quest');
-  fq.innerHTML = `<div class="iod-label">Field Quest of the Week</div>
-    <div class="iod-title"><span style="color:${qDom.color}">${qDom.emblem}</span> ${quest.title}</div>
-    <div class="fq-text">${quest.text}</div>
+  fq.innerHTML = `<span class="row-icon" style="color:${qDom.color}">🥾</span>
+    <span class="row-body"><span class="row-label">Field quest of the week</span>
+      <span class="row-main">${quest.title}</span>
+      <span class="row-sub">${quest.text}</span></span>
     ${questDone
-      ? '<div class="fq-done">✓ Done this week. The world is your classroom.</div>'
-      : '<button class="btn-primary fq-btn" id="fq-done-btn">I did it (+50 lumens)</button>'}`;
+      ? '<span class="row-done">✓ done</span>'
+      : '<button class="row-btn" id="fq-done-btn">I did it<br><small>+50</small></button>'}`;
   const fqBtn = $('#fq-done-btn');
   if (fqBtn) fqBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -2683,8 +2732,10 @@ function renderHome(){
   if (S.journal.length) {
     const e = S.journal[Math.floor(Date.now() / 86400000) % S.journal.length];
     const days = Math.max(0, Math.floor((Date.now() - e.ts) / 86400000));
-    echo.innerHTML = `<div class="echo-label">⭐ From your book${days ? `, kept ${days} day${days === 1 ? '' : 's'} ago` : ''}</div>
-      <div class="echo-text">${e.x}</div>`;
+    echo.innerHTML = `<span class="row-icon">⭐</span>
+      <span class="row-body"><span class="row-label">From your book${days ? `, ${days} day${days === 1 ? '' : 's'} ago` : ''}</span>
+        <span class="row-sub row-echo">${e.x}</span></span>
+      <span class="row-go">›</span>`;
     echo.style.display = '';
     echo.onclick = () => go('journal');
   } else {
