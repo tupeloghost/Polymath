@@ -2084,6 +2084,153 @@ const SKILLS = [
 
 </script>
 <script>
+// Workshop, second bench: six more skills.
+
+function staffSVG(y){
+  const lines = [40,50,60,70,80].map(ly => `<line x1="10" y1="${ly}" x2="190" y2="${ly}" stroke="#5d4e38" stroke-width="1.5"/>`).join('');
+  const ledger = y >= 90 ? `<line x1="85" y1="90" x2="115" y2="90" stroke="#5d4e38" stroke-width="1.5"/>` : '';
+  return `<svg viewBox="0 0 200 110" style="width:220px;max-width:100%;background:rgba(255,255,255,.5);border-radius:8px">
+    <text x="14" y="78" font-size="52" fill="#5d4e38">𝄞</text>
+    ${lines}${ledger}
+    <ellipse cx="100" cy="${y}" rx="8" ry="6" fill="#2e2417"/>
+  </svg>`;
+}
+const STAFF_NOTES = [
+  ['C', 90, 'middle C, on its own little ledger line below the staff'],
+  ['D', 85, 'hanging just below the bottom line'],
+  ['E', 80, 'the bottom line'],
+  ['F', 75, 'the first space'],
+  ['G', 70, 'the second line'],
+  ['A', 65, 'the second space'],
+  ['B', 60, 'the middle line'],
+  ['C', 55, 'the third space'],
+  ['D', 50, 'the fourth line'],
+  ['E', 45, 'the fourth space'],
+  ['F', 40, 'the top line']
+];
+
+const MORSE = { E:'•', T:'−', I:'••', M:'−−', A:'•−', N:'−•', S:'•••', O:'−−−', H:'••••', R:'•−•', D:'−••', U:'••−' };
+
+const PEGS = { 1:'bun', 2:'shoe', 3:'tree', 4:'door', 5:'hive', 6:'sticks', 7:'heaven', 8:'gate', 9:'vine', 10:'hen' };
+
+const NORTH_QS = [
+  { q:'The two stars at the end of the Big Dipper’s cup point straight to...', a:['the Moon','Polaris, the North Star','Mars','the horizon'], c:1 },
+  { q:'Polaris sits almost exactly above...', a:['the equator','the North Pole','your city','the Sun'], c:1 },
+  { q:'You find Polaris and face it. East is...', a:['behind you','on your right','on your left','straight up'], c:1 },
+  { q:'Why is Polaris the one star that barely moves all night?', a:['It is closest to Earth','Earth’s axis points almost straight at it','It is the brightest','It does not move in space'], c:1 },
+  { q:'How high Polaris sits above the horizon tells you...', a:['the time','your latitude (how far north you are)','the season','the weather'], c:1 },
+  { q:'You face Polaris and walk toward it. You are heading...', a:['east','true north','magnetic south','west'], c:1 },
+  { q:'To find the Big Dipper’s pointer stars, look at...', a:['the handle’s tip','the two stars forming the cup’s outer edge','the middle star','any bright star'], c:1 },
+  { q:'On a clear night with no compass and no phone, the most reliable way north is...', a:['moss on trees','the Big Dipper’s pointers to Polaris','the wind','bird flight'], c:1 }
+];
+
+const FERMI_QS = [
+  { q:'Roughly how many times does your heart beat in a year? (100,000 a day...)', a:['400,000','4 million','40 million','4 billion'], c:2, why:'100,000 × 365 ≈ 36 million. Round numbers, multiply, done.' },
+  { q:'About how many hours of practice is 1 hour a day for 10 years?', a:['365','3,650','36,500','365,000'], c:1, why:'365 × 10 = 3,650 hours: enough for real expertise at almost anything.' },
+  { q:'Roughly how many words does a person speak per day? (~2 per second, ~2 hours of talking)', a:['1,500','15,000','150,000','1.5 million'], c:1, why:'2/sec × 7,200 sec ≈ 15,000 words. Estimate by breaking into rate × time.' },
+  { q:'About how many breaths do you take per day? (~15 a minute)', a:['2,000','20,000','200,000','2 million'], c:1, why:'15 × 60 × 24 ≈ 21,600. Round 15×1,440 to 20,000 and move on.' },
+  { q:'Roughly how many pizzas does a city of 1 million eat per day? (say 1 in 10 people, ~3 people per pizza)', a:['300','3,000','30,000','300,000'], c:2, why:'100,000 eaters ÷ 3 per pizza ≈ 33,000. Wrong by 2x maybe, wrong by 100x never.' },
+  { q:'About how many days old is a 30-year-old?', a:['1,100','11,000','110,000','1.1 million'], c:1, why:'30 × 365 ≈ 11,000 days. Sobering and useful: you can count your Saturdays.' },
+  { q:'Roughly how many hairs on a human head?', a:['1,000','10,000','100,000','10 million'], c:2, why:'About 100,000. For counts you cannot count, think in powers of ten.' },
+  { q:'How many liters of water does a person drink in a lifetime? (~2 a day, ~80 years)', a:['600','6,000','60,000','600,000'], c:2, why:'2 × 365 × 80 ≈ 58,000 liters: a backyard swimming pool, through one body.' }
+];
+
+SKILLS.push(
+  {
+    id:'music', icon:'🎼', title:'Read Music Notes', mastery:6,
+    hook:'Sheet music is not a secret language. It is a map of up and down, and you can learn to read the treble staff today.',
+    teach:`<p>Five lines, bottom to top, spell <b>E G B D F</b>: <i>Every Good Bird Does Fly</i>.</p>
+      <p>The four spaces between them spell <b>F A C E</b>, which spells itself.</p>
+      <p>${staffSVG(60)}</p>
+      <p>That note sits on the middle line, so it is <b>B</b>. Higher on the staff means higher in pitch. That is genuinely most of it.</p>`,
+    practice(){
+      const [letter, y, where] = STAFF_NOTES[Math.floor(Math.random() * STAFF_NOTES.length)];
+      const wrong = pickN(['A','B','C','D','E','F','G'].filter(x => x !== letter), 3);
+      const choices = pickN([letter, ...wrong], 4);
+      return { prompt:`Name this note:<br>${staffSVG(y)}`, choices, c: choices.indexOf(letter),
+        explain:`It sits on ${where}: that is ${letter}. Lines spell EGBDF, spaces spell FACE.` };
+    }
+  },
+  {
+    id:'north', icon:'🧭', title:'Find North by the Stars', mastery:5,
+    hook:'Lost, no phone, clear night: sailors and travelers used this for three thousand years, and it takes five minutes to learn.',
+    teach:`<p><b>1.</b> Find the Big Dipper: seven bright stars shaped like a pot with a long handle.</p>
+      <p><b>2.</b> Look at the two stars forming the outer edge of its cup: the <b>pointers</b>.</p>
+      <p><b>3.</b> Follow the line they make, out of the cup, about five cup-widths: the next bright-ish star is <b>Polaris</b>, the North Star.</p>
+      <p><b>4.</b> Face it. You are facing <b>true north</b>. East is on your right, west on your left.</p>
+      <p>Bonus: Polaris barely moves all night because Earth’s axis points at it, and its height above the horizon equals your latitude.</p>`,
+    practice(){
+      const item = NORTH_QS[Math.floor(Math.random() * NORTH_QS.length)];
+      const order = item.a.map((t, i) => ({ t, right: i === item.c }));
+      const shuffled = pickN(order, order.length);
+      return { prompt: item.q, choices: shuffled.map(o => o.t), c: shuffled.findIndex(o => o.right),
+        explain: item.a[item.c] + '.' };
+    }
+  },
+  {
+    id:'morse', icon:'📡', title:'Morse Code Basics', mastery:8,
+    hook:'Three dots, three dashes, three dots: SOS. The oldest electric language still saves lives, and its most common letters take minutes to learn.',
+    teach:`<p>Morse spells with short beeps (<b>•</b> dot) and long ones (<b>−</b> dash). The most-used letters got the shortest codes:</p>
+      <p class="skill-big">E&nbsp;• &nbsp;&nbsp;T&nbsp;− &nbsp;&nbsp;I&nbsp;•• &nbsp;&nbsp;A&nbsp;•− &nbsp;&nbsp;N&nbsp;−•</p>
+      <p class="skill-big">S&nbsp;••• &nbsp;&nbsp;O&nbsp;−−− &nbsp;&nbsp;M&nbsp;−− &nbsp;&nbsp;H&nbsp;•••• &nbsp;&nbsp;R&nbsp;•−•</p>
+      <p><b>SOS</b> = ••• −−− ••• : chosen not as an abbreviation but because nothing is easier to send or recognize.</p>
+      <p>With these ten letters you can already read: SOS, TEAM, HEART, ROME, and more taps on a wall than you would think.</p>`,
+    practice(){
+      const letters = Object.keys(MORSE);
+      const L = letters[Math.floor(Math.random() * letters.length)];
+      const wrong = pickN(letters.filter(x => x !== L), 3);
+      const choices = pickN([L, ...wrong], 4);
+      return { prompt:`Which letter is <b class="skill-big">${MORSE[L]}</b>?`, choices, c: choices.indexOf(L),
+        explain:`${MORSE[L]} is ${L}.` };
+    }
+  },
+  {
+    id:'rule72', icon:'📈', title:'The Rule of 72', mastery:5,
+    hook:'How long until money (or anything growing) doubles? Bankers do this in their heads with one division, and after today so will you.',
+    teach:`<p>Divide <b>72 by the yearly growth rate</b> and you get the years to double. That is the whole rule.</p>
+      <p>Growing at <b>8%</b> a year? 72 ÷ 8 = <b>9 years</b> to double.</p>
+      <p>At <b>6%</b>? 72 ÷ 6 = <b>12 years</b>. At <b>2%</b>? 36 years.</p>
+      <p>It works on savings, debts, prices, populations, anything compounding. It also runs backwards: doubled in 9 years means about 8% growth. This one rule makes every financial headline legible.</p>`,
+    practice(){
+      const rates = [2,3,4,6,8,9,12,18,24];
+      const r = rates[Math.floor(Math.random() * rates.length)];
+      return { prompt:`Something grows <b class="skill-big">${r}%</b> per year. About how many years to double?`, answer: String(72 / r),
+        explain:`72 ÷ ${r} = ${72/r} years.` };
+    }
+  },
+  {
+    id:'pegs', icon:'🧠', title:'The Peg System', mastery:6,
+    hook:'Memory champions are not born; they use furniture. Learn ten rhyming pegs and you can memorize any ten-item list, in order, first try.',
+    teach:`<p>Each number rhymes with a peg image. Say them once and they stick:</p>
+      <p class="skill-big">1 bun · 2 shoe · 3 tree · 4 door · 5 hive</p>
+      <p class="skill-big">6 sticks · 7 heaven · 8 gate · 9 vine · 10 hen</p>
+      <p>To memorize a list, weld each item to its peg with a <b>ridiculous image</b>. Milk as item 1? A hamburger bun soaked in milk. Batteries as item 4? A door with batteries for hinges.</p>
+      <p>The sillier the image, the stronger the memory. Ask "what was item 4?" and the door swings open with the answer. This is how memory athletes memorize decks of cards: pegs, at scale.</p>`,
+    practice(){
+      const n = 1 + Math.floor(Math.random() * 10);
+      const wrong = pickN(Object.values(PEGS).filter(p => p !== PEGS[n]), 3);
+      const choices = pickN([PEGS[n], ...wrong], 4);
+      return { prompt:`What is the peg image for <b class="skill-big">${n}</b>?`, choices, c: choices.indexOf(PEGS[n]),
+        explain:`${n} rhymes with ${PEGS[n]}.` };
+    }
+  },
+  {
+    id:'fermi', icon:'🎯', title:'Estimate Anything', mastery:5,
+    hook:'How many pizzas does your city eat a day? Physicists answer questions like this in 30 seconds, not by knowing, but by breaking them apart. It is a superpower in every meeting.',
+    teach:`<p>The Fermi method, three moves:</p>
+      <p><b>1. Break it apart.</b> Pizzas per day = people × share who eat pizza ÷ people per pizza.</p>
+      <p><b>2. Use round numbers.</b> Not 1,037,412 people: <b>a million</b>. Not 2.7 per pizza: <b>3</b>.</p>
+      <p><b>3. Multiply and trust it.</b> Your answer lands within 2-3x of truth, which beats "no idea" by a mile.</p>
+      <p>The goal is the right <b>power of ten</b>, not the right digits. Practice a few and your sense of scale changes permanently.</p>`,
+    practice(){
+      const item = FERMI_QS[Math.floor(Math.random() * FERMI_QS.length)];
+      return { prompt: item.q, choices: item.a, c: item.c, explain: item.why };
+    }
+  }
+);
+
+</script>
+<script>
 // The Revelations pack: questions whose answers you will want to tell someone.
 // w:1 marks a "worth retelling" fact, eligible for the end-of-session take-away.
 QUESTIONS.push(
