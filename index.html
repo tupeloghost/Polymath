@@ -487,10 +487,16 @@ body.ph .menu-grid { grid-template-columns: repeat(2, 1fr); }
 body.dt #duel-body .qcard-answers, body.dt #parlor-body .qcard-answers { grid-template-columns: 1fr 1fr; }body.dt #duel-body .answer-btn, body.dt #parlor-body .answer-btn { font-size: 15px; padding: 12px; }
 .duel-turn { margin-bottom: 8px; padding: 6px; font-size: 16px; }
 .duel-steal {
-  margin-top: 10px; padding: 10px 14px; border-radius: 6px;
+  margin-top: 10px; padding: 12px 16px; border-radius: 6px;
   font-size: 15px; text-align: center;
   animation: pop .3s ease;
+  background: linear-gradient(180deg, #55402c, var(--wood-deep)) !important;
+  color: #f5ecd9 !important;
+  border: 2px solid var(--brass-bright);
+  box-shadow: 0 3px 10px rgba(0,0,0,.4), 0 0 14px rgba(232,166,80,.3);
+  font-weight: bold;
 }
+.duel-steal b { color: #ffe9b0; }
 .more-box {
   margin-top: 10px; padding: 10px 12px;
   background: rgba(255,255,255,.5);
