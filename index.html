@@ -935,6 +935,31 @@ body.dt #version-tag { font-size: 13px; }
 }
 body.dt .bold-btn { font-size: 18px; padding: 12px; }
 
+/* daily twist banner + tournament bracket */
+.twist-banner {
+  text-align: center; margin-bottom: 12px; padding: 8px 14px;
+  border: 1px dashed var(--brass-bright); border-radius: 8px;
+  color: #ffe9b0; font-size: 14px; background: rgba(232,166,80,.12);
+}
+body.dt .twist-banner { font-size: 17px; }
+.bracket { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.bracket-round { display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.bracket-title { text-align: center; font-variant: small-caps; letter-spacing: 2px; color: var(--brass-bright); font-size: 14px; }
+.bracket-match {
+  background: linear-gradient(180deg, var(--card), var(--paper-deep));
+  border: 1px solid var(--brass); border-radius: 8px;
+  padding: 8px 14px; text-align: center;
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 130px; color: var(--wood); font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0,0,0,.4);
+}
+.bracket-vs { font-size: 11px; color: var(--ink-soft); font-weight: normal; font-style: italic; }
+.bracket-win { color: var(--green); }
+.bracket-win::after { content: ' 👑'; }
+.bracket-lose { opacity: .45; text-decoration: line-through; }
+body.dt .bracket-match { font-size: 18px; min-width: 170px; padding: 10px 16px; }
+body.dt .bracket-title { font-size: 16px; }
+
 </style>
 </head>
 <body>
@@ -2997,7 +3022,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v27 · Sep 1, 2026";
+window.GAME_VERSION = "v28 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3140,14 +3165,15 @@ const SFX = (function(){
     o.connect(g); g.connect(c.destination);
     o.start(t); o.stop(t + dur + 0.05);
   }
+  function buzz(p){ try { if (navigator.vibrate) navigator.vibrate(p); } catch(e){} }
   return {
-    correct(){ tone(660, .18, 'sine', .06); tone(990, .22, 'sine', .05, .07); },
-    wrong(){ tone(180, .25, 'triangle', .07); tone(140, .3, 'triangle', .05, .08); },
-    reward(){ tone(523, .15, 'sine', .05); tone(659, .15, 'sine', .05, .09); tone(784, .3, 'sine', .06, .18); },
+    correct(){ tone(660, .18, 'sine', .06); tone(990, .22, 'sine', .05, .07); buzz(15); },
+    wrong(){ tone(180, .25, 'triangle', .07); tone(140, .3, 'triangle', .05, .08); buzz([40, 50, 40]); },
+    reward(){ tone(523, .15, 'sine', .05); tone(659, .15, 'sine', .05, .09); tone(784, .3, 'sine', .06, .18); buzz([20, 30, 60]); },
     page(){ tone(2400, .04, 'triangle', .015); tone(1800, .05, 'triangle', .012, .02); },
     tick(){ tone(1200, .03, 'sine', .02); },
     combo(n){ const f = 523 * Math.pow(2, Math.min(n, 12) / 12); tone(f, .12, 'sine', .05); tone(f * 1.5, .16, 'sine', .04, .06); },
-    fanfare(){ [523, 659, 784, 1047].forEach((f, i) => tone(f, .5, 'sine', .06, i * .13)); tone(1319, .8, 'sine', .05, .55); },
+    fanfare(){ [523, 659, 784, 1047].forEach((f, i) => tone(f, .5, 'sine', .06, i * .13)); tone(1319, .8, 'sine', .05, .55); buzz([30, 40, 30, 40, 80]); },
     drumroll(dur){ const n = Math.floor((dur || .7) / .05); for (let i = 0; i < n; i++) tone(900 + Math.random() * 200, .03, 'triangle', .02, i * .05); }
   };
 })();
@@ -4352,6 +4378,11 @@ function renderParlor(){
         <span class="bridge-title">Last Scholar Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
       </button>
+      <button class="bridge-item" id="parlor-tourney">
+        <span class="bridge-domains">🏟 4 or 8 players</span>
+        <span class="bridge-title">Tournament</span>
+        <span class="bridge-state">A bracket of quick duels. Win your match, advance, take the championship.</span>
+      </button>
       <button class="bridge-item" id="parlor-teach">
         <span class="bridge-domains">🕯 Face to face</span>
         <span class="bridge-title">Teach &amp; Test</span>
@@ -4362,6 +4393,89 @@ function renderParlor(){
   $('#parlor-coop').addEventListener('click', () => parlorNames(2, 'Set out together', (names, kid) => startExpedition(names, kid)));
   $('#parlor-party').addEventListener('click', () => parlorNames(6, 'Start the circle', (names, kid) => startParty(names, kid), 3));
   $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
+  $('#parlor-tourney').addEventListener('click', () => parlorNames(8, 'Draw the bracket', (names, kid) => startTournament(names, kid), 4));
+}
+
+// ---------- TOURNAMENT ----------
+let tourney = null;
+function startTournament(names, kid){
+  let field = names.slice(0, names.length >= 8 ? 8 : 4);
+  if (names.length > field.length) toast(`The bracket holds ${field.length}: the first ${field.length} names are in.`);
+  field = pickN(field, field.length);
+  const rounds = [];
+  let current = field;
+  while (current.length > 1) {
+    const matches = [];
+    for (let i = 0; i < current.length; i += 2) matches.push({ a: current[i], b: current[i + 1], winner: null });
+    rounds.push(matches);
+    current = new Array(current.length / 2).fill(null);
+  }
+  tourney = { rounds, kid, roundIdx: 0, matchIdx: 0 };
+  renderBracket();
+}
+function roundName(i, total){
+  const fromEnd = total - i;
+  return fromEnd === 1 ? 'The Final' : fromEnd === 2 ? 'Semifinals' : 'Quarterfinals';
+}
+function renderBracket(){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#screen-parlor').classList.add('active');
+  window.scrollTo(0,0);
+  const body = $('#parlor-body');
+  const done = tourney.roundIdx >= tourney.rounds.length;
+  let html = '<div class="bracket">';
+  tourney.rounds.forEach((matches, ri) => {
+    html += `<div class="bracket-round"><div class="bracket-title">${roundName(ri, tourney.rounds.length)}</div>`;
+    matches.forEach(m => {
+      html += `<div class="bracket-match">
+        <span class="${m.winner === m.a ? 'bracket-win' : m.winner ? 'bracket-lose' : ''}">${m.a || '?'}</span>
+        <span class="bracket-vs">vs</span>
+        <span class="${m.winner === m.b ? 'bracket-win' : m.winner ? 'bracket-lose' : ''}">${m.b || '?'}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  body.innerHTML = html;
+  if (done) {
+    const champ = tourney.rounds[tourney.rounds.length - 1][0].winner;
+    confetti(90);
+    SFX.fanfare();
+    const earned = awardLumens(25);
+    body.appendChild(el(`<div class="result-card" style="margin-top:14px">
+      <div class="result-title">Champion of the Cabinet</div>
+      <div class="result-score">🏆</div>
+      <div class="result-verdict"><b>${champ}</b> ran the whole bracket. The shelves will remember this.</div>
+      <div class="result-earn">+${earned} lumens to the cabinet</div>
+      <button class="btn-primary" id="tourney-again">New tournament</button>
+      <button class="btn-secondary" data-go="home">Back to the cabinet</button>
+    </div>`));
+    $('#tourney-again').addEventListener('click', () => renderParlor());
+    return;
+  }
+  const m = tourney.rounds[tourney.roundIdx][tourney.matchIdx];
+  body.appendChild(el(`<div class="lesson-card" style="text-align:center; margin-top:14px">
+    <h2 class="lesson-title">Next match: ${m.a} vs ${m.b}</h2>
+    <p class="lesson-text">Three questions each. Winner advances.</p>
+    <button class="btn-primary" id="match-go">Begin the match</button>
+  </div>`));
+  $('#match-go').addEventListener('click', () => {
+    startDuelGame([m.a, m.b], tourney.kid, {
+      total: 6,
+      onWin(w){
+        m.winner = w === 0 ? m.a : m.b;
+        // seed the winner into the next round
+        if (tourney.roundIdx + 1 < tourney.rounds.length) {
+          const next = tourney.rounds[tourney.roundIdx + 1][Math.floor(tourney.matchIdx / 2)];
+          if (tourney.matchIdx % 2 === 0) next.a = m.winner; else next.b = m.winner;
+        }
+        toast(`👑 ${m.winner} advances.`);
+        tourney.matchIdx++;
+        if (tourney.matchIdx >= tourney.rounds[tourney.roundIdx].length) { tourney.roundIdx++; tourney.matchIdx = 0; }
+        renderBracket();
+      }
+    });
+  });
 }
 function parlorNames(maxPlayers, buttonText, onReady, minPlayers){
   minPlayers = minPlayers || 2;
@@ -4520,19 +4634,24 @@ function renderDuelSetup(){
     );
   });
 }
-function startDuelGame(names, kid){
+function startDuelGame(names, kid, opts){
+  opts = opts || {};
   const prev = window.__lastDuel;
-  const sameFoes = prev && prev.names[0] === names[0] && prev.names[1] === names[1];
+  const sameFoes = !opts.onWin && prev && prev.names[0] === names[0] && prev.names[1] === names[1];
   const series = sameFoes ? prev.series : [0, 0];
-  window.__lastDuel = { names, kid, series };
+  if (!opts.onWin) window.__lastDuel = { names, kid, series };
   duel = {
     names, kid, series,
     scores: [0, 0],
     streaks: [0, 0],
-    turn: 0, asked: 0, total: 10,
+    turn: 0, asked: 0, total: opts.total || 10,
     deck: partyDeck(playPool(kid).filter(q => q.t !== 2)),
-    sudden: false
+    sudden: false,
+    onWin: opts.onWin || null
   };
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#screen-duel').classList.add('active');
+  window.scrollTo(0,0);
   renderDuelQuestion();
 }
 function duelStatusLine(){
@@ -4683,6 +4802,7 @@ function finishDuel(){
     return;
   }
   const w = duel.scores[0] > duel.scores[1] ? 0 : 1;
+  if (duel.onWin) { duel.onWin(w); return; }
   duel.series[w]++;
   if (window.__lastDuel) window.__lastDuel.series = duel.series;
   SFX.reward();
@@ -4814,14 +4934,58 @@ function accuracy(domain){
   return st.right / (st.right + st.wrong);
 }
 
+function todaysTwist(){
+  const dayN = Math.floor(Date.now() / 86400000);
+  const domainKeys = Object.keys(DOMAINS);
+  const dom = domainKeys[dayN % domainKeys.length];
+  const twists = [
+    { id:'tailwind', dom, text:`Tailwind: ${DOMAINS[dom].emblem} ${DOMAINS[dom].name} questions pay double lumens today.` },
+    { id:'hidden', spot: dayN % DAILY_LEN, text:'A hidden question in today’s run is worth 25 extra lumens.' },
+    { id:'perfect2', text:'Feast day: today’s perfect run bonus is doubled.' },
+    { id:'wowday', text:'Revelation day: every ✨ worth-retelling question pays 5 extra.' }
+  ];
+  return twists[dayN % twists.length];
+}
 function startDaily(){
   // up to 3 past misses come back first, then a fresh run
   const reviews = shuffle(dueMisses()).slice(0, 3);
   reviews.forEach(q => { q._review = true; });
   const fresh = pickDailyQuestions().filter(q => !reviews.includes(q));
-  daily = { qs: reviews.concat(fresh).slice(0, DAILY_LEN + reviews.length), idx: 0, right: 0, earned: 0 };
+  daily = { qs: reviews.concat(fresh).slice(0, DAILY_LEN + reviews.length), idx: 0, right: 0, earned: 0, twist: todaysTwist() };
   $('#daily-topbar').textContent = 'Daily Run';
   renderDailyQuestion();
+}
+// challenge links: a run travels to a friend inside a URL
+function buildChallengeLink(name, score, keys){
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({ n: name, s: score, k: keys }))));
+  return location.origin + location.pathname + '#c=' + payload;
+}
+function shareChallenge(name, score, keys){
+  const link = buildChallengeLink(name, score, keys);
+  try { localStorage.setItem('polymath_name', name); } catch(e){}
+  if (navigator.share) {
+    navigator.share({ title: 'The Polymath Cabinet', text: `${name} scored ${score}/${keys.length} and challenges you to the same questions.`, url: link }).catch(() => {});
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => toast('Challenge link copied. Send it to someone.')).catch(() => toast('Could not copy. Long-press the link to copy it.'));
+  }
+}
+function tryLoadChallenge(){
+  if (!location.hash.startsWith('#c=')) return false;
+  let data;
+  try { data = JSON.parse(decodeURIComponent(escape(atob(location.hash.slice(3))))); } catch(e) { return false; }
+  history.replaceState(null, '', location.pathname);
+  if (!data || !Array.isArray(data.k)) return false;
+  const map = {};
+  QUESTIONS.forEach(q => { map[qKey(q)] = q; });
+  const qs = data.k.map(k => map[k]).filter(Boolean);
+  if (qs.length < 5) { toast('This challenge needs a newer version of the game.'); return false; }
+  daily = { qs, idx: 0, right: 0, earned: 0, challenge: { name: data.n || 'A friend', score: data.s, keys: data.k } };
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#screen-daily').classList.add('active');
+  $('#daily-topbar').textContent = `Challenge from ${daily.challenge.name}`;
+  toast(`${daily.challenge.name} scored ${data.s}/${qs.length}. Same questions. Beat it.`);
+  renderDailyQuestion();
+  return true;
 }
 function startFocus(domain){
   const pool = shuffle(QUESTIONS.filter(q => q.d === domain)).slice(0, DAILY_LEN);
@@ -4842,6 +5006,7 @@ function renderDailyQuestion(){
     toast(roundNow === 2 ? '⚔ Round 2. The questions sharpen.' : '🔥 Final round. The hard ones.');
   }
   body.appendChild(el(`<div class="run-progress"><span style="width:${Math.round(100 * daily.idx / daily.qs.length)}%"></span></div>`));
+  if (daily.twist && daily.idx === 0) body.appendChild(el(`<div class="twist-banner">🎴 Today’s twist: ${daily.twist.text}</div>`));
   if ((daily.combo || 0) >= 5) setTimeout(() => { const c = body.querySelector('.qcard'); if (c) c.classList.add('card-hot'); }, 0);
   const q = daily.qs[daily.idx];
   body.appendChild(questionCard({
@@ -4853,7 +5018,14 @@ function renderDailyQuestion(){
         daily.right++;
         daily.combo = (daily.combo || 0) + 1;
         comboTick(daily);
-        daily.earned += (q.t === 2 ? 8 : 5);
+        let pts = (q.t === 2 ? 8 : 5);
+        const tw = daily.twist;
+        if (tw) {
+          if (tw.id === 'tailwind' && q.d === tw.dom) { pts *= 2; toast('🎴 Tailwind: double lumens!'); }
+          if (tw.id === 'hidden' && daily.idx === tw.spot) { pts += 25; toast('🎴 The hidden question! +25 lumens.'); }
+          if (tw.id === 'wowday' && q.w) { pts += 5; toast('🎴 Revelation day: +5.'); }
+        }
+        daily.earned += pts;
         const r = missSuccess(key);
         if (r === 'owned') toast('Three wins in a row. That one is yours for good.');
         else if (r === 'climbing') toast('Good. It will visit once more, a little later.');
@@ -4871,6 +5043,29 @@ function renderDailyQuestion(){
 function finishDaily(){
   const body = $('#daily-body');
   const score = daily.right;
+  if (daily.challenge) {
+    const ch = daily.challenge;
+    const earned = awardLumens(daily.earned);
+    const win = score > ch.score, tie = score === ch.score;
+    if (win) { confetti(70); SFX.fanfare(); }
+    const myName = (() => { try { return localStorage.getItem('polymath_name') || ''; } catch(e){ return ''; } })();
+    body.innerHTML = `
+      <div class="result-card">
+        <div class="result-title">${win ? 'Challenge Won' : tie ? 'A Dead Tie' : 'Challenge Lost'}</div>
+        <div class="result-score">${score} : ${ch.score}</div>
+        <div class="result-verdict">You scored ${score} of ${daily.qs.length}. ${ch.name} scored ${ch.score}. ${win ? 'The crown crosses the distance to you.' : tie ? 'Someone must break this.' : `${ch.name} keeps the crown, for now.`}</div>
+        <div class="result-earn">+${earned} lumens</div>
+        <input class="duel-name" id="ch-name" maxlength="14" placeholder="Your name for the reply" value="${myName.replace(/"/g,'')}">
+        <button class="btn-primary" id="ch-back">📨 Send your score back as a challenge</button>
+        <button class="btn-secondary" data-go="home">Back to the cabinet</button>
+      </div>`;
+    countUp(body.querySelector('.result-score'), score, ` : ${ch.score}`);
+    $('#ch-back').addEventListener('click', () => {
+      shareChallenge(($('#ch-name').value.trim() || 'A rival'), score, ch.keys);
+    });
+    $('#daily-progress').textContent = '';
+    return;
+  }
   let tokenNote = '';
   if (!daily.focus) {
     if (score > S.dailyBest) S.dailyBest = score;
@@ -4890,7 +5085,7 @@ function finishDaily(){
       tokenNote += (tokenNote ? ' ' : '') + '🕯️ Perfect run: you earned a quiet day token.';
     }
   }
-  const perfect = score === daily.qs.length ? 20 : 0;
+  const perfect = score === daily.qs.length ? (daily.twist && daily.twist.id === 'perfect2' ? 40 : 20) : 0;
   const streakBonus = daily.focus ? 0 : Math.min(S.streak - 1, 10) * 3;
   const earned = awardLumens(daily.earned + (daily.bonus || 0) + perfect + streakBonus);
   let verdict = 'The cabinet takes note.';
@@ -4911,9 +5106,17 @@ function finishDaily(){
       ${daily.focus
         ? `<button class="btn-primary" id="focus-again">Run this wing again</button>
            <button class="btn-secondary" data-go="cabinet">Back to the cabinet</button>`
-        : `<button class="btn-primary" data-go="daily">Run again</button>
+        : `<input class="duel-name" id="ch-name" maxlength="14" placeholder="Your name" value="${(() => { try { return (localStorage.getItem('polymath_name') || '').replace(/"/g,''); } catch(e){ return ''; } })()}">
+           <button class="btn-secondary" id="ch-send">📨 Challenge someone to these questions</button>
+           <button class="btn-primary" data-go="daily">Run again</button>
            <button class="btn-secondary" data-go="home">Back to the cabinet</button>`}
     </div>`;
+  if (!daily.focus) {
+    const keys = daily.qs.map(q => qKey(q));
+    $('#ch-send').addEventListener('click', () => {
+      shareChallenge(($('#ch-name').value.trim() || 'A friend'), score, keys);
+    });
+  }
   if (daily.focus) {
     const fd = daily.focus;
     $('#focus-again').addEventListener('click', () => startFocus(fd));
@@ -5586,11 +5789,12 @@ if (!S.intro) {
     renderHome();
   } else {
     renderHome();
-    setTimeout(introSequence, 1800);
+    setTimeout(() => { if (!window.__challengeActive) introSequence(); }, 1800);
   }
 } else {
   renderHome();
 }
+window.__challengeActive = tryLoadChallenge();
 })();
 
 </script>
