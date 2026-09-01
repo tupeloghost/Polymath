@@ -2742,6 +2742,13 @@ CHAINS.push(
 <script>
 // Expanded context, keyed by question text. Shown when the player taps "more".
 const MORE = {
+  'Who wrote Romeo and Juliet?': 'Shakespeare did not invent the story: an Italian tale of feuding families had circulated for decades, and he worked from an English poem version. His upgrade was the language and the speed: the whole tragedy takes place in four frantic days, and the lovers share a sonnet split between their voices the first time they speak. He wrote it around age 30, the same stretch that produced A Midsummer Night’s Dream. Two masterpieces, one year, no computer.',
+  'Van Gogh sold how many paintings in his lifetime?': 'One confirmed sale: The Red Vineyard, for 400 francs, months before he died at 37. He painted about 900 canvases in a single decade, most in bursts between crises, including 70 in his last 70 days. His sister-in-law Johanna inherited hundreds of "worthless" paintings and spent decades promoting them; without her bookkeeping and letters, we might never have heard his name. Persistence sometimes needs an ally who outlives you.',
+  'A "shooting star" is really...': 'Most meteors are smaller than a pea, hitting the air at 25,000 to 160,000 mph. At that speed the air ahead cannot get out of the way: it compresses and glows white-hot, and that glow is what you see, a pebble’s shock wave, not the pebble burning like a log. Perhaps 50 tons of space dust lands on Earth daily. On any clear, dark night, patience buys you a few an hour; during a meteor shower, one a minute.',
+  'Which planet is hottest at its surface?': 'Venus runs about 860°F, hot enough to melt lead, despite Mercury sitting far closer to the Sun. The difference is a runaway greenhouse: an atmosphere of nearly pure carbon dioxide, 90 times thicker than ours, that lets sunlight in and never lets heat leave. Soviet landers built like submarines survived under an hour there. Venus is the solar system’s warning label about atmospheres.',
+  'What are Saturn’s rings mostly made of?': 'Nearly pure water ice, from dust grains to house-sized boulders, spread across a disk wider than the distance from Earth to the Moon yet often only about 30 feet thick: proportionally thinner than a sheet of paper. They may be young, possibly forming after the dinosaurs died, likely from a shredded moon, and Cassini data suggests they are slowly raining into Saturn and could be gone in a few hundred million years. We may be lucky to see them at all.'
+};
+Object.assign(MORE, {
   'Why does the Moon show phases?': 'Half of the Moon is always in sunlight, just like half of Earth is always in daytime. As the Moon circles us each month, we see that lit half from changing angles: edge-on gives a crescent, face-on gives a full moon. You can prove the shadow idea wrong yourself: a lunar eclipse (Earth’s actual shadow on the Moon) looks completely different, a dim red bite, and only happens at full moon.',
   'What is a light-year?': 'Distances between stars are so large that miles become useless, so astronomers measure in time. Light covers 186,000 miles every second, and a light-year is how far it gets in a year: about 6 trillion miles. This has a strange consequence: looking far away means looking into the past. The star you see may have changed, or died, since its light left. Telescopes are the only true time machines we own.',
   'What makes a black hole black?': 'Every object has an escape speed: the speed needed to leave it and never fall back. Earth’s is about 25,000 mph. Pack enough mass into a small enough space and the escape speed passes the speed of light, and since nothing outruns light, nothing leaves. The boundary where this happens is the event horizon. Black holes are not vacuum cleaners: orbit one at a distance and it pulls no harder than any star of the same mass.',
@@ -2772,7 +2779,7 @@ const MORE = {
   'What does a transistor do?': 'A transistor is a switch with no moving parts: a small voltage at its gate lets current flow, no voltage stops it. That is a 1 and a 0. Wire a few together and you get logic (AND, OR, NOT); wire billions together and you get a phone. Their genius is scale: modern chips pack over 10 billion, each flipping billions of times a second, printed by light onto slivers of the second-most common element in Earth’s crust: silicon.',
   'Your smallest bones are in your...': 'The hammer, anvil, and stirrup form a lever chain that carries eardrum vibrations to the fluid-filled cochlea, and they solve a real physics problem: sound waves in air mostly bounce off liquid, so the chain concentrates faint air pressure onto a tiny window, boosting it roughly twenty-fold. They are also the only bones that never grow after birth: you hear through newborn equipment your whole life.',
   'How many languages are spoken today, roughly?': 'About 7,000, but the spread is wildly uneven: the top 20 languages cover half of humanity, while thousands have only a few hundred speakers each. One falls silent roughly every few weeks as the last elders die. Each loss takes more than words: encyclopedias of local plants, weather, and history are encoded in them, along with metaphors and jokes that exist nowhere else. Recording them is a race against time.'
-};
+});
 // attach to matching questions
 QUESTIONS.forEach(q => { if (MORE[q.q]) q.more = MORE[q.q]; });
 
@@ -3996,7 +4003,7 @@ function renderExpedition(){
     const q = pickQ(stop.d, false);
     expTurnBanner(body);
     body.appendChild(questionCard({
-      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, noRecord: !!exp.coop,
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, more: q.more, noRecord: !!exp.coop,
       onDone(right){
         if (right) { exp.loot += 6; toast('+6 loot'); }
         else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
@@ -4019,7 +4026,7 @@ function renderExpedition(){
       body.innerHTML = '';
       expTurnBanner(body);
       body.appendChild(questionCard({
-        domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, noRecord: !!exp.coop,
+        domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, more: q.more, noRecord: !!exp.coop,
         tag: adv ? 'advanced' : '',
         onDone(right){
           if (right) { exp.loot += reward; toast(`+${reward} loot`); }
@@ -4067,7 +4074,7 @@ function renderExpedition(){
     body.appendChild(el(`<div class="boss-banner">🗿 The Guardian asks (${Math.ceil(stop.left)} left)</div>`));
     expTurnBanner(body);
     body.appendChild(questionCard({
-      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, noRecord: !!exp.coop,
+      domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, more: q.more, noRecord: !!exp.coop,
       tag: 'advanced',
       onDone(right){
         if (right) { exp.loot += 15; toast('+15 loot. The Guardian nods slowly.'); }
@@ -4201,7 +4208,7 @@ function renderParty(){
   const q = party.deck[party.idx % party.deck.length];
   party.idx++;
   body.appendChild(questionCard({
-    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, noRecord: true,
+    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, more: q.more, noRecord: true,
     onDone(right){
       if (!right) {
         p.strikes++;
@@ -4333,7 +4340,18 @@ function renderDuelQuestion(){
       else if (!b.classList.contains('wrong')) b.classList.add('faded');
     });
     const why = card.querySelector('.qcard-why');
-    if (q.why) { why.textContent = q.why; why.classList.remove('hidden'); }
+    if (q.why) {
+      why.textContent = q.why;
+      why.classList.remove('hidden');
+      if (q.more) {
+        const moreBtn = el(`<button class="star-btn">📖 more</button>`);
+        moreBtn.addEventListener('click', () => {
+          moreBtn.remove();
+          why.appendChild(el(`<div class="more-box">${q.more}</div>`));
+        });
+        why.appendChild(moreBtn);
+      }
+    }
     const next = card.querySelector('.qcard-next');
     next.classList.remove('hidden');
     next.addEventListener('click', () => {
