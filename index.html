@@ -3195,7 +3195,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v36 · Sep 1, 2026";
+window.GAME_VERSION = "v37 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3416,100 +3416,222 @@ function buildOfficeScene(){
   if (!holder) return;
   holder.innerHTML = `
 <svg viewBox="0 0 800 400" id="office-svg" aria-label="Your office. Click the furniture.">
-  <!-- back wall -->
-  <rect x="0" y="0" width="800" height="290" fill="#3a2b1b"/>
-  <rect x="0" y="0" width="800" height="290" fill="url(#wallgrain)" opacity=".5"/>
-  <line x1="0" y1="70" x2="800" y2="70" stroke="#2c1f12" stroke-width="4"/>
-  <!-- floor -->
-  <polygon points="0,290 800,290 800,400 0,400" fill="#4a3524"/>
-  <polygon points="60,290 740,290 800,400 0,400" fill="#55402c"/>
-  <g stroke="#3a2b1b" stroke-width="3" opacity=".6">
-    <line x1="180" y1="290" x2="120" y2="400"/><line x1="320" y1="290" x2="290" y2="400"/>
-    <line x1="480" y1="290" x2="510" y2="400"/><line x1="620" y1="290" x2="680" y2="400"/>
-  </g>
-  <ellipse cx="400" cy="360" rx="230" ry="34" fill="#6b2f2a" opacity=".8"/>
-  <ellipse cx="400" cy="360" rx="190" ry="26" fill="none" stroke="#c9a24a" stroke-width="2" opacity=".5"/>
   <defs>
-    <pattern id="wallgrain" width="90" height="290" patternUnits="userSpaceOnUse">
-      <rect width="90" height="290" fill="none"/>
-      <line x1="0" y1="0" x2="0" y2="290" stroke="#2c1f12" stroke-width="3"/>
-    </pattern>
-    <radialGradient id="candleglow" cx="50%" cy="50%">
-      <stop offset="0%" stop-color="#ffd98a" stop-opacity=".55"/>
-      <stop offset="100%" stop-color="#ffd98a" stop-opacity="0"/>
+    <linearGradient id="wallwood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a3220"/><stop offset="55%" stop-color="#3c2818"/><stop offset="100%" stop-color="#2e1e10"/>
+    </linearGradient>
+    <linearGradient id="mahogany" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5a3a22"/><stop offset="45%" stop-color="#7a4e2c"/><stop offset="55%" stop-color="#845632"/><stop offset="100%" stop-color="#54351e"/>
+    </linearGradient>
+    <linearGradient id="mahoganyV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a5c36"/><stop offset="50%" stop-color="#6b4426"/><stop offset="100%" stop-color="#4e2f18"/>
+    </linearGradient>
+    <linearGradient id="floorwood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b4a2c"/><stop offset="100%" stop-color="#3c2814"/>
+    </linearGradient>
+    <radialGradient id="feltsheen" cx="50%" cy="35%">
+      <stop offset="0%" stop-color="#2e5a36"/><stop offset="70%" stop-color="#1e4026"/><stop offset="100%" stop-color="#142c1a"/>
     </radialGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0d491"/><stop offset="45%" stop-color="#c9a24a"/><stop offset="100%" stop-color="#8a6425"/>
+    </linearGradient>
+    <linearGradient id="nightsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c1226"/><stop offset="100%" stop-color="#1c2a4a"/>
+    </linearGradient>
+    <linearGradient id="drape" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5a1f1c"/><stop offset="45%" stop-color="#8a3a2e"/><stop offset="60%" stop-color="#6b2a22"/><stop offset="100%" stop-color="#48160f"/>
+    </linearGradient>
+    <linearGradient id="leather" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a2e26"/><stop offset="100%" stop-color="#54180f"/>
+    </linearGradient>
+    <radialGradient id="candleglow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#ffd98a" stop-opacity=".55"/><stop offset="100%" stop-color="#ffd98a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lampglow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#c0e8a0" stop-opacity=".4"/><stop offset="100%" stop-color="#c0e8a0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moonglow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#dbe4f0" stop-opacity=".8"/><stop offset="100%" stop-color="#dbe4f0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx="50%" cy="42%" r="75%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="78%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".55"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
   </defs>
 
-  <!-- window with tonight's moon -->
+  <!-- walls with paneling -->
+  <rect x="0" y="0" width="800" height="292" fill="url(#wallwood)"/>
+  <g stroke="#241708" stroke-width="2" fill="none" opacity=".8">
+    <rect x="18" y="26" width="200" height="180" rx="4"/>
+    <rect x="252" y="26" width="200" height="180" rx="4"/>
+    <rect x="700" y="26" width="82" height="180" rx="4"/>
+  </g>
+  <g stroke="#5a3d22" stroke-width="1.4" fill="none" opacity=".9">
+    <rect x="21" y="29" width="194" height="174" rx="3"/>
+    <rect x="255" y="29" width="194" height="174" rx="3"/>
+    <rect x="703" y="29" width="76" height="174" rx="3"/>
+  </g>
+  <rect x="0" y="0" width="800" height="16" fill="#241708"/>
+  <rect x="0" y="14" width="800" height="4" fill="#8a6425" opacity=".6"/>
+  <rect x="0" y="236" width="800" height="10" fill="#241708"/>
+  <rect x="0" y="244" width="800" height="48" fill="#33220f"/>
+  <g stroke="#241708" stroke-width="2" opacity=".7">
+    <line x1="66" y1="246" x2="66" y2="292"/><line x1="176" y1="246" x2="176" y2="292"/>
+    <line x1="286" y1="246" x2="286" y2="292"/><line x1="396" y1="246" x2="396" y2="292"/>
+    <line x1="506" y1="246" x2="506" y2="292"/><line x1="616" y1="246" x2="616" y2="292"/><line x1="726" y1="246" x2="726" y2="292"/>
+  </g>
+
+  <!-- floor -->
+  <rect x="0" y="292" width="800" height="108" fill="url(#floorwood)"/>
+  <g stroke="#2c1c0c" stroke-width="2" opacity=".7">
+    <line x1="140" y1="292" x2="70" y2="400"/><line x1="300" y1="292" x2="262" y2="400"/>
+    <line x1="460" y1="292" x2="482" y2="400"/><line x1="640" y1="292" x2="712" y2="400"/>
+  </g>
+  <rect x="0" y="292" width="800" height="10" fill="#1c1206" opacity=".7"/>
+
+  <!-- moonbeam -->
+  <polygon points="562,150 668,150 740,400 470,400" fill="#c8d8f0" opacity=".05"/>
+
+  <!-- persian rug -->
+  <g>
+    <ellipse cx="392" cy="362" rx="252" ry="35" fill="#4a1512"/>
+    <ellipse cx="392" cy="361" rx="238" ry="30" fill="#6b2320"/>
+    <ellipse cx="392" cy="361" rx="238" ry="30" fill="none" stroke="#c9a24a" stroke-width="2.5" stroke-dasharray="10 6" opacity=".8"/>
+    <ellipse cx="392" cy="360" rx="170" ry="21" fill="#8a3a2e"/>
+    <ellipse cx="392" cy="360" rx="170" ry="21" fill="none" stroke="#e8cf8f" stroke-width="1.6" stroke-dasharray="4 5" opacity=".8"/>
+    <ellipse cx="392" cy="360" rx="70" ry="10" fill="#5a1f1c" stroke="#c9a24a" stroke-width="1.4"/>
+  </g>
+
+  <!-- window: drapes, arch, moon -->
   <g id="sc-window" class="scene-hot" data-depth="1">
-    <path d="M560 40 a55 55 0 0 1 110 0 v110 h-110 z" fill="#141b2b" stroke="#6b5225" stroke-width="7"/>
-    <line x1="615" y1="0" x2="615" y2="150" stroke="#6b5225" stroke-width="5"/>
-    <line x1="560" y1="95" x2="670" y2="95" stroke="#6b5225" stroke-width="5"/>
-    <circle cx="580" cy="30" r="1.6" fill="#e8e4d0"/><circle cx="650" cy="60" r="1.3" fill="#e8e4d0"/>
-    <circle cx="597" cy="120" r="1.4" fill="#e8e4d0"/><circle cx="640" cy="128" r="1.1" fill="#e8e4d0"/>
-    <text id="sc-moon" x="592" y="66" font-size="30">🌘</text>
-    <text class="scene-label" x="615" y="175" text-anchor="middle">Tonight’s sky</text>
+    <ellipse cx="614" cy="212" rx="72" ry="10" fill="#000" opacity=".3" filter="url(#soft)"/>
+    <path d="M556 42 a58 58 0 0 1 116 0 v128 h-116 z" fill="url(#nightsky)" stroke="#8a6425" stroke-width="8"/>
+    <path d="M556 42 a58 58 0 0 1 116 0 v128 h-116 z" fill="none" stroke="#e8cf8f" stroke-width="2" opacity=".5"/>
+    <line x1="614" y1="0" x2="614" y2="170" stroke="#8a6425" stroke-width="6"/>
+    <line x1="556" y1="100" x2="672" y2="100" stroke="#8a6425" stroke-width="6"/>
+    <circle cx="578" cy="34" r="1.6" fill="#e8e4d0"/><circle cx="652" cy="66" r="1.3" fill="#e8e4d0"/>
+    <circle cx="594" cy="128" r="1.4" fill="#e8e4d0"/><circle cx="642" cy="140" r="1.1" fill="#e8e4d0"/>
+    <circle cx="632" cy="24" r="1.2" fill="#e8e4d0"/>
+    <circle cx="592" cy="62" r="22" fill="url(#moonglow)"/>
+    <text id="sc-moon" x="576" y="72" font-size="28">🌖</text>
+    <path d="M540 20 q18 90 6 168 l-22 0 q10 -90 -2 -160 z" fill="url(#drape)"/>
+    <path d="M688 20 q-18 90 -6 168 l22 0 q-10 -90 2 -160 z" fill="url(#drape)"/>
+    <path d="M522 168 q16 10 32 4" stroke="#c9a24a" stroke-width="4" fill="none"/>
+    <path d="M706 168 q-16 10 -32 4" stroke="#c9a24a" stroke-width="4" fill="none"/>
+    <rect x="516" y="12" width="196" height="10" rx="5" fill="url(#brass)"/>
+    <circle cx="516" cy="17" r="7" fill="url(#brass)"/><circle cx="712" cy="17" r="7" fill="url(#brass)"/>
+    <text class="scene-label" x="614" y="196" text-anchor="middle">Tonight’s sky</text>
   </g>
 
-  <!-- the cabinet (study) -->
+  <!-- framed painting -->
+  <g data-depth="1">
+    <rect x="300" y="46" width="104" height="76" fill="#241708"/>
+    <rect x="304" y="50" width="96" height="68" fill="url(#brass)"/>
+    <rect x="310" y="56" width="84" height="56" fill="#1c2a20"/>
+    <path d="M310 96 l22 -20 l16 12 l20 -26 l26 34 z" fill="#3c5a40"/>
+    <circle cx="378" cy="66" r="6" fill="#e8cf8f" opacity=".9"/>
+  </g>
+
+  <!-- the cabinet -->
   <g id="sc-cabinet" class="scene-hot" data-depth="2">
-    <rect x="60" y="60" width="170" height="240" rx="6" fill="#634728" stroke="#3a2c1c" stroke-width="4"/>
-    <rect x="72" y="72" width="146" height="52" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
-    <rect x="72" y="132" width="146" height="52" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
-    <rect x="72" y="192" width="70" height="96" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
-    <rect x="148" y="192" width="70" height="96" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
-    <rect x="130" y="92" width="30" height="7" rx="3" fill="#c9a24a"/>
-    <rect x="130" y="152" width="30" height="7" rx="3" fill="#c9a24a"/>
-    <circle cx="132" cy="240" r="5" fill="#c9a24a"/><circle cx="158" cy="240" r="5" fill="#c9a24a"/>
-    <rect x="52" y="52" width="186" height="12" rx="4" fill="#55402c" stroke="#3a2c1c" stroke-width="3"/>
-    <text x="145" y="46" font-size="17" text-anchor="middle" fill="#c9a24a" font-family="Georgia">✦</text>
-    <text class="scene-label" x="145" y="330" text-anchor="middle">The Cabinet · study</text>
+    <ellipse cx="146" cy="308" rx="112" ry="12" fill="#000" opacity=".4" filter="url(#soft)"/>
+    <path d="M46 52 h200 l-10 -18 h-180 z" fill="url(#mahoganyV)" stroke="#241708" stroke-width="3"/>
+    <rect x="56" y="52" width="180" height="252" rx="4" fill="url(#mahogany)" stroke="#241708" stroke-width="4"/>
+    <rect x="68" y="64" width="156" height="54" rx="3" fill="url(#mahoganyV)" stroke="#241708" stroke-width="2"/>
+    <rect x="68" y="126" width="156" height="54" rx="3" fill="url(#mahoganyV)" stroke="#241708" stroke-width="2"/>
+    <rect x="68" y="188" width="75" height="104" rx="3" fill="url(#mahoganyV)" stroke="#241708" stroke-width="2"/>
+    <rect x="149" y="188" width="75" height="104" rx="3" fill="url(#mahoganyV)" stroke="#241708" stroke-width="2"/>
+    <rect x="70" y="66" width="152" height="4" fill="#a87848" opacity=".5"/>
+    <rect x="70" y="128" width="152" height="4" fill="#a87848" opacity=".5"/>
+    <rect x="128" y="86" width="36" height="8" rx="4" fill="url(#brass)"/>
+    <rect x="128" y="148" width="36" height="8" rx="4" fill="url(#brass)"/>
+    <circle cx="134" cy="240" r="6" fill="url(#brass)"/><circle cx="158" cy="240" r="6" fill="url(#brass)"/>
+    <path d="M146 26 l7 12 h-14 z" fill="url(#brass)"/>
+    <rect x="86" y="200" width="40" height="80" rx="2" fill="#1c1206" opacity=".25"/>
+    <text class="scene-label" x="146" y="336" text-anchor="middle">The Cabinet · study</text>
   </g>
 
-  <!-- the game table (play) -->
+  <!-- the game table -->
   <g id="sc-table" class="scene-hot" data-depth="3">
-    <ellipse cx="400" cy="248" rx="128" ry="42" fill="#16301c" stroke="#6b5225" stroke-width="6"/>
-    <ellipse cx="400" cy="243" rx="118" ry="36" fill="#24422a"/>
-    <rect x="322" y="270" width="14" height="66" fill="#3a2c1c"/>
-    <rect x="464" y="270" width="14" height="66" fill="#3a2c1c"/>
-    <rect x="393" y="284" width="14" height="72" fill="#2c1f12"/>
-    <g transform="rotate(-8 360 238)"><rect x="342" y="226" width="34" height="24" rx="3" fill="#f5ecd9" stroke="#8a6d3b"/></g>
-    <g transform="rotate(7 430 244)"><rect x="414" y="232" width="34" height="24" rx="3" fill="#f5ecd9" stroke="#8a6d3b"/></g>
-    <rect x="448" y="220" width="13" height="13" rx="3" fill="#f5ecd9" stroke="#8a6d3b"/>
-    <circle cx="454.5" cy="226.5" r="1.6" fill="#4a3524"/>
-    <text class="scene-label" x="400" y="315" text-anchor="middle">The game table · play</text>
+    <ellipse cx="392" cy="330" rx="150" ry="18" fill="#000" opacity=".4" filter="url(#soft)"/>
+    <path d="M330 268 q-8 50 -18 64 l14 0 q10 -20 16 -62 z" fill="url(#mahoganyV)"/>
+    <path d="M454 268 q8 50 18 64 l-14 0 q-10 -20 -16 -62 z" fill="url(#mahoganyV)"/>
+    <path d="M386 276 q-2 46 -8 74 l16 0 q4 -30 4 -74 z" fill="#4e2f18"/>
+    <ellipse cx="392" cy="252" rx="132" ry="44" fill="url(#mahoganyV)"/>
+    <ellipse cx="392" cy="246" rx="132" ry="44" fill="#5a3a22"/>
+    <ellipse cx="392" cy="245" rx="120" ry="38" fill="none" stroke="url(#brass)" stroke-width="3"/>
+    <ellipse cx="392" cy="245" rx="114" ry="35" fill="url(#feltsheen)"/>
+    <g transform="rotate(-9 352 240)">
+      <rect x="332" y="228" width="38" height="27" rx="3" fill="#f7efd9" stroke="#b8a271"/>
+      <rect x="336" y="232" width="30" height="19" rx="2" fill="none" stroke="#8a3a2e" stroke-width="1.4"/>
+    </g>
+    <g transform="rotate(8 426 246)">
+      <rect x="408" y="234" width="38" height="27" rx="3" fill="#f7efd9" stroke="#b8a271"/>
+      <text x="414" y="252" font-size="14" fill="#8a3a2e" font-family="Georgia">A♦</text>
+    </g>
+    <circle cx="368" cy="262" r="6" fill="url(#brass)"/>
+    <circle cx="382" cy="266" r="6" fill="url(#brass)"/>
+    <circle cx="374" cy="270" r="6" fill="url(#brass)"/>
+    <text class="scene-label" x="392" y="316" text-anchor="middle">The game table · play</text>
   </g>
 
-  <!-- the desk (your things) -->
+  <!-- the desk with banker's lamp -->
   <g id="sc-desk" class="scene-hot" data-depth="2">
-    <polygon points="580,235 760,235 780,300 560,300" fill="#4e3226" stroke="#3a2c1c" stroke-width="4"/>
-    <rect x="568" y="300" width="16" height="52" fill="#38221a"/>
-    <rect x="756" y="300" width="16" height="52" fill="#38221a"/>
-    <g transform="rotate(-5 640 235)"><rect x="606" y="216" width="60" height="20" rx="2" fill="#8a3a2e" stroke="#3a1c14" stroke-width="2"/><rect x="606" y="212" width="60" height="8" rx="2" fill="#f5ecd9"/></g>
-    <rect x="700" y="210" width="16" height="26" rx="3" fill="#2c1f12"/>
-    <ellipse cx="708" cy="210" rx="8" ry="3" fill="#141b2b"/>
-    <line x1="712" y1="206" x2="726" y2="184" stroke="#c9a24a" stroke-width="3" stroke-linecap="round"/>
-    <text class="scene-label" x="668" y="330" text-anchor="middle">Your desk</text>
+    <ellipse cx="672" cy="352" rx="120" ry="12" fill="#000" opacity=".4" filter="url(#soft)"/>
+    <polygon points="576,238 764,238 786,304 554,304" fill="url(#mahoganyV)" stroke="#241708" stroke-width="4"/>
+    <polygon points="590,246 750,246 764,292 576,292" fill="url(#leather)" opacity=".9"/>
+    <polygon points="590,246 750,246 764,292 576,292" fill="none" stroke="#c9a24a" stroke-width="1.4" stroke-dasharray="3 4" opacity=".7"/>
+    <path d="M566 304 q-4 26 -10 46 l16 0 q6 -22 8 -46 z" fill="#3c2412"/>
+    <path d="M772 304 q4 26 10 46 l-16 0 q-6 -22 -8 -46 z" fill="#3c2412"/>
+    <circle cx="694" cy="216" r="34" fill="url(#lampglow)"/>
+    <rect x="688" y="222" width="10" height="18" fill="url(#brass)"/>
+    <path d="M672 214 h44 a22 12 0 0 0 -44 0 z" fill="#2e6b3a" stroke="#1c4022" stroke-width="2"/>
+    <ellipse cx="694" cy="216" rx="20" ry="4" fill="#8fd49a" opacity=".8"/>
+    <ellipse cx="693" cy="242" rx="18" ry="4" fill="url(#brass)"/>
+    <g transform="rotate(-4 626 238)">
+      <rect x="600" y="222" width="56" height="9" rx="2" fill="#54180f"/>
+      <rect x="600" y="214" width="56" height="9" rx="2" fill="#1c3a4a"/>
+      <rect x="600" y="210" width="56" height="5" rx="2" fill="#f5ecd9"/>
+    </g>
+    <rect x="736" y="216" width="14" height="24" rx="3" fill="#141b2b"/>
+    <line x1="744" y1="214" x2="758" y2="190" stroke="#e8e4d0" stroke-width="2.5" stroke-linecap="round"/>
+    <text class="scene-label" x="672" y="330" text-anchor="middle">Your desk</text>
   </g>
 
-  <!-- candle (ambience) -->
+  <!-- globe -->
+  <g data-depth="2">
+    <ellipse cx="760" cy="330" rx="26" ry="6" fill="#000" opacity=".35" filter="url(#soft)"/>
+    <path d="M752 322 h16 l-4 -12 h-8 z" fill="url(#mahoganyV)"/>
+    <circle cx="760" cy="288" r="24" fill="#1c3a4a"/>
+    <path d="M742 280 q12 -8 22 0 q8 6 14 2" stroke="#3c6b50" stroke-width="7" fill="none"/>
+    <path d="M746 298 q14 6 26 -2" stroke="#3c6b50" stroke-width="6" fill="none"/>
+    <path d="M736 288 a24 24 0 0 1 48 0" fill="none" stroke="url(#brass)" stroke-width="3"/>
+    <circle cx="760" cy="288" r="24" fill="none" stroke="#c9a24a" stroke-width="1.4" opacity=".6"/>
+  </g>
+
+  <!-- candle -->
   <g id="sc-candle" class="scene-hot" data-depth="1">
-    <rect x="500" y="176" width="14" height="34" rx="3" fill="#efe4cd"/>
-    <ellipse cx="507" cy="212" rx="16" ry="6" fill="#c9a24a"/>
-    <ellipse id="sc-flame" cx="507" cy="166" rx="6" ry="11" fill="#ffb84a"/>
-    <ellipse cx="507" cy="169" rx="3" ry="6" fill="#ffe9b0"/>
-    <circle cx="507" cy="168" r="40" fill="url(#candleglow)"/>
-    <text class="scene-label" x="507" y="240" text-anchor="middle">Candle · room sound</text>
+    <rect x="497" y="178" width="15" height="34" rx="3" fill="#f2e6ca"/>
+    <rect x="497" y="178" width="6" height="34" rx="3" fill="#fff6df" opacity=".7"/>
+    <path d="M488 212 h33 l-5 10 h-23 z" fill="url(#brass)"/>
+    <ellipse cx="504" cy="212" rx="17" ry="5" fill="url(#brass)"/>
+    <ellipse id="sc-flame" cx="504" cy="168" rx="6" ry="12" fill="#ffb84a"/>
+    <ellipse cx="504" cy="171" rx="3" ry="6" fill="#ffe9b0"/>
+    <circle cx="504" cy="170" r="46" fill="url(#candleglow)"/>
+    <text class="scene-label" x="504" y="244" text-anchor="middle">Candle · room sound</text>
   </g>
 
-  <!-- the owl -->
+  <!-- the owl on a brass perch -->
   <g id="sc-owl" class="scene-hot" data-depth="3">
-    <rect x="282" y="120" width="8" height="80" fill="#3a2c1c"/>
-    <rect x="258" y="196" width="56" height="8" rx="4" fill="#3a2c1c"/>
-    <rect x="266" y="112" width="40" height="8" rx="4" fill="#55402c"/>
-    <text x="286" y="108" font-size="44" text-anchor="middle">🦉</text>
-    <text class="scene-label" x="286" y="235" text-anchor="middle">The Curator</text>
+    <ellipse cx="286" cy="212" rx="34" ry="6" fill="#000" opacity=".35" filter="url(#soft)"/>
+    <rect x="282" y="126" width="7" height="80" rx="3" fill="url(#brass)"/>
+    <path d="M254 206 h64 l-6 8 h-52 z" fill="url(#mahoganyV)"/>
+    <rect x="262" y="118" width="48" height="7" rx="3" fill="url(#brass)"/>
+    <text x="286" y="114" font-size="46" text-anchor="middle">🦉</text>
+    <text class="scene-label" x="286" y="238" text-anchor="middle">The Curator</text>
   </g>
+
+  <rect x="0" y="0" width="800" height="400" fill="url(#vignette)" pointer-events="none"/>
 </svg>`;
 
   const mp = moonPhase();
