@@ -35,6 +35,24 @@ body {
 }
 
 #app { max-width: 760px; margin: 0 auto; padding: 18px 14px 60px; }
+@media (min-width: 1000px) {
+  #app { max-width: 1020px; }
+  /* play screens: fill the height and center the action */
+  #screen-daily.active, #screen-gauntlet.active, #screen-lightning.active,
+  #screen-duel.active, #screen-exam.active, #screen-wheel.active,
+  #screen-chain.active, #screen-skill.active, #screen-parlor.active,
+  #screen-expedition.active {
+    display: flex; flex-direction: column; min-height: calc(100vh - 90px);
+  }
+  #daily-body, #gauntlet-body, #lightning-body, #duel-body, #exam-body,
+  #wheel-body, #chain-body, #skill-body, #parlor-body, #expedition-body {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+  }
+  #daily-body > *, #gauntlet-body > *, #lightning-body > *, #duel-body > *,
+  #exam-body > *, #chain-body > *, #skill-body > *, #parlor-body > *, #expedition-body > * {
+    flex: 0 0 auto;
+  }
+}
 
 .screen { display: none; animation: fadein .3s ease; }
 .screen.active { display: block; }
