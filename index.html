@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Polymath Cabinet</title>
+<title>The Polymath Academy</title>
 <style>
 /* The Polymath Cabinet - old library / cabinet of curiosities */
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1172,8 +1172,8 @@ body.dt .rivalry-line { font-size: 18px; }
   <section id="screen-home" class="screen active">
     <header class="masthead">
       <div class="masthead-rule"></div>
-      <h1>The Polymath Cabinet</h1>
-      <p class="tagline">A cabinet of curiosities. Fill every drawer.</p>
+      <h1>The Polymath Academy</h1>
+      <p class="tagline">A night school for curious minds.</p>
       <div class="masthead-rule"></div>
     </header>
 
@@ -1282,12 +1282,23 @@ body.dt .rivalry-line { font-size: 18px; }
           </button>
           <button class="menu-card" data-go="ledger" title="Your stats, stars, and the ladder of titles.">
             <span class="menu-emblem">&#128220;</span>
-            <span class="menu-title">Ledger</span>
+            <span class="menu-title">Report Card</span>
           </button>
         </div>
       </div>
     </nav>
     <div id="version-tag"></div>
+  </section>
+
+  <!-- YOUR OFFICE (room) -->
+  <section id="screen-office" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <div class="topbar-title">Your Office</div>
+      <div class="topbar-right"></div>
+    </div>
+    <p class="helper-text">Your private study. Click around: most things respond.</p>
+    <div id="office-room"></div>
   </section>
 
   <!-- DAILY RUN -->
@@ -1479,7 +1490,7 @@ body.dt .rivalry-line { font-size: 18px; }
   <section id="screen-ledger" class="screen">
     <div class="topbar">
       <button class="btn-back" data-go="home">&larr; Back</button>
-      <div class="topbar-title">The Ledger</div>
+      <div class="topbar-title">Report Card</div>
       <div class="topbar-right"></div>
     </div>
     <div id="ledger-body"></div>
@@ -3226,7 +3237,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v38 · Sep 1, 2026";
+window.GAME_VERSION = "v39 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3444,9 +3455,9 @@ const CURATOR = {
 
 </script>
 <script>
-// The office, drawn: a point-and-click room where nearly everything responds.
-function buildOfficeScene(){
-  const holder = document.getElementById('office-scene');
+// Your office: a point-and-click room where nearly everything responds.
+function buildOfficeRoom(){
+  const holder = document.getElementById('office-room');
   if (!holder) return;
   holder.innerHTML = `
 <svg viewBox="0 0 800 400" id="office-svg" aria-label="Your office. Click around.">
@@ -3765,16 +3776,11 @@ function buildOfficeScene(){
     if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'start' }); n.classList.add('section-lit'); setTimeout(() => n.classList.remove('section-lit'), 1600); }
     SFX.page();
   };
-  on('sc-cabinet', () => go2('.section-cabinet'));
-  on('sc-table', () => go2('.section-table'));
-  on('sc-desk', () => go2('.section-desk'));
+  on('sc-cabinet', () => goScreen('cabinet'));
+  on('sc-table', () => goScreen('parlor'));
+  on('sc-desk', () => goScreen('ledger'));
   on('sc-window', () => toast(`${mp.icon} ${mp.name} tonight. ${mp.tip}`));
-  on('sc-owl', () => {
-    const lineEl = document.getElementById('curator-line');
-    if (lineEl && typeof CURATOR !== 'undefined') { lineEl.textContent = CURATOR.greeting(); }
-    document.getElementById('curator-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    SFX.combo(2);
-  });
+  on('sc-owl', () => { toast('🦉 ' + CURATOR.greeting() + ' ' + CURATOR.observation({}, {})); SFX.combo(2); });
   on('sc-candle', () => {
     if (typeof AMBIENT !== 'undefined') {
       if (AMBIENT.playing()) { AMBIENT.stop(); toast('The room falls quiet.'); }
@@ -3845,6 +3851,157 @@ function buildOfficeScene(){
       svg.querySelectorAll('[data-depth]').forEach(g => { g.style.transform = ''; });
     });
   }
+}
+
+
+// The campus at night: the academy in cutaway, every lit room clickable.
+function buildCampusScene(){
+  const holder = document.getElementById('office-scene');
+  if (!holder) return;
+  const mp = moonPhase();
+  holder.innerHTML = `
+<svg viewBox="0 0 800 460" id="campus-svg" aria-label="The academy at night. Click a room.">
+  <defs>
+    <linearGradient id="csky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0f20"/><stop offset="70%" stop-color="#1a2340"/><stop offset="100%" stop-color="#2a3050"/>
+    </linearGradient>
+    <linearGradient id="cstone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a3c30"/><stop offset="100%" stop-color="#332820"/>
+    </linearGradient>
+    <linearGradient id="croof" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2430"/><stop offset="100%" stop-color="#241420"/>
+    </linearGradient>
+    <radialGradient id="cwarm" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#ffd98a" stop-opacity=".9"/><stop offset="100%" stop-color="#c98a3c" stop-opacity=".75"/>
+    </radialGradient>
+    <radialGradient id="cmoonglow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#dbe4f0" stop-opacity=".7"/><stop offset="100%" stop-color="#dbe4f0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="800" height="460" fill="url(#csky)"/>
+  <g fill="#e8e4d0">
+    <circle cx="60" cy="50" r="1.6"/><circle cx="150" cy="90" r="1.2"/><circle cx="250" cy="40" r="1.4"/>
+    <circle cx="560" cy="60" r="1.3"/><circle cx="700" cy="40" r="1.6"/><circle cx="740" cy="110" r="1.2"/>
+    <circle cx="90" cy="160" r="1.2"/><circle cx="760" cy="200" r="1.3"/>
+  </g>
+  <g id="c-moon" class="scene-hot">
+    <circle cx="706" cy="76" r="36" fill="url(#cmoonglow)"/>
+    <text x="684" y="92" font-size="42">${mp.icon}</text>
+    <text class="scene-label" x="706" y="140" text-anchor="middle">Tonight’s sky</text>
+  </g>
+  <ellipse cx="400" cy="452" rx="420" ry="26" fill="#141a10"/>
+  <ellipse cx="400" cy="448" rx="380" ry="20" fill="#1c2416"/>
+
+  <!-- schoolhouse -->
+  <rect x="130" y="150" width="540" height="290" fill="url(#cstone)" stroke="#1c140c" stroke-width="4"/>
+  <polygon points="110,150 400,84 690,150" fill="url(#croof)" stroke="#1c140c" stroke-width="4"/>
+  <!-- bell tower -->
+  <g id="c-raven" class="scene-hot">
+    <rect x="368" y="30" width="64" height="76" fill="url(#cstone)" stroke="#1c140c" stroke-width="3"/>
+    <polygon points="360,30 400,4 440,30" fill="url(#croof)" stroke="#1c140c" stroke-width="3"/>
+    <rect x="382" y="48" width="36" height="34" rx="14" fill="#100c18"/>
+    <path d="M400 54 a9 9 0 0 1 9 9 l-18 0 a9 9 0 0 1 9 -9 z" fill="#c9a24a"/>
+    <circle cx="400" cy="66" r="2.5" fill="#c9a24a"/>
+    <text x="416" y="8" font-size="17">🐦‍⬛</text>
+    <text class="scene-label" x="400" y="122" text-anchor="middle">The bell tower raven</text>
+  </g>
+
+  <!-- second floor -->
+  <g id="c-library" class="scene-hot">
+    <rect x="150" y="166" width="150" height="110" fill="#241a10" stroke="#1c140c" stroke-width="3"/>
+    <rect x="156" y="172" width="138" height="98" fill="url(#cwarm)" opacity=".28"/>
+    <g fill="#54351e"><rect x="162" y="182" width="10" height="30"/><rect x="174" y="186" width="9" height="26"/><rect x="185" y="180" width="10" height="32"/><rect x="197" y="184" width="9" height="28"/></g>
+    <g fill="#54351e"><rect x="162" y="226" width="10" height="30"/><rect x="174" y="230" width="9" height="26"/><rect x="185" y="224" width="10" height="32"/><rect x="197" y="228" width="9" height="28"/></g>
+    <rect x="158" y="216" width="60" height="4" fill="#1c140c"/>
+    <text x="255" y="230" font-size="26" text-anchor="middle">📚</text>
+    <text class="scene-label" x="225" y="292" text-anchor="middle">Library · the drawers</text>
+  </g>
+  <g id="c-class" class="scene-hot">
+    <rect x="325" y="166" width="150" height="110" fill="#241a10" stroke="#1c140c" stroke-width="3"/>
+    <rect x="331" y="172" width="138" height="98" fill="url(#cwarm)" opacity=".3"/>
+    <rect x="340" y="182" width="70" height="42" rx="3" fill="#1c3a2a" stroke="#8a6425" stroke-width="2"/>
+    <text x="345" y="208" font-size="14" fill="#e8e4d0" font-family="Georgia">2+2</text>
+    <g fill="#4e3220"><rect x="336" y="240" width="26" height="14"/><rect x="372" y="240" width="26" height="14"/><rect x="408" y="240" width="26" height="14"/></g>
+    <text x="446" y="212" font-size="22" text-anchor="middle">🍎</text>
+    <text class="scene-label" x="400" y="292" text-anchor="middle">Classroom · daily run</text>
+  </g>
+  <g id="c-office" class="scene-hot">
+    <rect x="500" y="166" width="150" height="110" fill="#241a10" stroke="#1c140c" stroke-width="3"/>
+    <rect x="506" y="172" width="138" height="98" fill="url(#cwarm)" opacity=".24"/>
+    <text x="545" y="234" font-size="30" text-anchor="middle">🦉</text>
+    <text x="602" y="238" font-size="24" text-anchor="middle">🕯️</text>
+    <ellipse cx="575" cy="256" rx="40" ry="8" fill="#54351e"/>
+    <text class="scene-label" x="575" y="292" text-anchor="middle">Your office</text>
+  </g>
+
+  <!-- first floor -->
+  <g id="c-workshop" class="scene-hot">
+    <rect x="150" y="292" width="150" height="104" fill="#241a10" stroke="#1c140c" stroke-width="3"/>
+    <rect x="156" y="298" width="138" height="92" fill="url(#cwarm)" opacity=".26"/>
+    <text x="205" y="352" font-size="28" text-anchor="middle">🛠️</text>
+    <text x="255" y="346" font-size="20" text-anchor="middle">⚙️</text>
+    <text class="scene-label" x="225" y="412" text-anchor="middle">Workshop · real skills</text>
+  </g>
+  <g id="c-museum" class="scene-hot">
+    <rect x="325" y="292" width="150" height="104" fill="#241a10" stroke="#1c140c" stroke-width="3"/>
+    <rect x="331" y="298" width="138" height="92" fill="url(#cwarm)" opacity=".26"/>
+    <rect x="352" y="340" width="30" height="34" fill="#54351e"/>
+    <text x="367" y="336" font-size="20" text-anchor="middle">🏺</text>
+    <rect x="412" y="340" width="30" height="34" fill="#54351e"/>
+    <text x="427" y="336" font-size="20" text-anchor="middle">🔭</text>
+    <text class="scene-label" x="400" y="412" text-anchor="middle">Museum · your collection</text>
+  </g>
+  <g id="c-trophy" class="scene-hot">
+    <rect x="500" y="292" width="150" height="104" fill="#241a10" stroke="#1c140c" stroke-width="3"/>
+    <rect x="506" y="298" width="138" height="92" fill="url(#cwarm)" opacity=".26"/>
+    <text x="548" y="348" font-size="26" text-anchor="middle">🏆</text>
+    <text x="600" y="344" font-size="20" text-anchor="middle">🎖️</text>
+    <rect x="524" y="356" width="104" height="6" fill="#54351e"/>
+    <text class="scene-label" x="575" y="412" text-anchor="middle">Trophy hall · honors</text>
+  </g>
+
+  <!-- basement -->
+  <g id="c-rec" class="scene-hot">
+    <rect x="150" y="404" width="240" height="36" fill="#1a120a" stroke="#1c140c" stroke-width="3"/>
+    <rect x="156" y="408" width="228" height="28" fill="url(#cwarm)" opacity=".18"/>
+    <text x="220" y="430" font-size="17" text-anchor="middle">🎭</text>
+    <text x="270" y="430" font-size="15" text-anchor="middle">🃏</text>
+    <text class="scene-label" x="270" y="400" text-anchor="middle">Rec hall · play together</text>
+  </g>
+  <g id="c-detention" class="scene-hot">
+    <rect x="410" y="404" width="240" height="36" fill="#14100a" stroke="#1c140c" stroke-width="3"/>
+    <rect x="416" y="408" width="228" height="28" fill="#8a3a2e" opacity=".16"/>
+    <g stroke="#54351e" stroke-width="3"><line x1="470" y1="406" x2="470" y2="440"/><line x1="500" y1="406" x2="500" y2="440"/><line x1="530" y1="406" x2="530" y2="440"/></g>
+    <text x="580" y="430" font-size="16" text-anchor="middle">🪑</text>
+    <text id="c-detention-count" x="614" y="430" font-size="13" fill="#e0b898" font-family="Georgia"></text>
+    <text class="scene-label" x="530" y="400" text-anchor="middle">Detention · win back your misses</text>
+  </g>
+
+  <!-- door -->
+  <g id="c-door" class="scene-hot">
+    <rect x="372" y="404" width="0" height="0" fill="none"/>
+  </g>
+</svg>`;
+
+  const on = (id, fn) => { const n = document.getElementById(id); if (n) n.addEventListener('click', fn); };
+  on('c-class', () => goScreen('daily'));
+  on('c-library', () => goScreen('cabinet'));
+  on('c-office', () => goScreen('office'));
+  on('c-workshop', () => goScreen('workshop'));
+  on('c-museum', () => goScreen('collection'));
+  on('c-trophy', () => goScreen('honors'));
+  on('c-rec', () => goScreen('parlor'));
+  on('c-detention', () => goScreen('detention'));
+  on('c-moon', () => toast(`${mp.icon} ${mp.name} tonight. ${mp.tip}`));
+  const RAVEN = [
+    'Caw. Back again? The Dean will be thrilled. The Dean is me. I am a raven.',
+    'Caw. I have seen your report card. There is room for improvement. There always is.',
+    'Caw. The owl gets an office and I get a bell tower. Anyway, go learn something.',
+    'Caw. Detention is downstairs. I am not saying you belong there. I am implying it.',
+    'Caw. Fun fact: a group of ravens is called a conspiracy. We earned that.'
+  ];
+  on('c-raven', () => { toast('🐦‍⬛ ' + RAVEN[Math.floor(Math.random() * RAVEN.length)]); SFX.combo(1); });
 }
 
 </script>
@@ -4009,7 +4166,7 @@ function rankCeremony(title){
   ov.className = 'ceremony';
   ov.innerHTML = `
     <div class="ceremony-inner">
-      <div class="ceremony-label">The cabinet bestows a new title</div>
+      <div class="ceremony-label">The academy bestows a new title</div>
       <div class="ceremony-title">${title}</div>
       <div class="ceremony-seal">❦</div>
       <div class="ceremony-hint">tap to continue</div>
@@ -4252,15 +4409,15 @@ function missSuccess(key){
   return 'climbing';
 }
 const RANKS = [
-  { at: 0,   name: 'New Visitor' },
-  { at: 10,  name: 'Curious Wanderer' },
-  { at: 30,  name: 'Apprentice' },
-  { at: 80,  name: 'Scholar' },
-  { at: 150, name: 'Keeper of Curiosities' },
-  { at: 250, name: 'Sage of the Cabinet' },
-  { at: 400, name: 'Polymath' },
-  { at: 650, name: 'Grand Polymath' },
-  { at: 1000, name: 'The Living Library' }
+  { at: 0,   name: 'New Student' },
+  { at: 10,  name: 'Freshman' },
+  { at: 30,  name: 'Sophomore' },
+  { at: 80,  name: 'Junior' },
+  { at: 150, name: 'Senior' },
+  { at: 250, name: 'Graduate' },
+  { at: 400, name: 'Professor' },
+  { at: 650, name: 'Dean' },
+  { at: 1000, name: 'The Polymath' }
 ];
 function rankIndex(){
   let i = 0;
@@ -4324,9 +4481,12 @@ function announceUnlocks(){
 
 // ---------- navigation ----------
 function go(name){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $('#screen-' + name).classList.add('active');
-  window.scrollTo(0,0);
+  const scr = $('#screen-' + name);
+  if (scr) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    scr.classList.add('active');
+    window.scrollTo(0,0);
+  }
   if (name === 'home') renderHome();
   if (name === 'cabinet') renderCabinet();
   if (name === 'bridges') renderBridges();
@@ -4340,12 +4500,15 @@ function go(name){
   if (name === 'honors') renderHonors();
   if (name === 'journal') renderJournal();
   if (name === 'wheel') renderWheel();
+  if (name === 'office') buildOfficeRoom();
+  if (name === 'detention') startDetention();
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
   if (name === 'duel') renderDuelSetup();
   if (name === 'parlor') renderParlor();
   SFX.page();
 }
+window.goScreen = (name) => go(name);
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-go]');
   if (!b) return;
@@ -5617,6 +5780,25 @@ function tryLoadChallenge(){
   renderDailyQuestion();
   return true;
 }
+function startDetention(){
+  const map = {};
+  QUESTIONS.forEach(q => { map[qKey(q)] = q; });
+  const due = Object.keys(S.misses).map(k => map[k]).filter(Boolean);
+  if (!due.length) {
+    toast('🪑 Detention is empty. No missed questions are waiting. Keep it that way. Or don’t.');
+    go('home');
+    return;
+  }
+  const qs = shuffle(due).slice(0, 10);
+  qs.forEach(q => { q._review = true; });
+  daily = { qs, idx: 0, right: 0, earned: 0, detention: true };
+  document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('active'));
+  $('#screen-daily').classList.add('active');
+  window.scrollTo(0,0);
+  $('#daily-topbar').textContent = 'Detention';
+  toast(`🪑 ${qs.length} missed question${qs.length === 1 ? '' : 's'} await. Answer right to walk free.`);
+  renderDailyQuestion();
+}
 function startFocus(domain){
   const pool = shuffle(QUESTIONS.filter(q => q.d === domain)).slice(0, DAILY_LEN);
   daily = { qs: pool, idx: 0, right: 0, earned: 0, focus: domain };
@@ -5697,7 +5879,7 @@ function finishDaily(){
     return;
   }
   let tokenNote = '';
-  if (!daily.focus) {
+  if (!daily.focus && !daily.detention) {
     if (score > S.dailyBest) S.dailyBest = score;
     const today = todayStr();
     if (S.lastDaily !== today) {
@@ -5716,13 +5898,16 @@ function finishDaily(){
     }
   }
   const perfect = score === daily.qs.length ? (daily.twist && daily.twist.id === 'perfect2' ? 40 : 20) : 0;
-  const streakBonus = daily.focus ? 0 : Math.min(S.streak - 1, 10) * 3;
+  const streakBonus = (daily.focus || daily.detention) ? 0 : Math.min(S.streak - 1, 10) * 3;
   const earned = awardLumens(daily.earned + (daily.bonus || 0) + perfect + streakBonus);
-  let verdict = 'The cabinet takes note.';
-  if (score >= 9) verdict = 'A mind of rare reach. The cabinet glows.';
-  else if (score >= 7) verdict = 'The drawers open a little wider for you.';
-  else if (score >= 5) verdict = 'A respectable haul of knowledge.';
-  else verdict = 'Every wrong answer is a drawer worth revisiting.';
+  let verdict = 'The academy takes note.';
+  if (daily.detention) verdict = score === daily.qs.length
+    ? 'Detention cleared. Walk out with your head high.'
+    : `You cleared ${score} of ${daily.qs.length}. The rest will see you back here soon.`;
+  else if (score >= 9) verdict = 'A mind of rare reach. Top of the class.';
+  else if (score >= 7) verdict = 'Strong work. The academy notices.';
+  else if (score >= 5) verdict = 'A respectable showing.';
+  else verdict = 'Every wrong answer is a lesson scheduled for later.';
   body.innerHTML = `
     <div class="result-card">
       <div class="result-title">Run Complete</div>
@@ -6425,7 +6610,12 @@ if (!S.intro) {
 } else {
   renderHome();
 }
-buildOfficeScene();
+buildCampusScene();
+// show how many misses wait in detention
+setTimeout(() => {
+  const n = document.getElementById('c-detention-count');
+  if (n) n.textContent = Object.keys(S.misses).length ? Object.keys(S.misses).length + ' held' : 'empty';
+}, 0);
 window.__challengeActive = tryLoadChallenge();
 })();
 
