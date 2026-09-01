@@ -1537,6 +1537,61 @@ body.dt #campus-moon-icon { font-size: 52px; }
 }
 .dir-close:hover { color: #f0e0bc; border-color: rgba(212,171,94,.8); }
 
+/* ---------- v52: the charter and Reality Check ---------- */
+#charter-link {
+  margin-top: 10px; font-family: var(--serif); font-size: 15px; letter-spacing: .4px;
+  color: #c9b58c; background: none; border: 1px solid rgba(176,141,74,.45);
+  border-radius: 999px; padding: 5px 16px; cursor: pointer;
+}
+#charter-link:hover { color: #f5e2b2; border-color: rgba(212,171,94,.9); box-shadow: 0 0 12px rgba(255,190,90,.35); }
+.charter-card { max-width: 560px; }
+.charter-text { font-family: var(--serif); font-size: 17.5px; line-height: 1.55; color: #e8d9b4; }
+.charter-text p { margin: 0 0 13px; }
+.charter-text b { color: #ffd98a; }
+.charter-sig { font-style: italic; color: #c9a24a; text-align: center; margin-top: 18px; }
+
+.reality-card { text-align: left; }
+.reality-value {
+  font-family: var(--display); font-size: 42px; color: #8a5a14; text-align: center;
+  margin: 14px 0 6px;
+}
+body.ph .reality-value { font-size: 34px; }
+.reality-slider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 10px; border-radius: 6px;
+  background: linear-gradient(90deg, #3a2812, #6b4a22); outline: none; margin: 6px 0 2px;
+  border: 1px solid rgba(176,141,74,.5); cursor: pointer;
+}
+.reality-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9b0, #c9a24a 60%, #8a6425);
+  border: 2px solid #46300f; box-shadow: 0 2px 8px rgba(0,0,0,.6), 0 0 12px rgba(255,205,110,.4); cursor: grab;
+}
+.reality-slider::-moz-range-thumb {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9b0, #c9a24a 60%, #8a6425);
+  border: 2px solid #46300f; box-shadow: 0 2px 8px rgba(0,0,0,.6); cursor: grab;
+}
+.reality-slider:disabled { opacity: .55; cursor: default; }
+.reality-minmax {
+  display: flex; justify-content: space-between; font-family: var(--serif);
+  font-size: 13.5px; color: #6b5638; margin-bottom: 14px;
+}
+.reality-verdict { font-family: var(--serif); font-size: 18px; color: #46320e; margin: 14px 0 10px; }
+.reality-verdict b { color: #8a5a14; font-size: 21px; }
+.reality-bar {
+  position: relative; height: 14px; border-radius: 8px; margin: 6px 0 4px;
+  background: linear-gradient(90deg, #2c1c0c, #4a3218);
+  border: 1px solid rgba(176,141,74,.5);
+}
+.rb-guess, .rb-truth { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 12px; height: 12px; border-radius: 50%; }
+.rb-guess { background: #7fa8c0; box-shadow: 0 0 8px rgba(127,168,192,.9); }
+.rb-truth { background: #ffd044; box-shadow: 0 0 10px rgba(255,208,68,.9); }
+.reality-legend { display: flex; gap: 18px; font-family: var(--serif); font-size: 13px; color: #6b5638; margin-bottom: 8px; }
+.rb-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+.rb-dot.rb-g { background: #7fa8c0; } .rb-dot.rb-t { background: #ffd044; }
+.reality-final { font-family: var(--display); font-size: 40px; color: #8a5a14; text-align: center; margin: 12px 0; }
+.duel-again { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
+
 </style>
 </head>
 <body>
@@ -1549,6 +1604,7 @@ body.dt #campus-moon-icon { font-size: 52px; }
       <div class="masthead-rule"></div>
       <h1>The Polymath Academy</h1>
       <p class="tagline">A night school for curious minds.</p>
+      <button id="charter-link" title="Why this school exists">📜 Our Charter</button>
       <div class="masthead-rule"></div>
     </header>
 
@@ -1604,6 +1660,11 @@ body.dt #campus-moon-icon { font-size: 52px; }
             <span class="menu-emblem">&#9889;</span>
             <span class="menu-title">Lightning</span>
             <span class="menu-badge" id="lightning-badge"></span>
+          </button>
+          <button class="menu-card" data-go="reality" title="Guess the real number with a slider. See how far off your gut is.">
+            <span class="menu-emblem">&#127777;</span>
+            <span class="menu-title">Reality Check</span>
+            <span class="menu-badge" id="reality-badge"></span>
           </button>
           <button class="menu-card" data-go="trips" title="Step into history and make the choices yourself.">
             <span class="menu-emblem">&#128652;</span>
@@ -1705,6 +1766,16 @@ body.dt #campus-moon-icon { font-size: 52px; }
       <div class="topbar-right" id="debate-progress"></div>
     </div>
     <div id="debate-body"></div>
+  </section>
+
+  <!-- REALITY CHECK -->
+  <section id="screen-reality" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <div class="topbar-title">Reality Check</div>
+      <div class="topbar-right" id="reality-progress"></div>
+    </div>
+    <div id="reality-body"></div>
   </section>
 
   <!-- YOUR OFFICE (room) -->
@@ -3809,6 +3880,86 @@ const MATCH_PAIRS = [
 
 </script>
 <script>
+// Reality Check: guess the real number, see how far off your gut is.
+// Every number here can change a real decision. That is the entry fee.
+// { q, min, max, step, ans, pre, suf, why }  pre/suf wrap the displayed number.
+const REALITY = [
+  { q:'You invest $1,000 once at age 25 and never touch it. At 7% a year, what is it worth at 65?',
+    min:1000, max:30000, step:100, ans:14974, pre:'$',
+    why:'About $14,974. It doubles roughly every 10 years at 7%. The money you invest young is worth 15 times more than money invested late. Start small, start now.' },
+  { q:'A $6 coffee every day, invested instead at 7%, becomes how much in 30 years?',
+    min:10000, max:500000, step:1000, ans:207000, pre:'$',
+    why:'About $207,000. Not because coffee is evil, but because small daily amounts compound into life-changing ones. Pick your daily habits like they cost six figures. Some do.' },
+  { q:'You carry $5,000 on a credit card at 24% APR. How much interest do you pay in just the first year?',
+    min:0, max:3000, step:50, ans:1200, pre:'$',
+    why:'About $1,200, and that is if the balance never grows. Credit card interest is a machine that eats paychecks. Pay the card first; nothing you can buy earns 24%.' },
+  { q:'Negotiate $5,000 more on your starting salary. With normal 3% raises, how much extra do you earn over a 40-year career?',
+    min:5000, max:800000, step:5000, ans:377000, pre:'$',
+    why:'About $377,000, because every raise compounds on the higher base. One awkward 5-minute conversation is the best-paid work of your life.' },
+  { q:'At 3% inflation, what will $100 in your mattress actually buy 30 years from now?',
+    min:0, max:100, step:1, ans:41, pre:'$',
+    why:'About $41 worth. Cash quietly melts. That is why money must be invested, not just saved: you are not trying to get rich, you are trying not to shrink.' },
+  { q:'The rule of 72: at 8% growth, how many years for your money to double?',
+    min:1, max:30, step:1, ans:9, suf:' years',
+    why:'9 years. Divide 72 by the interest rate and you get the doubling time. Works in your head, works in meetings, works for debts too, which double against you.' },
+  { q:'What does it really cost to own a new car per year in the US, all-in (payment, insurance, gas, repairs)?',
+    min:2000, max:25000, step:100, ans:12300, pre:'$',
+    why:'About $12,300 a year, per AAA. Roughly $1,000 a month. The car payment is only the visible half. Buy less car than you can afford and you fund your whole future.' },
+  { q:'What percent of Americans could not cover a surprise $400 expense with cash or savings?',
+    min:0, max:100, step:1, ans:37, suf:'%',
+    why:'About 37%. A small emergency fund, even $500, moves you out of the most fragile third of the country. It is the first money goal that matters.' },
+  { q:'Your odds of winning the Powerball jackpot are 1 in how many million?',
+    min:1, max:400, step:1, ans:292, pre:'1 in ', suf: ' million',
+    why:'1 in 292 million. You are about 300 times more likely to be struck by lightning this year. The lottery is a tax on not knowing this number.' },
+  { q:'Texting while driving multiplies your crash risk by how many times?',
+    min:1, max:50, step:1, ans:23, suf:'x',
+    why:'23 times, per Virginia Tech research. Your eyes leave the road about 5 seconds per text; at 55 mph that is a football field, blind. No message survives that math.' },
+  { q:'Lifetime odds of an American dying in a car crash: 1 in how many?',
+    min:1, max:1000, step:1, ans:93, pre:'1 in ',
+    why:'About 1 in 93. Compare: plane crash, about 1 in 11 million per flight. We fear the wrong things. The seatbelt is the single best safety device you will ever touch.' },
+  { q:'One cigarette shortens a smoker’s life by about how many minutes?',
+    min:0, max:60, step:1, ans:11, suf:' minutes',
+    why:'About 11 minutes, per BMJ research. A pack a day is roughly 3.5 hours of life traded daily. Quitting at any age starts paying it back within weeks.' },
+  { q:'A 20-oz bottle of soda holds how many teaspoons of sugar?',
+    min:0, max:30, step:1, ans:16, suf:' tsp',
+    why:'About 16 teaspoons. Try spooning that into a glass once; you will never see soda the same way. Liquid sugar skips your fullness signals entirely.' },
+  { q:'What percent of American adults sleep less than 7 hours a night?',
+    min:0, max:100, step:1, ans:35, suf:'%',
+    why:'About 35%. Under 7 hours reliably worsens memory, mood, immunity, and judgment. Sleep is not the thing you cut to get more done; it is the thing that makes doing possible.' },
+  { q:'A brisk 30-minute walk burns roughly how many calories?',
+    min:0, max:600, step:10, ans:150, suf:' cal',
+    why:'About 150, roughly one candy bar. Lesson: you cannot outwalk a bad diet, but walking daily still cuts heart disease and depression risk dramatically. Do it for the second reason.' },
+  { q:'After an interruption, how many minutes does it take the average mind to fully refocus on hard work?',
+    min:0, max:60, step:1, ans:23, suf:' minutes',
+    why:'About 23 minutes, per UC Irvine research. Five "quick checks" of your phone can erase two hours of deep work. Silence the phone; batch the checking.' },
+  { q:'How many times does the average American check their phone per day?',
+    min:0, max:400, step:2, ans:144, suf:' times',
+    why:'About 144 times, roughly once every 7 waking minutes. Attention is the raw material of every skill in this academy. Guard it like money.' },
+  { q:'Reading 20 minutes a day at normal speed gets you through about how many books a year?',
+    min:0, max:60, step:1, ans:20, suf:' books',
+    why:'About 20 books a year, from one bus ride worth of time. Most people read fewer than 5. This is the cheapest unfair advantage that exists.' },
+  { q:'What percent of new businesses are still alive after 5 years?',
+    min:0, max:100, step:1, ans:50, suf:'%',
+    why:'About 50%, better odds than the "most businesses fail" myth suggests. And most that close do so quietly, not in flames. Risk is usually survivable and usually exaggerated.' },
+  { q:'What percent of your body is water?',
+    min:0, max:100, step:1, ans:60, suf:'%',
+    why:'About 60%. Even 2% dehydration measurably dents focus and mood. Before you diagnose a bad afternoon, drink a glass of water and wait ten minutes.' },
+  { q:'How many minutes does sunlight take to reach Earth?',
+    min:0, max:60, step:1, ans:8, suf:' minutes',
+    why:'About 8 minutes. You never see the sun as it is, only as it was. Every look at the sky is time travel, which is a fine thing to know on a hard day.' },
+  { q:'Humans share what percent of their DNA with chimpanzees?',
+    min:50, max:100, step:1, ans:99, suf:'%',
+    why:'About 98.8%. A ~1% difference wrote symphonies and built hospitals. Small differences, compounded, become everything. That applies to daily habits too.' },
+  { q:'An 80-year human life is about how many days?',
+    min:5000, max:50000, step:100, ans:29200, suf:' days',
+    why:'About 29,200. Count yours used so far; the number left is smaller than it feels. This is not morbid, it is a lens: spend days like the currency they are.' },
+  { q:'The average American spends how much per year eating out?',
+    min:0, max:10000, step:100, ans:3900, pre:'$',
+    why:'About $3,900. Not a command to stop, but a number to choose on purpose. Cut it in half, invest the difference, and it is six figures by retirement.' }
+];
+
+</script>
+<script>
 // Workshop bench five: train your actual ears.
 SKILLS.push(
   {
@@ -3838,7 +3989,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v51 · Sep 1, 2026";
+window.GAME_VERSION = "v52 · Sep 1, 2026";
 
 </script>
 <script>
@@ -5097,6 +5248,7 @@ function go(name){
   if (name === 'office') buildOfficeRoom();
   if (name === 'trips') renderTrips();
   if (name === 'debate') startDebate();
+  if (name === 'reality') startReality();
   if (name === 'detention') startDetention();
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
@@ -5105,6 +5257,29 @@ function go(name){
   SFX.page();
 }
 window.goScreen = (name) => go(name);
+// the founder's charter: why this school exists
+const charterBtn = document.getElementById('charter-link');
+if (charterBtn) charterBtn.addEventListener('click', () => {
+  const ov = document.createElement('div');
+  ov.className = 'dir-overlay';
+  ov.innerHTML = `<div class="dir-card charter-card">
+    <div class="dir-head">📜 The Founder’s Charter</div>
+    <div class="charter-text">
+      <p>This school exists because too much of school did not.</p>
+      <p>You can graduate knowing the chief exports of countries you will never visit, and still not know how money grows, how liars argue, why your body begs for sleep, or what a day of your life is worth.</p>
+      <p>Not here.</p>
+      <p>Every question in this academy pays rent by one rule: <b>it must matter</b>. It must change what you do with your money, your health, your words, your attention, or your mind. If a fact will never touch your life, we leave it out. If it will, we make it unforgettable.</p>
+      <p>You will play. You will laugh. And you will walk out of every session carrying something you will actually use.</p>
+      <p class="charter-sig">Learn like it matters. It does.<br>· The Founder ·</p>
+    </div>
+    <button class="dir-close">Close the charter</button>
+  </div>`;
+  ov.addEventListener('click', e => { if (e.target === ov || e.target.closest('.dir-close')) ov.remove(); });
+  document.body.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('dir-in'));
+  SFX.page();
+});
+
 window.sceneHooks3 = {
   // live status lines for the campus room plaques and the front-door directory
   status(){
@@ -5307,6 +5482,7 @@ function renderHome(){
   $('#expedition-badge').textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
   $('#trips-badge').textContent = `${Object.keys(S.tripsDone || {}).length} of ${TRIPS.length} taken`;
   $('#debate-badge').textContent = S.debateBest ? `best: ${S.debateBest}/8` : 'untried';
+  $('#reality-badge').textContent = S.realityBest ? `best: ${S.realityBest}/24` : 'untried';
   $('#workshop-badge').textContent = `${Object.keys(S.skills).length} of ${SKILLS.length} learned`;
 
   // idea of the day: one drawer, chosen by the calendar
@@ -6128,6 +6304,81 @@ function finishTrip(){
 
 // ---------- DEBATE CLUB: spot the flaw ----------
 let debate = null;
+// ---------- reality check: guess the real number, meet your own gut ----------
+function startReality(){
+  const qs = shuffle(REALITY).slice(0, 8);
+  let idx = 0, score = 0, earned = 0;
+  const body = $('#reality-body');
+  const fmt = (item, n) => (item.pre || '') + n.toLocaleString('en-US') + (item.suf || '');
+  function show(){
+    $('#reality-progress').textContent = (idx + 1) + ' / ' + qs.length;
+    const item = qs[idx];
+    const mid = Math.round((item.min + item.max) / 2 / item.step) * item.step;
+    body.innerHTML = '';
+    body.appendChild(el(`<div class="qcard reality-card">
+      <div class="qcard-domain" style="color:#c9a24a">🌡️ The Real Number</div>
+      <div class="qcard-question">${item.q}</div>
+      <div class="reality-value" id="rv"></div>
+      <input type="range" id="rslider" class="reality-slider" min="${item.min}" max="${item.max}" step="${item.step}" value="${mid}">
+      <div class="reality-minmax"><span>${fmt(item, item.min)}</span><span>${fmt(item, item.max)}</span></div>
+      <button class="btn-primary" id="rlock">Lock in my guess</button>
+      <div id="rreveal"></div>
+    </div>`));
+    const sl = $('#rslider'), rv = $('#rv');
+    const upd = () => { rv.textContent = fmt(item, +sl.value); };
+    sl.addEventListener('input', upd);
+    upd();
+    $('#rlock').onclick = () => {
+      const guess = +sl.value;
+      sl.disabled = true;
+      $('#rlock').remove();
+      const range = item.max - item.min;
+      const off = Math.abs(guess - item.ans) / range;
+      let pts, verdict;
+      if (off <= 0.05) { pts = 3; verdict = '🎯 Bullseye.'; }
+      else if (off <= 0.15) { pts = 2; verdict = '👏 Close.'; }
+      else if (off <= 0.30) { pts = 1; verdict = 'Not bad.'; }
+      else { pts = 0; verdict = guess < item.ans ? 'Way low.' : 'Way high.'; }
+      score += pts;
+      if (pts) earned += awardLumens(pts);
+      pts ? SFX.correct() : SFX.wrong();
+      const pctG = Math.min(98, Math.max(2, (guess - item.min) / range * 100)).toFixed(1);
+      const pctA = Math.min(98, Math.max(2, (item.ans - item.min) / range * 100)).toFixed(1);
+      $('#rreveal').innerHTML = `
+        <div class="reality-verdict">${verdict} The real number is <b>${fmt(item, item.ans)}</b>. You said ${fmt(item, guess)}.</div>
+        <div class="reality-bar"><span class="rb-guess" style="left:${pctG}%"></span><span class="rb-truth" style="left:${pctA}%"></span></div>
+        <div class="reality-legend"><span><i class="rb-dot rb-g"></i> your guess</span><span><i class="rb-dot rb-t"></i> the truth</span></div>
+        <div class="qcard-why">${item.why}</div>
+        <button class="btn-primary" id="rnext">${idx + 1 < qs.length ? 'Next number' : 'See my results'}</button>`;
+      $('#rnext').onclick = () => { idx++; idx < qs.length ? show() : finish(); };
+    };
+  }
+  function finish(){
+    const max = qs.length * 3;
+    const newBest = score > (S.realityBest || 0);
+    if (newBest) S.realityBest = score;
+    save();
+    const grade = score >= max * 0.85 ? 'Calibrated. Your gut can be trusted with numbers, which is rarer than a diploma.'
+      : score >= max * 0.6 ? 'Sharp. You are better calibrated than most adults, and it will show in your decisions.'
+      : score >= max * 0.35 ? 'Waking up. Your gut has now met reality. They should keep talking.'
+      : 'Most people miss most of these. The difference is that now you know the real numbers.';
+    $('#reality-progress').textContent = '';
+    body.innerHTML = '';
+    body.appendChild(el(`<div class="qcard reality-card">
+      <div class="qcard-question">Reality Check complete</div>
+      <div class="reality-final">${score} / ${max}${newBest ? ' · new best!' : ''}</div>
+      <div class="qcard-why">${grade}${earned ? ` You earned ${earned} lumens.` : ''}</div>
+      <div class="duel-again">
+        <button class="btn-primary" data-go="reality">New numbers</button>
+        <button class="btn-secondary" data-go="home">Back to campus</button>
+      </div>
+    </div>`));
+    if (newBest) confetti(40);
+    SFX.fanfare();
+  }
+  show();
+}
+
 function startDebate(){
   const body = $('#debate-body');
   body.innerHTML = `
