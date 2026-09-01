@@ -1183,6 +1183,51 @@ body.dt .teacher-line { font-size: 17px; }
 .shooting-star { animation: starstreak 3.5s linear forwards; }
 @keyframes starstreak { from { transform: translateX(840px); } to { transform: translateX(-120px); } }
 
+/* order-it + pop quiz */
+.order-picked { background: #dbe7cf !important; border-color: var(--green) !important; }
+.order-num {
+  display: inline-block; width: 22px; height: 22px; line-height: 22px;
+  background: var(--green); color: #fff; border-radius: 50%;
+  text-align: center; font-size: 13px; margin-right: 6px; font-weight: bold;
+}
+.order-truth { color: var(--red); font-weight: bold; font-size: 13px; }
+#popquiz-card {
+  cursor: pointer;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(143,180,232,.3), transparent 60%),
+    linear-gradient(180deg, #2a3050, #1a2340);
+  border: 1px solid #8fa8d4;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 0 0 16px;
+  text-align: center;
+  color: var(--paper);
+  box-shadow: 0 4px 14px rgba(0,0,0,.5), 0 0 18px rgba(143,168,212,.25);
+  animation: mystpulse 2.6s ease-in-out infinite;
+}
+#popquiz-card .qcard { text-align: left; margin-top: 10px; cursor: default; animation: none; }
+
+/* entering rooms */
+#campus-svg { transition: transform .7s cubic-bezier(.5,0,.8,.4), filter .7s ease; }
+#campus-svg.room-zoom { transform: scale(3); filter: brightness(1.5); }
+#office-scene { overflow: hidden; }
+.room-fade {
+  position: fixed; inset: 0; z-index: 97; background: #120c06;
+  opacity: 0; transition: opacity .55s ease;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.room-fade-in { opacity: 1; }
+.room-fade-label {
+  color: var(--brass-bright); font-style: italic; font-size: 22px;
+  font-family: Georgia, serif; letter-spacing: 1px;
+}
+#door-left, #door-right { transform-box: fill-box; transition: transform .5s ease; }
+#door-left { transform-origin: left center; }
+#door-right { transform-origin: right center; }
+.door-open #door-left { transform: scaleX(.15); }
+.door-open #door-right { transform: scaleX(.15); }
+
 </style>
 </head>
 <body>
@@ -1215,6 +1260,7 @@ body.dt .teacher-line { font-size: 17px; }
     <div class="home-stats" id="home-stats"></div>
 
     <div id="schedule-card"></div>
+    <div id="popquiz-card"></div>
     <div id="mystery-card"></div>
     <div id="examiner-card"></div>
     <div id="today-panel">
@@ -3288,7 +3334,7 @@ function facultyLine(domain, right){
 
 </script>
 <script>
-window.GAME_VERSION = "v42 · Sep 1, 2026";
+window.GAME_VERSION = "v43 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3443,6 +3489,7 @@ const SFX = (function(){
     drumroll(dur){ const n = Math.floor((dur || .7) / .05); for (let i = 0; i < n; i++) tone(900 + Math.random() * 200, .03, 'triangle', .02, i * .05); },
     crackle(){ for (let i = 0; i < 7; i++) tone(120 + Math.random() * 300, .04, 'triangle', .03, Math.random() * .8); },
     chime(){ tone(880, .6, 'sine', .05); tone(1108, .8, 'sine', .04, .3); buzz(20); },
+    door(){ tone(260, .18, 'triangle', .045); tone(215, .2, 'triangle', .04, .14); tone(170, .24, 'triangle', .04, .3); tone(90, .12, 'triangle', .05, .5); },
     bell(){ [660, 660].forEach((f, i) => { tone(f, 1.1, 'sine', .06, i * .7); tone(f * 2.76, .5, 'sine', .02, i * .7); }); buzz([40, 200, 40]); },
     purr(){ for (let i = 0; i < 6; i++) tone(82, .09, 'triangle', .04, i * .12); tone(520, .18, 'sine', .04, .8); tone(430, .22, 'sine', .04, .92); buzz([50, 40, 50, 40, 50]); }
   };
@@ -4016,24 +4063,29 @@ function buildCampusScene(){
 
   <!-- basement -->
   <g id="c-rec" class="scene-hot">
-    <rect x="150" y="404" width="240" height="36" fill="#1a120a" stroke="#1c140c" stroke-width="3"/>
-    <rect x="156" y="408" width="228" height="28" fill="url(#cwarm)" opacity=".18"/>
+    <rect x="150" y="404" width="216" height="36" fill="#1a120a" stroke="#1c140c" stroke-width="3"/>
+    <rect x="156" y="408" width="204" height="28" fill="url(#cwarm)" opacity=".18"/>
     <text x="220" y="430" font-size="17" text-anchor="middle">🎭</text>
     <text x="270" y="430" font-size="15" text-anchor="middle">🃏</text>
     <text class="scene-label" x="270" y="400" text-anchor="middle">Rec hall · play together</text>
   </g>
   <g id="c-detention" class="scene-hot">
-    <rect x="410" y="404" width="240" height="36" fill="#14100a" stroke="#1c140c" stroke-width="3"/>
-    <rect x="416" y="408" width="228" height="28" fill="#8a3a2e" opacity=".16"/>
-    <g stroke="#54351e" stroke-width="3"><line x1="470" y1="406" x2="470" y2="440"/><line x1="500" y1="406" x2="500" y2="440"/><line x1="530" y1="406" x2="530" y2="440"/></g>
+    <rect x="434" y="404" width="216" height="36" fill="#14100a" stroke="#1c140c" stroke-width="3"/>
+    <rect x="440" y="408" width="204" height="28" fill="#8a3a2e" opacity=".16"/>
+    <g stroke="#54351e" stroke-width="3"><line x1="490" y1="406" x2="490" y2="440"/><line x1="520" y1="406" x2="520" y2="440"/><line x1="550" y1="406" x2="550" y2="440"/></g>
     <text x="580" y="430" font-size="16" text-anchor="middle">🪑</text>
     <text id="c-detention-count" x="614" y="430" font-size="13" fill="#e0b898" font-family="Georgia"></text>
     <text class="scene-label" x="530" y="400" text-anchor="middle">Detention · win back your misses</text>
   </g>
 
-  <!-- door -->
+  <!-- the grand front door -->
   <g id="c-door" class="scene-hot">
-    <rect x="372" y="404" width="0" height="0" fill="none"/>
+    <rect x="366" y="396" width="68" height="48" fill="#241708"/>
+    <path d="M366 400 a34 20 0 0 1 68 0 v44 h-68 z" fill="#1c1206" stroke="#8a6425" stroke-width="3"/>
+    <g id="door-left"><path d="M370 400 a30 17 0 0 1 30 -14 v56 h-30 z" fill="url(#mahoganyV)" stroke="#241708" stroke-width="2"/><circle cx="394" cy="424" r="2.5" fill="#c9a24a"/></g>
+    <g id="door-right"><path d="M430 400 a30 17 0 0 0 -30 -14 v56 h30 z" fill="url(#mahoganyV)" stroke="#241708" stroke-width="2"/><circle cx="406" cy="424" r="2.5" fill="#c9a24a"/></g>
+    <rect x="358" y="444" width="84" height="6" fill="#33220f"/>
+    <text class="scene-label" x="400" y="392" text-anchor="middle">The front door</text>
   </g>
 </svg>`;
 
@@ -4067,14 +4119,49 @@ function buildCampusScene(){
   }, 9000);
 
   const on = (id, fn) => { const n = document.getElementById(id); if (n) n.addEventListener('click', fn); };
-  on('c-class', () => goScreen('daily'));
-  on('c-library', () => goScreen('cabinet'));
-  on('c-office', () => goScreen('office'));
-  on('c-workshop', () => goScreen('workshop'));
-  on('c-museum', () => goScreen('collection'));
-  on('c-trophy', () => goScreen('honors'));
-  on('c-rec', () => goScreen('parlor'));
-  on('c-detention', () => goScreen('detention'));
+  function enterRoom(gid, label, target){
+    const svg = document.getElementById('campus-svg');
+    const g = document.getElementById(gid);
+    if (!svg || !g) { goScreen(target); return; }
+    const bb = g.getBBox();
+    svg.style.transformOrigin = `${(bb.x + bb.width / 2) / 800 * 100}% ${(bb.y + bb.height / 2) / 460 * 100}%`;
+    svg.classList.add('room-zoom');
+    SFX.door();
+    const ov = document.createElement('div');
+    ov.className = 'room-fade';
+    const lb = document.createElement('div');
+    lb.className = 'room-fade-label';
+    lb.textContent = 'Entering ' + label + '…';
+    ov.appendChild(lb);
+    document.body.appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('room-fade-in'));
+    setTimeout(() => {
+      goScreen(target);
+      svg.classList.remove('room-zoom');
+      svg.style.transformOrigin = '';
+      ov.classList.remove('room-fade-in');
+      setTimeout(() => ov.remove(), 450);
+    }, 700);
+  }
+  on('c-class', () => enterRoom('c-class', 'the Classroom', 'daily'));
+  on('c-library', () => enterRoom('c-library', 'the Library', 'cabinet'));
+  on('c-office', () => enterRoom('c-office', 'your Office', 'office'));
+  on('c-workshop', () => enterRoom('c-workshop', 'the Workshop', 'workshop'));
+  on('c-museum', () => enterRoom('c-museum', 'the Museum', 'collection'));
+  on('c-trophy', () => enterRoom('c-trophy', 'the Trophy Hall', 'honors'));
+  on('c-rec', () => enterRoom('c-rec', 'the Rec Hall', 'parlor'));
+  on('c-detention', () => enterRoom('c-detention', 'Detention', 'detention'));
+  on('c-door', () => {
+    const d = document.getElementById('c-door');
+    d.classList.add('door-open');
+    SFX.door();
+    toast('🚪 You step inside. Your schedule is on the board.');
+    setTimeout(() => {
+      const sc = document.getElementById('schedule-card');
+      if (sc) sc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      d.classList.remove('door-open');
+    }, 600);
+  });
   on('c-moon', () => toast(`${mp.icon} ${mp.name} tonight. ${mp.tip}`));
   const RAVEN = [
     'Caw. Back again? The Dean will be thrilled. The Dean is me. I am a raven.',
@@ -4831,6 +4918,42 @@ function renderHome(){
     confetti(50);
     toast(`🔔 Perfect attendance! All three periods done. +${got} lumens. (${S.attendanceCount} day${S.attendanceCount === 1 ? '' : 's'} total)`);
   }
+
+  // pop quiz: some days a teacher ambushes you
+  const pq = $('#popquiz-card');
+  const pqDone = S.popQuizDay === td;
+  const pqToday = ((Math.floor(Date.now() / 86400000) * 7919) % 5) < 2; // about 2 days in 5
+  if (pqToday && !pqDone && S.totalRight >= 10) {
+    const domKeys = Object.keys(FACULTY);
+    const pqDom = domKeys[Math.floor(Date.now() / 86400000) % domKeys.length];
+    const t = FACULTY[pqDom];
+    pq.style.display = '';
+    pq.innerHTML = `<div class="iod-label">A teacher blocks the hallway</div>
+      <div class="mystery-title">${t.emoji} Pop quiz from ${t.name}!</div>
+      <div class="iod-hint">One ${DOMAINS[pqDom].name} question. Double lumens if you get it.</div>`;
+    pq.onclick = () => {
+      pq.onclick = null;
+      const pool = QUESTIONS.filter(x => x.d === pqDom);
+      const q = pool[Math.floor(Math.random() * pool.length)];
+      pq.innerHTML = `<div class="iod-label">${t.emoji} ${t.name} asks:</div>`;
+      pq.appendChild(questionCard({
+        domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, more: q.more,
+        onDone(right){
+          S.popQuizDay = td;
+          save();
+          if (right) {
+            const got = awardLumens((q.t === 2 ? 8 : 5) * 2);
+            toast(`${t.emoji} Pop quiz passed! +${got} lumens.`);
+          } else {
+            toast(`${t.emoji} ${t.name} sighs kindly. It will come back in your reviews.`);
+            missFail(qKey(q));
+          }
+          renderHome();
+          $('#popquiz-card').style.display = 'none';
+        }
+      }));
+    };
+  } else { pq.style.display = 'none'; pq.onclick = null; }
 
   // the mystery drawer: some days it simply appears
   const todayN = Math.floor(Date.now() / 86400000);
@@ -5848,6 +5971,85 @@ function accuracy(domain){
   return st.right / (st.right + st.wrong);
 }
 
+
+// order-it: arrange four things by date or size
+function genOrderQuestion(){
+  if (Math.random() < 0.55) {
+    // chronological, well-separated events
+    let picks = [], guard = 0;
+    while (picks.length < 4 && guard++ < 200) {
+      const e = PG_EVENTS[Math.floor(Math.random() * PG_EVENTS.length)];
+      if (!picks.includes(e) && picks.every(p => Math.abs(p[1] - e[1]) >= 60)) picks.push(e);
+    }
+    if (picks.length < 4) picks = PG_EVENTS.slice(0, 4);
+    const sorted = picks.slice().sort((a, b) => a[1] - b[1]);
+    return {
+      _order: true, d: 'history',
+      q: 'Put these in order, earliest first. Tap them in order.',
+      items: pickN(picks, 4).map(p => p[0]),
+      correct: sorted.map(p => p[0]),
+      why: 'The order: ' + sorted.map(p => `${p[0]} (${p[1] < 0 ? Math.abs(p[1]) + ' BCE' : p[1]})`).join(' → ') + '.'
+    };
+  }
+  const cat = PG_SIZES[Math.floor(Math.random() * PG_SIZES.length)];
+  let picks = [], guard = 0;
+  while (picks.length < 4 && guard++ < 200) {
+    const it = cat.items[Math.floor(Math.random() * cat.items.length)];
+    if (!picks.includes(it) && picks.every(p => Math.max(p[1], it[1]) / Math.min(p[1], it[1]) >= 1.3)) picks.push(it);
+  }
+  if (picks.length < 4) picks = cat.items.slice(0, 4);
+  const sorted = picks.slice().sort((a, b) => b[1] - a[1]);
+  return {
+    _order: true, d: cat.d,
+    q: `Put these in order, ${cat.unit.split(' ')[0].replace('wider','widest').replace('heavier','heaviest').replace('longer','longest')} first. Tap them in order.`,
+    items: pickN(picks, 4).map(p => p[0]),
+    correct: sorted.map(p => p[0]),
+    why: 'The order: ' + sorted.map(p => `${p[0]} (${p[1].toLocaleString()} ${cat.suffix})`).join(' → ') + '.'
+  };
+}
+function renderOrderQuestion(q, container, onDone){
+  const card = el(`<div class="qcard">
+    <div class="qcard-domain" style="color:${DOMAINS[q.d].color}">${DOMAINS[q.d].emblem} ${DOMAINS[q.d].name} <span class="qcard-tag">order it</span></div>
+    <div class="qcard-question">${q.q}</div>
+    <div class="qcard-answers"></div>
+    <div class="qcard-why hidden"></div>
+    <button class="btn-primary qcard-next hidden">Continue</button>
+  </div>`);
+  const box = card.querySelector('.qcard-answers');
+  const picked = [];
+  let done = false;
+  q.items.forEach(item => {
+    const btn = el(`<button class="answer-btn order-btn">${item}</button>`);
+    btn.addEventListener('click', () => {
+      if (done || picked.includes(item)) return;
+      picked.push(item);
+      btn.classList.add('order-picked');
+      btn.innerHTML = `<span class="order-num">${picked.length}</span> ${item}`;
+      SFX.tick();
+      if (picked.length === q.items.length) {
+        done = true;
+        const right = picked.every((it, i) => it === q.correct[i]);
+        recordAnswer(q.d, right);
+        box.querySelectorAll('.order-btn').forEach(b => {
+          const label = b.textContent.replace(/^\d+\s*/, '');
+          const shouldBe = q.correct.indexOf(label) + 1;
+          b.classList.add(right ? 'correct' : 'faded');
+          if (!right) b.innerHTML += ` <span class="order-truth">(${shouldBe})</span>`;
+        });
+        const why = card.querySelector('.qcard-why');
+        why.textContent = q.why;
+        why.classList.remove('hidden');
+        if (typeof facultyLine === 'function') card.insertBefore(el(`<div class="teacher-line">${facultyLine(q.d, right)}</div>`), why);
+        const next = card.querySelector('.qcard-next');
+        next.classList.remove('hidden');
+        next.addEventListener('click', () => onDone(right), { once: true });
+      }
+    });
+    box.appendChild(btn);
+  });
+  container.appendChild(card);
+}
+
 function todaysTwist(){
   const dayN = Math.floor(Date.now() / 86400000);
   const domainKeys = Object.keys(DOMAINS);
@@ -5865,7 +6067,10 @@ function startDaily(){
   const reviews = shuffle(dueMisses()).slice(0, 3);
   reviews.forEach(q => { q._review = true; });
   const fresh = pickDailyQuestions().filter(q => !reviews.includes(q));
-  daily = { qs: reviews.concat(fresh).slice(0, DAILY_LEN + reviews.length), idx: 0, right: 0, earned: 0, twist: todaysTwist() };
+  const runQs = reviews.concat(fresh).slice(0, DAILY_LEN + reviews.length);
+  const orderSpot = reviews.length + 2 + Math.floor(Math.random() * 4);
+  runQs.splice(Math.min(orderSpot, runQs.length - 1), 0, genOrderQuestion());
+  daily = { qs: runQs, idx: 0, right: 0, earned: 0, twist: todaysTwist() };
   $('#daily-topbar').textContent = 'Daily Run';
   renderDailyQuestion();
 }
@@ -5942,6 +6147,19 @@ function renderDailyQuestion(){
   if (daily.twist && daily.idx === 0) body.appendChild(el(`<div class="twist-banner">🎴 Today’s twist: ${daily.twist.text}</div>`));
   if ((daily.combo || 0) >= 5) setTimeout(() => { const c = body.querySelector('.qcard'); if (c) c.classList.add('card-hot'); }, 0);
   const q = daily.qs[daily.idx];
+  if (q._order) {
+    renderOrderQuestion(q, body, (right) => {
+      if (right) {
+        daily.right++;
+        daily.combo = (daily.combo || 0) + 1;
+        comboTick(daily);
+        daily.earned += 7;
+      } else daily.combo = 0;
+      daily.idx++;
+      renderDailyQuestion();
+    });
+    return;
+  }
   body.appendChild(questionCard({
     domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, more: q.more,
     tag: q._review ? 'return visit' : (q.t === 2 ? 'advanced' : ''),
