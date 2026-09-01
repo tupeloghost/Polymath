@@ -914,6 +914,33 @@ body::after {
   .btn-back { padding: 8px 14px; }
 }
 
+/* big screens read big: solo modes get a bump, group modes get a large one (kept last so it wins) */
+@media (min-width: 1000px) {
+  #daily-body .qcard-question, #gauntlet-body .qcard-question,
+  #lightning-body .qcard-question, #exam-body .qcard-question {
+    font-size: 23px;
+  }
+  #daily-body .answer-btn, #gauntlet-body .answer-btn,
+  #lightning-body .answer-btn, #exam-body .answer-btn {
+    font-size: 18px; padding: 15px 16px;
+  }
+  #daily-body .qcard-why, #gauntlet-body .qcard-why, #exam-body .qcard-why { font-size: 17px; }
+  .lesson-text { font-size: 18px; }
+  #duel-body .qcard-question, #parlor-body .qcard-question {
+    font-size: 28px; line-height: 1.4; margin-bottom: 18px;
+  }
+  #duel-body .answer-btn, #parlor-body .answer-btn {
+    font-size: 21px; padding: 20px;
+  }
+  #duel-body .duel-turn, #parlor-body .duel-turn { font-size: 23px; padding: 12px; }
+  #duel-body .qcard-why, #parlor-body .qcard-why { font-size: 18px; }
+  #duel-body .duel-steal, #parlor-body .duel-steal { font-size: 20px; }
+  #duel-body .qcard-domain, #parlor-body .qcard-domain { font-size: 16px; }
+  #parlor-body .party-chip { font-size: 17px; padding: 6px 16px; }
+  #duel-body .duel-name, #parlor-body .duel-name { font-size: 19px; padding: 14px; }
+  #duel-body .qcard, #parlor-body .qcard { padding: 24px 28px; }
+}
+
 </style>
 </head>
 <body>
