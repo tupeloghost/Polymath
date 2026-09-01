@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Polymath Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* The Polymath Cabinet - old library / cabinet of curiosities */
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -1289,6 +1292,106 @@ body.dt #mystery-card .mystery-title, body.dt #examiner-card .mystery-title, bod
 #curator-card { padding: 10px 14px; margin-bottom: 12px; }
 .home-stats { margin: 12px 0 14px; }
 .rank-progress { margin-bottom: 4px; }
+
+/* ============ DESIGN ELEVATION PASS ============ */
+/* type: an editorial serif for display, warm serif for reading */
+:root {
+  --display: 'Playfair Display', Georgia, serif;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --gold: #c9a24a;
+  --gold-bright: #e8cf8f;
+}
+.masthead h1 { font-family: var(--display); font-weight: 800; letter-spacing: 1px; }
+.tagline { font-family: var(--serif); font-size: 19px; letter-spacing: .5px; }
+.topbar-title, .lesson-title, .result-title, .menu-head, .today-head,
+.mystery-title, .bridge-title, .curator-name, .stat-rank, .ceremony-title,
+.iod-label, .shelf-label, .drawer-title, .menu-title, .plaque-name, .curio-name {
+  font-family: var(--display);
+}
+.lesson-title { font-weight: 700; letter-spacing: 0; }
+.result-title { font-weight: 700; }
+.menu-head { font-weight: 600; }
+.qcard-question, .lesson-text, .result-verdict, .trip-text, .debate-quote,
+.curator-line, .row-main, .journal-text, .skill-teach p, .takeaway-text {
+  font-family: var(--serif); font-weight: 500;
+}
+.qcard-question { font-weight: 600; }
+body.dt .qcard-question { letter-spacing: .2px; }
+.answer-btn { font-family: var(--serif); font-weight: 500; }
+
+/* paper: a whisper of grain on every light card */
+.qcard, .lesson-card, .result-card, .stat-plaque, #today-panel, #schedule-card,
+.bridge-item, .curio, .journal-entry, .papers, .ledger-row {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.16 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--card), var(--paper-deep));
+}
+
+/* shadows: layered and soft, like candlelight */
+.qcard, .lesson-card { box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 12px 28px -10px rgba(0,0,0,.65); border-radius: 14px; }
+.result-card { border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 16px 36px -12px rgba(0,0,0,.7); }
+#today-panel, #schedule-card { box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 24px -10px rgba(0,0,0,.6); }
+.bridge-item { border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 18px -8px rgba(0,0,0,.55); }
+
+/* buttons: letterpress gold with real depth */
+.btn-primary {
+  font-family: var(--display); font-weight: 600; letter-spacing: 1.5px;
+  background: linear-gradient(180deg, #e3c26f, var(--gold) 45%, #a37f34);
+  border: 1px solid #6b5225;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 3px rgba(0,0,0,.25), 0 4px 10px rgba(0,0,0,.4);
+  text-shadow: 0 1px 1px rgba(0,0,0,.35);
+  border-radius: 10px;
+  color: #fff8ea;
+}
+.btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.55), inset 0 -2px 3px rgba(0,0,0,.25), 0 7px 14px rgba(0,0,0,.45); }
+.btn-primary:active { transform: translateY(1px); box-shadow: inset 0 2px 5px rgba(0,0,0,.3); }
+.btn-secondary { font-family: var(--display); font-weight: 600; letter-spacing: 1px; border-radius: 10px; }
+
+/* answer buttons: quiet until touched, then alive */
+.answer-btn {
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  transition: background .12s ease, transform .08s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.answer-btn:hover { border-left-color: var(--gold); box-shadow: 0 3px 10px rgba(0,0,0,.18); }
+.answer-btn.correct { border-left-color: var(--green); }
+.answer-btn.wrong { border-left-color: var(--red); }
+
+/* refined rules and ornaments */
+.qcard-why { border-left-width: 2px; border-radius: 0 10px 10px 0; }
+.result-card { position: relative; }
+.result-card::before {
+  content: '❦';
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  color: var(--gold); font-size: 14px; opacity: .7;
+}
+.masthead-rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); position: relative; }
+.topbar-title { letter-spacing: 2.5px; }
+
+/* focus visible, politely */
+button:focus-visible, input:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+
+/* drawer tiles: label plates in the display face */
+.menu-title { font-weight: 600; letter-spacing: .8px; }
+.today-head, .menu-head { letter-spacing: 3.5px; }
+
+/* Cormorant runs small: compensate where it is used for reading */
+body.dt #daily-body .qcard-question, body.dt #gauntlet-body .qcard-question,
+body.dt #lightning-body .qcard-question, body.dt #exam-body .qcard-question,
+body.dt #chain-body .qcard-question, body.dt #skill-body .qcard-question { font-size: 25px; }
+body.dt #duel-body .qcard-question, body.dt #parlor-body .qcard-question,
+body.dt #expedition-body .qcard-question { font-size: 30px; }
+body.dt #daily-body .answer-btn, body.dt #gauntlet-body .answer-btn,
+body.dt #lightning-body .answer-btn, body.dt #exam-body .answer-btn,
+body.dt #chain-body .answer-btn, body.dt #skill-body .answer-btn { font-size: 20px; }
+body.dt #duel-body .answer-btn, body.dt #parlor-body .answer-btn,
+body.dt #expedition-body .answer-btn { font-size: 23px; }
+body.dt .lesson-text { font-size: 20px; }
+body.dt .curator-line { font-size: 20px; }
+body.dt .result-verdict { font-size: 20px; }
+body.ph .qcard-question { font-size: 19px; }
+body.ph .answer-btn { font-size: 17px; }
+body.ph .lesson-text { font-size: 18px; }
 
 </style>
 </head>
@@ -3591,7 +3694,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v46 · Sep 1, 2026";
+window.GAME_VERSION = "v47 · Sep 1, 2026";
 
 </script>
 <script>
