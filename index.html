@@ -1162,6 +1162,27 @@ body.dt .rivalry-line { font-size: 18px; }
 @keyframes headlift { 0% { transform: translateY(0); } 18% { transform: translateY(-5px); } 80% { transform: translateY(-5px); } 100% { transform: translateY(0); } }
 #clock-h, #clock-m { transition: transform 1s ease; }
 
+/* teacher lines + schedule + campus life */
+.teacher-line {
+  margin-top: 12px; padding: 8px 12px;
+  font-size: 14.5px; font-style: italic; color: var(--ink-soft);
+  background: rgba(0,0,0,.06); border-radius: 6px;
+}
+body.dt .teacher-line { font-size: 17px; }
+.sched-row { cursor: pointer; }
+#schedule-card {
+  background: linear-gradient(180deg, var(--card), var(--paper-deep));
+  border: 2px solid var(--brass);
+  border-radius: 12px;
+  margin: 0 0 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.45);
+  overflow: hidden;
+}
+#c-cloud { animation: clouddrift 90s linear infinite; }
+@keyframes clouddrift { from { transform: translateX(-80px); } to { transform: translateX(880px); } }
+.shooting-star { animation: starstreak 3.5s linear forwards; }
+@keyframes starstreak { from { transform: translateX(840px); } to { transform: translateX(-120px); } }
+
 </style>
 </head>
 <body>
@@ -1193,6 +1214,7 @@ body.dt .rivalry-line { font-size: 18px; }
 
     <div class="home-stats" id="home-stats"></div>
 
+    <div id="schedule-card"></div>
     <div id="mystery-card"></div>
     <div id="examiner-card"></div>
     <div id="today-panel">
@@ -3237,7 +3259,36 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v41 · Sep 1, 2026";
+// The faculty: every subject has a teacher. Short reactions, big personalities.
+const FACULTY = {
+  astronomy:  { name:'Prof. Vega', emoji:'🔭', right:['Correct. Somewhere, a star just twinkled for you.','Yes! I told the moon you would get that one.'], wrong:['Incorrect. The universe forgives you. I am working on it.','No. But space is mostly empty and so was that guess. We move on.'] },
+  biology:    { name:'Prof. Fern', emoji:'🌿', right:['Right! Your neurons just grew a little. Literally.','Correct. Nature is showing off through you.'], wrong:['Not quite. Even evolution needed a few billion tries.','Wrong, but compost makes gardens. That answer will feed the next one.'] },
+  history:    { name:'Prof. Antiquity', emoji:'🏺', right:['Correct. The ancestors nod approvingly.','Yes. You would have survived at least a week in ancient Rome.'], wrong:['Incorrect. History repeats itself; so will this question.','No. But every empire made worse mistakes, believe me.'] },
+  art:        { name:'Maestra Ombra', emoji:'🎨', right:['Yes! You have the eye. Guard it.','Correct. Somewhere, Van Gogh feels understood.'], wrong:['No. But bad first drafts hang in every great career.','Wrong shade entirely. Mix again.'] },
+  music:      { name:'Madame Sol', emoji:'🎼', right:['Correct! That answer was perfectly in tune.','Yes. You may hum with confidence today.'], wrong:['Flat, I am afraid. We will rehearse it again.','No. Even Beethoven hit wrong notes. Allegedly.'] },
+  math:       { name:'Prof. Integer', emoji:'📐', right:['Correct. The numbers respect you now.','Precisely right. How satisfying.'], wrong:['Incorrect, but an error term is still a term.','No. Show your work to yourself and try again later.'] },
+  philosophy: { name:'Prof. Query', emoji:'🦉', right:['Correct. Socrates would have only three follow-up questions.','Yes. Wisdom suits you.'], wrong:['Wrong. But knowing you were wrong is halfway to wisdom.','No. Sit with that. Then let it go.'] },
+  earth:      { name:'Ranger Slate', emoji:'⛰️', right:['Correct! Solid as bedrock.','Yes. The planet appreciates being understood.'], wrong:['Erosion happens. So do wrong answers. Both wear down with time.','Nope. But even continents drift off course.'] },
+  psychology: { name:'Dr. Vesper', emoji:'🧠', right:['Correct. Your brain understanding itself: my favorite loop.','Yes. Fascinating how right you were.'], wrong:['Wrong, and how does that make you feel? Motivated, I hope.','No. Your brain will encode this better precisely because it stung.'] },
+  economics:  { name:'Prof. Ledger', emoji:'📊', right:['Correct. Excellent return on your attention.','Yes. Consider that answer a sound investment.'], wrong:['Wrong. Consider it tuition.','No. But sunk costs are sunk; the next question is a fresh market.'] },
+  physics:    { name:'Dr. Flux', emoji:'⚡', right:['Correct! The universe is deterministic about your brilliance.','Yes. Newton would be quietly pleased.'], wrong:['Incorrect. For every wrong answer there is an equal and opposite lesson.','No. But in some quantum sense you were also right. Not this sense though.'] },
+  literature: { name:'Prof. Quill', emoji:'✒️', right:['Correct. A plot twist no one saw coming: competence.','Yes. Beautifully read.'], wrong:['Wrong, alas. Every hero fails in act two.','No. But an unreliable narrator lives in all of us.'] },
+  technology: { name:'Prof. Cog', emoji:'⚙️', right:['Correct. System functioning as intended.','Yes! No bugs detected in that answer.'], wrong:['Error. Have you tried turning your assumptions off and on again?','Wrong. Logged for the next patch. You are the patch.'] },
+  mythology:  { name:'Prof. Fable', emoji:'🐉', right:['Correct. The old gods smile. The tricksters sulk.','Yes. Legend material, honestly.'], wrong:['Wrong. Even Odysseus took ten years to get home.','No. The sphinx would have eaten you, but you would have died educated.'] },
+  body:       { name:'Doc Marrow', emoji:'🩺', right:['Correct! Your 37 trillion cells celebrate as one.','Yes. Medically speaking, that was a great answer.'], wrong:['Wrong, but your gut brain probably knew. Listen to it next time.','No. Take two facts and call me in the morning.'] },
+  language:   { name:'Prof. Lexi', emoji:'📖', right:['Correct. May all your words land this well.','Yes! Etymologically flawless.'], wrong:['Wrong, or as the ancients said: oops.','No. But every language is just mistakes that caught on.'] },
+  practical:  { name:'Coach Flint', emoji:'🔑', right:['Correct! Now go use it before the day ends.','Yes. That one pays rent in real life.'], wrong:['Wrong. Good. Wrong in practice here is cheaper than wrong out there.','No. Twenty hours, remember? This was minute one.'] }
+};
+function facultyLine(domain, right){
+  const t = FACULTY[domain];
+  if (!t) return '';
+  const pool = right ? t.right : t.wrong;
+  return `${t.emoji} ${t.name}: “${pool[Math.floor(Math.random() * pool.length)]}”`;
+}
+
+</script>
+<script>
+window.GAME_VERSION = "v42 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3392,6 +3443,7 @@ const SFX = (function(){
     drumroll(dur){ const n = Math.floor((dur || .7) / .05); for (let i = 0; i < n; i++) tone(900 + Math.random() * 200, .03, 'triangle', .02, i * .05); },
     crackle(){ for (let i = 0; i < 7; i++) tone(120 + Math.random() * 300, .04, 'triangle', .03, Math.random() * .8); },
     chime(){ tone(880, .6, 'sine', .05); tone(1108, .8, 'sine', .04, .3); buzz(20); },
+    bell(){ [660, 660].forEach((f, i) => { tone(f, 1.1, 'sine', .06, i * .7); tone(f * 2.76, .5, 'sine', .02, i * .7); }); buzz([40, 200, 40]); },
     purr(){ for (let i = 0; i < 6; i++) tone(82, .09, 'triangle', .04, i * .12); tone(520, .18, 'sine', .04, .8); tone(430, .22, 'sine', .04, .92); buzz([50, 40, 50, 40, 50]); }
   };
 })();
@@ -3890,6 +3942,7 @@ function buildCampusScene(){
     <text x="684" y="92" font-size="42">${mp.icon}</text>
     <text class="scene-label" x="706" y="140" text-anchor="middle">Tonight’s sky</text>
   </g>
+  <g id="c-cloud"><ellipse cx="0" cy="120" rx="46" ry="12" fill="#2a3350" opacity=".8"/><ellipse cx="30" cy="112" rx="30" ry="10" fill="#2a3350" opacity=".7"/></g>
   <ellipse cx="400" cy="452" rx="420" ry="26" fill="#141a10"/>
   <ellipse cx="400" cy="448" rx="380" ry="20" fill="#1c2416"/>
 
@@ -3983,6 +4036,35 @@ function buildCampusScene(){
     <rect x="372" y="404" width="0" height="0" fill="none"/>
   </g>
 </svg>`;
+
+  // windows glow brighter in the rooms you visit most
+  if (window.sceneHooks2) {
+    const glowMap = { 'c-class':'daily', 'c-library':'cabinet', 'c-workshop':'workshop', 'c-museum':'collection', 'c-trophy':'honors', 'c-rec':'parlor', 'c-office':'office' };
+    Object.entries(glowMap).forEach(([gid, key]) => {
+      const g = document.getElementById(gid);
+      if (!g) return;
+      const warm = g.querySelector('rect[fill="url(#cwarm)"]');
+      if (warm) {
+        const base = parseFloat(warm.getAttribute('opacity')) || .25;
+        warm.setAttribute('opacity', Math.min(.55, base + sceneHooks2.roomUse(key) * 0.012).toFixed(2));
+      }
+    });
+  }
+  // now and then, a shooting star crosses the sky: click it for luck
+  if (window.__starTimer) clearInterval(window.__starTimer);
+  window.__starTimer = setInterval(() => {
+    const svg = document.getElementById('campus-svg');
+    if (!svg || !document.querySelector('#screen-home.active')) return;
+    if (Math.random() < 0.65) return;
+    const y = 30 + Math.random() * 90;
+    const star = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    star.setAttribute('class', 'shooting-star');
+    star.innerHTML = `<line x1="-40" y1="${y + 12}" x2="0" y2="${y}" stroke="#e8e4d0" stroke-width="2" stroke-linecap="round" opacity=".8"/><circle cx="0" cy="${y}" r="4" fill="#fff6df"/>`;
+    star.style.cursor = 'pointer';
+    star.addEventListener('click', () => { if (window.sceneHooks2) sceneHooks2.luckyStar(); star.remove(); });
+    svg.appendChild(star);
+    setTimeout(() => star.remove(), 3600);
+  }, 9000);
 
   const on = (id, fn) => { const n = document.getElementById(id); if (n) n.addEventListener('click', fn); };
   on('c-class', () => goScreen('daily'));
@@ -4491,6 +4573,8 @@ function go(name){
   if (name === 'cabinet') renderCabinet();
   if (name === 'bridges') renderBridges();
   if (name === 'ledger') renderLedger();
+  if (!S.roomUse) S.roomUse = {};
+  if (['daily','cabinet','workshop','collection','honors','parlor','office'].includes(name)) { S.roomUse[name] = (S.roomUse[name] || 0) + 1; save(); }
   if (name === 'daily') startDaily();
   if (name === 'gauntlet') startGauntlet();
   if (name === 'collection') renderCollection();
@@ -4509,6 +4593,13 @@ function go(name){
   SFX.page();
 }
 window.goScreen = (name) => go(name);
+window.sceneHooks2 = {
+  roomUse(k){ return (S.roomUse && S.roomUse[k]) || 0; },
+  luckyStar(){
+    const got = awardLumens(2);
+    toast('🌠 A lucky star! +' + got + ' lumens.');
+  }
+};
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-go]');
   if (!b) return;
@@ -4547,6 +4638,10 @@ function questionCard(opts){
       });
       if (!opt.right) { btn.classList.remove('faded'); btn.classList.add('wrong'); }
       const why = card.querySelector('.qcard-why');
+      if (opts.why && typeof facultyLine === 'function') {
+        const tl = facultyLine(opts.domain, opt.right);
+        if (tl) card.insertBefore(el(`<div class="teacher-line">${tl}</div>`), why);
+      }
       if (opts.why) {
         if (opts.wow) {
           why.classList.add('qcard-wow');
@@ -4712,6 +4807,30 @@ function renderHome(){
   document.body.classList.toggle('season-oct', month === 9);
   document.body.classList.toggle('season-dec', month === 11);
   $('#curator-moon').textContent = `${mp.icon} ${mp.name} tonight. ${mp.tip}${seasonal}`;
+
+  // today's class schedule: three periods, one small day
+  const td = todayStr();
+  const p1 = S.lastDaily === td;
+  const p2 = S.lastDrawerDay === td;
+  const p3 = S.lastSkillDay === td;
+  const sched = $('#schedule-card');
+  const row = (done, go, label, sub) => `
+    <div class="today-row sched-row" data-go="${go}">
+      <span class="row-icon">${done ? '✅' : '⬜'}</span>
+      <span class="row-body"><span class="row-main">${label}</span><span class="row-sub">${sub}</span></span>
+      <span class="row-go">›</span>
+    </div>`;
+  sched.innerHTML = `<div class="today-head">Today’s Class Schedule</div>
+    ${row(p1, 'daily', 'Period 1 · Daily Run', p1 ? 'Done. Nice work.' : 'Ten questions from all subjects.')}
+    ${row(p2, 'cabinet', 'Period 2 · One Drawer', p2 ? 'Done. One more idea is yours.' : 'Read one small idea, answer one question.')}
+    ${row(p3, 'workshop', 'Period 3 · Skill Practice', p3 ? 'Done. Sharper than yesterday.' : 'Practice any real-life skill for a few minutes.')}`;
+  if (p1 && p2 && p3 && S.attendanceDay !== td) {
+    S.attendanceDay = td;
+    S.attendanceCount = (S.attendanceCount || 0) + 1;
+    const got = awardLumens(20);
+    confetti(50);
+    toast(`🔔 Perfect attendance! All three periods done. +${got} lumens. (${S.attendanceCount} day${S.attendanceCount === 1 ? '' : 's'} total)`);
+  }
 
   // the mystery drawer: some days it simply appears
   const todayN = Math.floor(Date.now() / 86400000);
@@ -4922,6 +5041,8 @@ function renderSkillPractice(){
     const why = card.querySelector('.qcard-why');
     why.textContent = (right ? '✓ ' : '✗ ') + p.explain;
     why.classList.remove('hidden');
+    S.lastSkillDay = todayStr();
+    save();
     if (right) { skillRun.right++; SFX.correct(); } else SFX.wrong();
     $('#skill-progress').textContent = `${skillRun.right} / ${sk.mastery}`;
     const next = card.querySelector('.qcard-next');
@@ -5900,6 +6021,7 @@ function finishDaily(){
   const perfect = score === daily.qs.length ? (daily.twist && daily.twist.id === 'perfect2' ? 40 : 20) : 0;
   const streakBonus = (daily.focus || daily.detention) ? 0 : Math.min(S.streak - 1, 10) * 3;
   const earned = awardLumens(daily.earned + (daily.bonus || 0) + perfect + streakBonus);
+  if (!daily.focus && !daily.detention) SFX.bell();
   let verdict = 'The academy takes note.';
   if (daily.detention) verdict = score === daily.qs.length
     ? 'Detention cleared. Walk out with your head high.'
@@ -6018,6 +6140,7 @@ function openNode(node){
     body.appendChild(questionCard({
       domain: node.d, q: node.q.q, a: node.q.a, c: node.q.c, why: '',
       onDone(right){
+        if (right) S.lastDrawerDay = todayStr();
         if (right && !S.nodesDone[node.id]) {
           S.nodesDone[node.id] = true;
           const reward = awardLumens((node.tier||1) === 2 ? 25 : 15);
