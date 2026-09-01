@@ -960,6 +960,32 @@ body.dt .twist-banner { font-size: 17px; }
 body.dt .bracket-match { font-size: 18px; min-width: 170px; padding: 10px 16px; }
 body.dt .bracket-title { font-size: 16px; }
 
+/* forfeits, shot clock, rivalry */
+.forfeit-card {
+  margin: 12px auto; padding: 14px 18px; max-width: 420px;
+  background: linear-gradient(180deg, #55402c, var(--wood-deep));
+  border: 2px solid var(--brass-bright); border-radius: 10px;
+  color: #f5ecd9; text-align: center;
+  animation: pop .35s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,.5), 0 0 16px rgba(232,166,80,.3);
+}
+.forfeit-label { font-variant: small-caps; letter-spacing: 2px; font-size: 13px; color: var(--brass-bright); }
+.forfeit-text { font-size: 17px; font-style: italic; margin-top: 4px; }
+body.dt .forfeit-text { font-size: 20px; }
+.shot-clock {
+  text-align: center; font-size: 22px; font-weight: bold;
+  color: var(--wood); margin-bottom: 8px; letter-spacing: 1px;
+}
+.shot-clock-hot { color: var(--red); animation: hotpulse 1s ease-in-out infinite; }
+body.dt .shot-clock { font-size: 28px; }
+.rivalry-line {
+  margin: 8px 0; padding: 8px 14px;
+  border: 1px solid var(--brass-bright); border-radius: 8px;
+  background: rgba(232,207,143,.25);
+  color: var(--wood); font-weight: bold; font-size: 15px;
+}
+body.dt .rivalry-line { font-size: 18px; }
+
 </style>
 </head>
 <body>
@@ -3022,7 +3048,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v30 · Sep 1, 2026";
+window.GAME_VERSION = "v31 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4225,7 +4251,7 @@ function startExpedition(coopNames, kid){
 }
 function expTurnBanner(body){
   if (!exp.coop) return;
-  body.appendChild(el(`<div class="duel-turn duel-p${exp.turn % 2}">${exp.coop[exp.turn]}, this one is yours</div>`));
+  body.appendChild(el(`<div class="duel-turn duel-p${exp.turn % 2}">Your turn, ${exp.coop[exp.turn]}</div>`));
 }
 function expPassTurn(){ if (exp.coop) exp.turn = (exp.turn + 1) % exp.coop.length; }
 function expIcon(stop, idx){
@@ -4441,6 +4467,11 @@ function renderParty(){
         <button class="btn-primary" id="party-again">Play again</button>
         <button class="btn-secondary" data-go="parlor">Back to the parlor</button>
       </div>`;
+    const fallen = party.players.filter(pl => pl.out);
+    if (fallen.length) {
+      const drawer = fallen[fallen.length - 1].name;
+      body.querySelector('.result-card').insertBefore(forfeitButton(drawer), $('#party-again'));
+    }
     $('#party-again').addEventListener('click', () => startParty(party.players.map(p => p.name), party.kid));
     return;
   }
@@ -4449,7 +4480,7 @@ function renderParty(){
   const standings = party.players.map(pl =>
     `<span class="party-chip ${pl.out ? 'party-out' : ''} ${pl === p ? 'party-now' : ''}">${pl.name} ${pl.out ? '✗' : '♥'.repeat(2 - pl.strikes)}</span>`).join('');
   body.appendChild(el(`<div class="party-standings">${standings}</div>`));
-  body.appendChild(el(`<div class="duel-turn duel-p${party.turn % 2}">${p.name}, your question</div>`));
+  body.appendChild(el(`<div class="duel-turn duel-p${party.turn % 2}">Your turn, ${p.name}</div>`));
   const q = party.deck[party.idx % party.deck.length];
   party.idx++;
   body.appendChild(questionCard({
@@ -4509,7 +4540,7 @@ function renderTeachTest(){
   </div>`));
   $('#tt-ready').addEventListener('click', () => {
     body.innerHTML = '';
-    body.appendChild(el(`<div class="duel-turn duel-p${(tt.round + 1) % 2}">${answerer}, your question</div>`));
+    body.appendChild(el(`<div class="duel-turn duel-p${(tt.round + 1) % 2}">Your turn, ${answerer}</div>`));
     body.appendChild(questionCard({
       domain: node.d, q: node.q.q, a: node.q.a, c: node.q.c, why: '', noRecord: true,
       onDone(right){
@@ -4519,6 +4550,38 @@ function renderTeachTest(){
       }
     }));
   });
+}
+
+// ---------- FORFEITS: the loser becomes the entertainment ----------
+const FORFEITS = [
+  'Answer your next question in a whisper.',
+  'Address the winner as "Your Brilliance" until the next game ends.',
+  'Give a 10-second victory speech... for the winner.',
+  'Do your best owl impression. The Curator is watching.',
+  'Answer your next question in a dramatic movie-trailer voice.',
+  'The winner picks a word. Work it into your next three sentences.',
+  'Bow to the winner. A real one. From the waist.',
+  'Hum a victory tune for the winner, at least five seconds long.',
+  'Speak in rhyme until your next turn. Or at least try.',
+  'Tell everyone one true, nice thing about the winner.',
+  'Hold your next answer button-press for a slow, dramatic three seconds.',
+  'Refer to yourself only in the third person for one round.',
+  'Stand up while answering your next question. Formal posture.',
+  'Recite the winner’s score like a royal announcement.',
+  'Your next wrong answer must be blamed, out loud, on the weather.',
+  'Applaud the winner. Slowly. While keeping eye contact.'
+];
+function forfeitButton(loserName){
+  const btn = el(`<button class="btn-secondary" id="forfeit-draw">🃏 ${loserName} draws a forfeit</button>`);
+  btn.addEventListener('click', () => {
+    const card = el(`<div class="forfeit-card">
+      <div class="forfeit-label">The Forfeit Deck decrees</div>
+      <div class="forfeit-text">${FORFEITS[Math.floor(Math.random() * FORFEITS.length)]}</div>
+    </div>`);
+    btn.replaceWith(card);
+    SFX.combo(4);
+  });
+  return btn;
 }
 
 // ---------- THE DUEL ----------
@@ -4533,17 +4596,20 @@ function renderDuelSetup(){
       <input class="duel-name" id="duel-p1" maxlength="14" placeholder="Player 1 name" value="">
       <input class="duel-name" id="duel-p2" maxlength="14" placeholder="Player 2 name" value="">
       <label class="kid-toggle"><input type="checkbox" id="duel-kid"> Gentle questions (good for young players)</label>
+      <label class="kid-toggle"><input type="checkbox" id="duel-clock"> ⏱ Shot clock: 15 seconds per answer</label>
       <button class="btn-primary" id="duel-start">Begin the duel</button>
     </div>`;
   if (window.__lastDuel) {
     $('#duel-p1').value = window.__lastDuel.names[0];
     $('#duel-p2').value = window.__lastDuel.names[1];
     $('#duel-kid').checked = !!window.__lastDuel.kid;
+    $('#duel-clock').checked = !!window.__lastDuel.clock;
   }
   $('#duel-start').addEventListener('click', () => {
     startDuelGame(
       [($('#duel-p1').value.trim() || 'Player 1'), ($('#duel-p2').value.trim() || 'Player 2')],
-      $('#duel-kid').checked
+      $('#duel-kid').checked,
+      { clock: $('#duel-clock').checked }
     );
   });
 }
@@ -4552,9 +4618,9 @@ function startDuelGame(names, kid, opts){
   const prev = window.__lastDuel;
   const sameFoes = !opts.onWin && prev && prev.names[0] === names[0] && prev.names[1] === names[1];
   const series = sameFoes ? prev.series : [0, 0];
-  if (!opts.onWin) window.__lastDuel = { names, kid, series };
+  if (!opts.onWin) window.__lastDuel = { names, kid, series, clock: !!opts.clock };
   duel = {
-    names, kid, series,
+    names, kid, series, clock: !!opts.clock,
     scores: [0, 0],
     streaks: [0, 0],
     turn: 0, asked: 0, total: opts.total || 10,
@@ -4592,10 +4658,10 @@ function renderDuelQuestion(){
   let points = isFinal ? 2 : 1;
   const tense = !duel.sudden && duel.asked >= 8 && duel.scores[0] !== duel.scores[1];
   const banner = duel.sudden
-    ? `☠️ Sudden death${duel.suddenRound >= 2 ? ', hard questions now' : ''}: ${duel.names[p]}`
+    ? `☠️ Sudden death · your turn, ${duel.names[p]}${duel.suddenRound >= 2 ? ' · hard questions now' : ''}`
     : isFinal
-    ? `⭐ Final question, worth 2: ${duel.names[p]}${tense ? ' · the crown hangs on this' : ''}`
-    : `${duel.names[p]} · question ${qNum} of ${duel.total / 2}`;
+    ? `⭐ Your turn, ${duel.names[p]} · final question, worth 2 points${tense ? ' · this could decide it' : ''}`
+    : `Your turn, ${duel.names[p]} · question ${qNum} of ${duel.total / 2}`;
   body.appendChild(el(`<div class="duel-turn duel-p${p}">${banner}</div>`));
   // go bold: an optional wager before answering
   let bold = false;
@@ -4625,6 +4691,36 @@ function renderDuelQuestion(){
   const stealBar = card.querySelector('.duel-steal');
   let phase = 'answer'; // answer -> steal -> done
   const buttons = [];
+  let clockTimer = null;
+  let clockEl = null;
+  function stopClock(){ if (clockTimer) { clearInterval(clockTimer); clockTimer = null; } if (clockEl) clockEl.classList.add('hidden'); }
+  if (duel.clock) {
+    let left = 15;
+    clockEl = el(`<div class="shot-clock">⏱ 15</div>`);
+    card.insertBefore(clockEl, card.querySelector('.qcard-question'));
+    clockTimer = setInterval(() => {
+      if (phase !== 'answer' || !document.querySelector('#screen-duel').classList.contains('active')) { stopClock(); return; }
+      left--;
+      clockEl.textContent = '⏱ ' + left;
+      if (left <= 5) { clockEl.classList.add('shot-clock-hot'); SFX.tick(); }
+      if (left <= 0) {
+        stopClock();
+        phase = 'steal';
+        if (bold) {
+          duel.scores[p] = Math.max(0, duel.scores[p] - 1);
+          toast(`🎲 Bold and out of time: ${duel.names[p]} loses a point.`);
+        }
+        duel.streaks[p] = 0;
+        SFX.wrong();
+        $('#duel-status').textContent = duelStatusLine();
+        const boldEl2 = body.querySelector('.bold-btn');
+        if (boldEl2) boldEl2.remove();
+        stealBar.innerHTML = `⏱ Time! <b>${duel.names[1 - p]}</b>, steal chance: pick the right answer for 1 point.`;
+        stealBar.classList.remove('hidden');
+        stealBar.className = `duel-steal duel-p${1 - p}`;
+      }
+    }, 1000);
+  }
   function reveal(){
     buttons.forEach((b, i) => {
       if (order[i].right) b.classList.add('correct');
@@ -4659,6 +4755,7 @@ function renderDuelQuestion(){
     const btn = el(`<button class="answer-btn">${opt.text}</button>`);
     btn.addEventListener('click', () => {
       if (phase === 'answer') {
+        stopClock();
         phase = opt.right ? 'done' : 'steal';
         const boldEl = body.querySelector('.bold-btn');
         if (boldEl) boldEl.remove();
@@ -4717,7 +4814,17 @@ function finishDuel(){
   const w = duel.scores[0] > duel.scores[1] ? 0 : 1;
   if (duel.onWin) { duel.onWin(w); return; }
   duel.series[w]++;
-  if (window.__lastDuel) window.__lastDuel.series = duel.series;
+  const ld = window.__lastDuel;
+  let rivalry = '';
+  if (ld) {
+    ld.series = duel.series;
+    if (ld.streakHolder === duel.names[w]) ld.winStreak = (ld.winStreak || 0) + 1;
+    else { ld.streakHolder = duel.names[w]; ld.winStreak = 1; }
+    const total = duel.series[0] + duel.series[1];
+    if (duel.series[w] >= 10) rivalry = `🏵 Ten victories. ${duel.names[1 - w]} is officially ${duel.names[w]}’s Apprentice.`;
+    else if (ld.winStreak === 3) rivalry = `🏵 Three straight wins. ${duel.names[w]} is now ${duel.names[1 - w]}’s Nemesis.`;
+    else if (total >= 4 && Math.abs(duel.series[0] - duel.series[1]) <= 1) rivalry = '🏵 Sworn Rivals: this feud is dead even.';
+  }
   SFX.reward();
   confetti(50);
   const earned = awardLumens(15);
@@ -4732,11 +4839,14 @@ function finishDuel(){
       <div class="result-verdict"><b>${duel.names[w]}</b> takes the crown, ${duel.scores[w]} to ${duel.scores[1 - w]}. ${duel.names[1 - w]}, the cabinet demands a rematch.</div>
       ${seriesLine}
       <div class="result-earn">+${earned} lumens to the cabinet for hosting</div>
+      ${rivalry ? `<div class="rivalry-line">${rivalry}</div>` : ''}
       <button class="btn-primary" id="duel-rematch">Rematch: ${duel.names[1 - w]} wants revenge</button>
       <button class="btn-secondary" data-go="home">Back to the cabinet</button>
     </div>`;
-  const names = duel.names, kid = duel.kid;
-  $('#duel-rematch').addEventListener('click', () => startDuelGame(names, kid));
+  const rc = body.querySelector('.result-card');
+  rc.insertBefore(forfeitButton(duel.names[1 - w]), $('#duel-rematch'));
+  const names = duel.names, kid = duel.kid, clock = duel.clock;
+  $('#duel-rematch').addEventListener('click', () => startDuelGame(names, kid, { clock }));
   $('#duel-status').textContent = '';
 }
 
