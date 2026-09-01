@@ -2981,7 +2981,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v24 · Sep 1, 2026";
+window.GAME_VERSION = "v25 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4487,16 +4487,28 @@ function renderDuelSetup(){
       <label class="kid-toggle"><input type="checkbox" id="duel-kid"> Gentle questions (good for young players)</label>
       <button class="btn-primary" id="duel-start">Begin the duel</button>
     </div>`;
+  if (window.__lastDuel) {
+    $('#duel-p1').value = window.__lastDuel.names[0];
+    $('#duel-p2').value = window.__lastDuel.names[1];
+    $('#duel-kid').checked = !!window.__lastDuel.kid;
+  }
   $('#duel-start').addEventListener('click', () => {
-    duel = {
-      names: [($('#duel-p1').value.trim() || 'Player 1'), ($('#duel-p2').value.trim() || 'Player 2')],
-      scores: [0, 0],
-      turn: 0, asked: 0, total: 10,
-      deck: partyDeck(playPool($('#duel-kid').checked).filter(q => q.t !== 2)),
-      sudden: false
-    };
-    renderDuelQuestion();
+    startDuelGame(
+      [($('#duel-p1').value.trim() || 'Player 1'), ($('#duel-p2').value.trim() || 'Player 2')],
+      $('#duel-kid').checked
+    );
   });
+}
+function startDuelGame(names, kid){
+  window.__lastDuel = { names, kid };
+  duel = {
+    names, kid,
+    scores: [0, 0],
+    turn: 0, asked: 0, total: 10,
+    deck: partyDeck(playPool(kid).filter(q => q.t !== 2)),
+    sudden: false
+  };
+  renderDuelQuestion();
 }
 function renderDuelQuestion(){
   const body = $('#duel-body');
@@ -4623,9 +4635,11 @@ function finishDuel(){
       <div class="result-score">👑</div>
       <div class="result-verdict"><b>${duel.names[w]}</b> takes the crown, ${duel.scores[w]} to ${duel.scores[1 - w]}. ${duel.names[1 - w]}, the cabinet demands a rematch.</div>
       <div class="result-earn">+${earned} lumens to the cabinet for hosting</div>
-      <button class="btn-primary" data-go="duel">Rematch</button>
+      <button class="btn-primary" id="duel-rematch">Rematch: ${duel.names[1 - w]} wants revenge</button>
       <button class="btn-secondary" data-go="home">Back to the cabinet</button>
     </div>`;
+  const names = duel.names, kid = duel.kid;
+  $('#duel-rematch').addEventListener('click', () => startDuelGame(names, kid));
   $('#duel-status').textContent = '';
 }
 
