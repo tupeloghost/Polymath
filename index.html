@@ -472,6 +472,27 @@ body {
 .duel-p0 { color: #ffd9a0; background: rgba(176,110,40,.25); border: 1px solid rgba(176,141,74,.6); }
 .duel-p1 { color: #b8d4ff; background: rgba(60,90,140,.25); border: 1px solid rgba(90,120,170,.6); }
 
+/* compact group play: less scrolling when people share a screen */
+#duel-body .qcard, #parlor-body .qcard { padding: 14px; }
+#duel-body .qcard-question, #parlor-body .qcard-question { font-size: 17px; margin-bottom: 10px; }
+#duel-body .qcard-answers, #parlor-body .qcard-answers { gap: 8px; }
+@media (min-width: 560px) {
+  #duel-body .qcard-answers, #parlor-body .qcard-answers { grid-template-columns: 1fr 1fr; }
+  #duel-body .answer-btn, #parlor-body .answer-btn { font-size: 15px; padding: 12px; }
+}
+.duel-turn { margin-bottom: 8px; padding: 6px; font-size: 16px; }
+.duel-steal {
+  margin-top: 10px; padding: 10px 14px; border-radius: 6px;
+  font-size: 15px; text-align: center;
+  animation: pop .3s ease;
+}
+.more-box {
+  margin-top: 10px; padding: 10px 12px;
+  background: rgba(255,255,255,.5);
+  border-radius: 6px;
+  font-style: normal; font-size: 14.5px; line-height: 1.6; color: var(--ink);
+}
+
 /* party + kid toggle */
 .kid-toggle {
   display: block; margin: 10px auto; font-size: 14px; color: var(--ink-soft);
@@ -2709,6 +2730,44 @@ CHAINS.push(
 
 </script>
 <script>
+// Expanded context, keyed by question text. Shown when the player taps "more".
+const MORE = {
+  'Why does the Moon show phases?': 'Half of the Moon is always in sunlight, just like half of Earth is always in daytime. As the Moon circles us each month, we see that lit half from changing angles: edge-on gives a crescent, face-on gives a full moon. You can prove the shadow idea wrong yourself: a lunar eclipse (Earth’s actual shadow on the Moon) looks completely different, a dim red bite, and only happens at full moon.',
+  'What is a light-year?': 'Distances between stars are so large that miles become useless, so astronomers measure in time. Light covers 186,000 miles every second, and a light-year is how far it gets in a year: about 6 trillion miles. This has a strange consequence: looking far away means looking into the past. The star you see may have changed, or died, since its light left. Telescopes are the only true time machines we own.',
+  'What makes a black hole black?': 'Every object has an escape speed: the speed needed to leave it and never fall back. Earth’s is about 25,000 mph. Pack enough mass into a small enough space and the escape speed passes the speed of light, and since nothing outruns light, nothing leaves. The boundary where this happens is the event horizon. Black holes are not vacuum cleaners: orbit one at a distance and it pulls no harder than any star of the same mass.',
+  'The Sun makes energy by...': 'In the Sun’s core, the pressure of its own weight squeezes hydrogen atoms until they fuse into helium. The helium weighs slightly less than the hydrogen that made it, and that missing mass departs as energy, exactly as E = mc² promises. The numbers are staggering: the Sun converts about 4 million tons of matter into light every second, and has kept it up for 4.6 billion years with fuel to spare.',
+  'What does DNA do?': 'DNA is a four-letter alphabet (A, T, G, C) spelling out instructions for building proteins, and proteins do nearly everything: build tissue, digest food, carry oxygen, fight infection. Every cell in you carries the full recipe book, about 3 billion letters, but each cell type only reads its own chapters, which is why a liver cell and a neuron behave so differently while holding identical DNA.',
+  'Evolution works mainly through...': 'The logic takes one sentence: creatures vary, some variations help survival and reproduction, and helpful variations therefore pile up over generations. No planning or effort is involved: a giraffe never stretched its way to a long neck; short-necked ones simply left fewer descendants during hard seasons. Given millions of years, this quiet filter built eyes, wings, and brains. It is still running, in hospitals and fields, right now.',
+  'Antibiotics work against...': 'Antibiotics jam machinery that bacteria have and your cells lack, like their cell walls, which is why the drugs can kill an infection without killing you. Viruses have no such machinery: they are gene fragments that hijack your own cells, so there is nothing for an antibiotic to hit. Taking one for the flu does nothing except train nearby bacteria to resist it, which is how superbugs are made.',
+  'Who is credited with printing with movable type in Europe?': 'Gutenberg’s clever part was not the press (wine presses existed) but the type: individual metal letters, cast quickly and reusable in any order. Before him, one hand-copied Bible took a scribe about three years; his shop printed 180 in that time. Within fifty years, Europe held more books than it had produced in the previous thousand. Luther, modern science, and the newspaper all walked through the door he opened.',
+  'The Renaissance began in...': 'Italy had three ingredients at once: trade wealth (Florence and Venice bankrolled art the way modern cities fund tech), the ruins and texts of Rome underfoot as a constant dare, and refugee Greek scholars arriving after Constantinople fell in 1453 with armloads of lost books. Add competitive patron families like the Medici trying to out-beautify each other, and you get Leonardo, Michelangelo, and a century of fireworks.',
+  'What are the three primary colors of paint?': 'Paint mixing is subtraction: each pigment soaks up some of the light hitting it, and what bounces back is the color you see. Red, yellow, and blue each absorb a different third of the spectrum, so combinations can produce nearly anything, and all three together absorb almost everything: a muddy near-black. Screens work the opposite way, adding light, which is why their primaries are red, green, and blue instead.',
+  'Perspective drawing creates...': 'The trick is geometric: parallel lines, like road edges, appear to meet at a point as they recede, so drawing them that way convinces the eye of depth that is not there. Brunelleschi demonstrated it around 1420 with a painted panel and a mirror, and within a generation flat medieval scenes gave way to windows you could seemingly walk into. Every 3D video game still runs on his math.',
+  'A minor key often sounds...': 'Lower the third note of a major scale by one half-step and the mood darkens: that one note is most of the difference between a birthday song and a lament. Why it feels sad is only partly cultural: minor intervals ring with rougher overlaps of sound waves, and some studies find the pattern echoes the drooping pitch of a sad human voice. Composers exploit the border constantly, sliding between keys to move you without a word.',
+  'An octave higher means the sound wave vibrates...': 'Double the vibration speed and you get the "same" note higher: A at 440 wiggles per second, the next A at 880. Your ear hears them as family because their wave peaks line up every single cycle: the simplest possible relationship two different pitches can have. Every musical culture on Earth discovered the octave independently. It is not a human invention; it is arithmetic, audible.',
+  'What is a prime number?': 'Primes are the atoms of arithmetic: every whole number is a unique product of primes (60 = 2×2×3×5, and no other combination). That uniqueness is why they matter far beyond puzzles: internet encryption hides your credit card behind the fact that multiplying two enormous primes is instant, but recovering them from the product would take computers longer than the universe has existed.',
+  'Pi is the ratio of a circle’s...': 'Measure around any circle, divide by the distance across, and you get 3.14159... every time, whether the circle is a coin or a planet’s orbit. The digits never end and never repeat, which has made pi a celebrity, but the useful miracle is the constancy: circles are so common in nature that pi appears in equations for waves, orbits, probability, and even the bell curve, places with no visible circle at all.',
+  'Stoicism teaches you to focus on...': 'The Stoics drew one line through the world: your judgments, choices, and responses on one side; everything else, weather, traffic, other people’s opinions, your own reputation, on the other. Suffering, they argued, comes from staking happiness on the far side of the line. Epictetus taught this while enslaved; Marcus Aurelius while running an empire. The same two-box exercise now sits at the heart of cognitive behavioral therapy.',
+  'Occam’s razor advises...': 'When several explanations fit the facts, the one making the fewest new assumptions is most often right, not always, but as a betting strategy. Hoofbeats are usually horses, not zebras; a missed call is usually a busy day, not a conspiracy. Each extra assumption is another place to be wrong, so simplicity is not laziness. It is error-avoidance. Doctors, detectives, and debuggers all live by it.',
+  'What causes earthquakes?': 'Earth’s surface is broken into slabs of rock drifting on hot, slowly-flowing mantle at about the speed fingernails grow. Where slabs grind past each other they stick, strain builds for decades or centuries, then the rock snaps and releases it all at once: that snap is the earthquake. This is why quakes repeat along the same faults, and why the "Ring of Fire" around the Pacific hosts most of the world’s big ones.',
+  'Why do we have seasons?': 'Earth’s axis leans 23.5 degrees, and the lean points the same direction all year. So for half the orbit the northern half leans sunward, catching taller sun and longer days, and for the other half it leans away. Distance is not the cause: Earth is actually closest to the Sun in January. One tilted planet, two hemispheres with opposite seasons, and every calendar and harvest in history downstream of that lean.',
+  'What is confirmation bias?': 'Your brain treats beliefs a bit like possessions: evidence for them feels pleasant and gets waved through; evidence against them triggers a search for flaws. Nobody feels themselves doing it, which is what makes it dangerous. The practical defenses are mechanical, not moral: ask what evidence would change your mind before you look, seek the smartest person who disagrees, and grade your favorite claims on the same curve as the rest.',
+  'Spaced repetition beats cramming because...': 'Memories fade on a curve: steep at first, then slower. Reviewing just before the cliff-edge, and having to struggle a little to recall, tells the brain "this keeps mattering" and flattens the curve each time. That is why this game brings your misses back after 1, then 3, then 7 days. Crammed facts pass tomorrow’s test and vanish by next month; spaced ones are still there in a decade.',
+  'Supply and demand says prices rise when...': 'A price is a negotiation between how much exists and how much people want it, updated constantly. Bad harvest, same appetite: coffee climbs. New factories, same appetite: TVs fall. The deep insight is that nobody sets these prices from a control room. Millions of separate buy-and-skip decisions do it automatically, which is why price controls so often backfire into shortages: they silence the signal instead of fixing the scarcity.',
+  'Compound interest is powerful because...': 'Growth on growth is a snowball: the interest you earned last year earns its own interest this year. At 8%, money doubles about every 9 years, so $1,000 at age 20 can double five times by 65: past $30,000, from one deposit. The catch is symmetry: credit card debt compounds by the same math, but faster and against you. Compounding quietly rewards whoever starts earliest, in money and in skills alike.',
+  'Gravity on the Moon is about...': 'Weight is just gravity’s grip on your mass, and grip depends on the planet you stand on. The Moon has one-eightieth of Earth’s mass, so its surface pull is about one-sixth: a 180-pound astronaut weighs 30 pounds there, though their mass, and the effort to stop their motion, is unchanged. That is why Apollo footage shows slow bounding floats and also why astronauts still stumbled: mass keeps its momentum.',
+  'Why does ice float?': 'Almost every substance packs tighter as it freezes, so solids sink in their own liquid. Water is a rebel: its molecules lock into a hexagonal lattice with open space inside, making ice about 9% lighter than the water it floats on. This oddity keeps ponds from freezing bottom-up, letting fish overwinter beneath an insulating lid, and it is fair to say life on Earth would look very different without it.',
+  'A metaphor is...': 'Metaphor is not decoration; it is how minds grip the abstract. We reason about time as money (spend, save, waste), arguments as war (defend, attack), ideas as food (raw, digest). Studies show swapping the metaphor changes conclusions: people offered "crime is a beast" want enforcement, "crime is a virus" want prevention, from identical statistics. Whoever picks the metaphor quietly frames the debate.',
+  'The Odyssey is about...': 'Odysseus needs ten years to sail home from Troy, delayed by monsters, storms, temptations, and his own pride, while his wife Penelope holds off men trying to replace him. It survives because the shape underneath is universal: the long, changed-by-the-road journey back to what matters. The Hobbit, Finding Nemo, and every road-trip movie run on its engine, and "odyssey" became the word for the shape itself.',
+  'What does a transistor do?': 'A transistor is a switch with no moving parts: a small voltage at its gate lets current flow, no voltage stops it. That is a 1 and a 0. Wire a few together and you get logic (AND, OR, NOT); wire billions together and you get a phone. Their genius is scale: modern chips pack over 10 billion, each flipping billions of times a second, printed by light onto slivers of the second-most common element in Earth’s crust: silicon.',
+  'Your smallest bones are in your...': 'The hammer, anvil, and stirrup form a lever chain that carries eardrum vibrations to the fluid-filled cochlea, and they solve a real physics problem: sound waves in air mostly bounce off liquid, so the chain concentrates faint air pressure onto a tiny window, boosting it roughly twenty-fold. They are also the only bones that never grow after birth: you hear through newborn equipment your whole life.',
+  'How many languages are spoken today, roughly?': 'About 7,000, but the spread is wildly uneven: the top 20 languages cover half of humanity, while thousands have only a few hundred speakers each. One falls silent roughly every few weeks as the last elders die. Each loss takes more than words: encyclopedias of local plants, weather, and history are encoded in them, along with metaphors and jokes that exist nowhere else. Recording them is a race against time.'
+};
+// attach to matching questions
+QUESTIONS.forEach(q => { if (MORE[q.q]) q.more = MORE[q.q]; });
+
+</script>
+<script>
 // The Revelations pack: questions whose answers you will want to tell someone.
 // w:1 marks a "worth retelling" fact, eligible for the end-of-session take-away.
 QUESTIONS.push(
@@ -3014,7 +3073,7 @@ function makeFactCard(text, domainKey, title){
   g.font = '52px Georgia';
   g.fillText(dom.emblem + '  ' + dom.name.toUpperCase(), W/2, 170);
   g.font = 'italic 30px Georgia';
-  g.fillText('— worth retelling —', W/2, 225);
+  g.fillText('❦ worth retelling ❦', W/2, 225);
 
   // wrapped fact text
   g.fillStyle = '#2e2417';
@@ -3436,6 +3495,16 @@ function questionCard(opts){
         }
         why.classList.remove('hidden');
         why.appendChild(starButton(opts.q, opts.why, opts.domain));
+        if (opts.more) {
+          const moreBtn = el(`<button class="star-btn">📖 more</button>`);
+          moreBtn.addEventListener('click', () => {
+            moreBtn.remove();
+            const box = el(`<div class="more-box">${opts.more}</div>`);
+            box.appendChild(starButton(opts.q, opts.more, opts.domain));
+            why.appendChild(box);
+          });
+          why.appendChild(moreBtn);
+        }
       }
       const next = card.querySelector('.qcard-next');
       next.classList.remove('hidden');
@@ -4207,44 +4276,92 @@ function renderDuelQuestion(){
   $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
   if (!duel.sudden && duel.asked >= duel.total) { finishDuel(); return; }
   const p = duel.turn;
-  const q = duel.deck[duel.asked % duel.deck.length];
-  body.appendChild(el(`<div class="duel-turn duel-p${p}">${duel.sudden ? '☠️ Sudden death: ' : ''}${duel.names[p]}, your question</div>`));
+  let q;
+  if (duel.sudden) {
+    // sudden death sharpens: each extra round draws harder questions
+    duel.suddenRound = duel.suddenRound || 1;
+    const hardDeck = duel.hardDeck || (duel.hardDeck = shuffle(QUESTIONS.filter(x => x.t === 2)));
+    q = duel.suddenRound >= 2 ? hardDeck[duel.asked % hardDeck.length] : duel.deck[duel.asked % duel.deck.length];
+  } else {
+    q = duel.deck[duel.asked % duel.deck.length];
+  }
+  const qNum = Math.floor(duel.asked / 2) + 1;
+  const isFinal = !duel.sudden && qNum === duel.total / 2;
+  const points = isFinal ? 2 : 1;
+  const banner = duel.sudden
+    ? `☠️ Sudden death${duel.suddenRound >= 2 ? ', hard questions now' : ''}: ${duel.names[p]}`
+    : isFinal
+    ? `⭐ Final question, worth 2: ${duel.names[p]}`
+    : `${duel.names[p]} · question ${qNum} of ${duel.total / 2}`;
+  body.appendChild(el(`<div class="duel-turn duel-p${p}">${banner}</div>`));
   const order = shuffle(q.a.map((text, i) => ({ text, right: i === q.c })));
   const dom = DOMAINS[q.d];
   const card = el(`<div class="qcard">
     <div class="qcard-domain" style="color:${dom.color}">${dom.emblem} ${dom.name}</div>
     <div class="qcard-question">${q.q}</div>
     <div class="qcard-answers"></div>
+    <div class="duel-steal hidden"></div>
     <div class="qcard-why hidden"></div>
     <button class="btn-primary qcard-next hidden">Pass the device</button>
   </div>`);
   const box = card.querySelector('.qcard-answers');
-  let answered = false;
-  order.forEach(opt => {
+  const stealBar = card.querySelector('.duel-steal');
+  let phase = 'answer'; // answer -> steal -> done
+  const buttons = [];
+  function reveal(){
+    buttons.forEach((b, i) => {
+      if (order[i].right) b.classList.add('correct');
+      else if (!b.classList.contains('wrong')) b.classList.add('faded');
+    });
+    const why = card.querySelector('.qcard-why');
+    if (q.why) { why.textContent = q.why; why.classList.remove('hidden'); }
+    const next = card.querySelector('.qcard-next');
+    next.classList.remove('hidden');
+    next.addEventListener('click', () => {
+      duel.asked++;
+      if (duel.sudden && duel.turn === 1) {
+        if (duel.scores[0] !== duel.scores[1]) { finishDuel(); return; }
+        duel.suddenRound++;
+      }
+      duel.turn = 1 - duel.turn;
+      renderDuelQuestion();
+    }, { once: true });
+  }
+  order.forEach((opt, idx) => {
     const btn = el(`<button class="answer-btn">${opt.text}</button>`);
     btn.addEventListener('click', () => {
-      if (answered) return;
-      answered = true;
-      if (opt.right) { duel.scores[p]++; SFX.correct(); }
-      else SFX.wrong();
-      box.querySelectorAll('.answer-btn').forEach((b, i) => {
-        if (order[i].right) b.classList.add('correct'); else b.classList.add('faded');
-      });
-      if (!opt.right) { btn.classList.remove('faded'); btn.classList.add('wrong'); }
-      const why = card.querySelector('.qcard-why');
-      if (q.why) { why.textContent = q.why; why.classList.remove('hidden'); }
-      const next = card.querySelector('.qcard-next');
-      next.classList.remove('hidden');
-      next.addEventListener('click', () => {
-        duel.asked++;
-        if (duel.sudden && duel.turn === 1) {
-          if (duel.scores[0] !== duel.scores[1]) { finishDuel(); return; }
+      if (phase === 'answer') {
+        phase = opt.right ? 'done' : 'steal';
+        if (opt.right) {
+          duel.scores[p] += points;
+          SFX.correct();
+          $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+          reveal();
+        } else {
+          SFX.wrong();
+          btn.classList.add('wrong');
+          btn.disabled = true;
+          stealBar.innerHTML = `🫳 Steal chance! <b>${duel.names[1 - p]}</b>, pick the right answer for 1 point.`;
+          stealBar.classList.remove('hidden');
+          stealBar.className = `duel-steal duel-p${1 - p}`;
         }
-        duel.turn = 1 - duel.turn;
-        $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
-        renderDuelQuestion();
-      }, { once: true });
+      } else if (phase === 'steal') {
+        if (btn.disabled) return;
+        phase = 'done';
+        stealBar.classList.add('hidden');
+        if (opt.right) {
+          duel.scores[1 - p]++;
+          SFX.correct();
+          toast(`${duel.names[1 - p]} steals the point!`);
+          $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+        } else {
+          SFX.wrong();
+          btn.classList.add('wrong');
+        }
+        reveal();
+      }
     });
+    buttons.push(btn);
     box.appendChild(btn);
   });
   body.appendChild(card);
@@ -4356,7 +4473,23 @@ function pickDailyQuestions(){
     i++;
     if (i > 50) break;
   }
-  return shuffle(picks).slice(0, DAILY_LEN);
+  let final = shuffle(picks).slice(0, DAILY_LEN);
+  // the run builds toward harder questions: make sure at least 3 advanced are in the mix
+  const hardCount = final.filter(q => q.t === 2).length;
+  if (hardCount < 3) {
+    const spare = shuffle(QUESTIONS.filter(q => q.t === 2 && !final.includes(q))).slice(0, 3 - hardCount);
+    spare.forEach(sq => {
+      const swapIdx = final.findIndex(q => q.t !== 2);
+      if (swapIdx >= 0) final[swapIdx] = sq;
+    });
+  }
+  // easy questions first, advanced last
+  return final.sort((a, b) => (a.t === 2 ? 1 : 0) - (b.t === 2 ? 1 : 0));
+}
+function dailyRound(idx, total){
+  if (idx < Math.ceil(total * 0.4)) return 1;
+  if (idx < Math.ceil(total * 0.75)) return 2;
+  return 3;
 }
 function accuracy(domain){
   const st = S.domainStats[domain];
@@ -4386,12 +4519,16 @@ function renderDailyQuestion(){
   const body = $('#daily-body');
   body.innerHTML = '';
   if (daily.idx >= daily.qs.length) { finishDaily(); return; }
-  $('#daily-progress').textContent = `${daily.idx + 1} / ${daily.qs.length}${(daily.combo||0) >= 3 ? ` 🔥${daily.combo}` : ''}`;
+  const roundNow = dailyRound(daily.idx, daily.qs.length);
+  $('#daily-progress').textContent = `Round ${roundNow} · ${daily.idx + 1}/${daily.qs.length}${(daily.combo||0) >= 3 ? ` 🔥${daily.combo}` : ''}`;
+  if (daily.idx > 0 && roundNow !== dailyRound(daily.idx - 1, daily.qs.length)) {
+    toast(roundNow === 2 ? '⚔ Round 2. The questions sharpen.' : '🔥 Final round. The hard ones.');
+  }
   body.appendChild(el(`<div class="run-progress"><span style="width:${Math.round(100 * daily.idx / daily.qs.length)}%"></span></div>`));
   if ((daily.combo || 0) >= 5) setTimeout(() => { const c = body.querySelector('.qcard'); if (c) c.classList.add('card-hot'); }, 0);
   const q = daily.qs[daily.idx];
   body.appendChild(questionCard({
-    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
+    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, more: q.more,
     tag: q._review ? 'return visit' : (q.t === 2 ? 'advanced' : ''),
     onDone(right){
       const key = qKey(q);
@@ -4575,7 +4712,7 @@ function renderExamQuestion(){
   body.appendChild(el(`<div class="run-progress"><span style="width:${Math.round(100 * exam.idx / exam.qs.length)}%"></span></div>`));
   const q = exam.qs[exam.idx];
   body.appendChild(questionCard({
-    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why,
+    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, more: q.more,
     onDone(right){
       if (right) exam.right++;
       exam.idx++;
@@ -4865,7 +5002,12 @@ function renderHonors(){
 // ---------- GAUNTLET ----------
 let gauntlet = null;
 function startGauntlet(){
-  gauntlet = { deck: shuffle(QUESTIONS), idx: 0, score: 0, strikes: 0 };
+  // a gentle start, then the full vault, hard ones weighted deeper in
+  const easy = shuffle(QUESTIONS.filter(q => q.t !== 2));
+  const opening = easy.slice(0, 8);
+  const rest = shuffle(QUESTIONS.filter(q => !opening.includes(q)))
+    .sort((a, b) => ((a.t === 2 ? 1 : 0) + Math.random()) - ((b.t === 2 ? 1 : 0) + Math.random()));
+  gauntlet = { deck: opening.concat(rest), idx: 0, score: 0, strikes: 0 };
   renderGauntletQuestion();
 }
 function renderGauntletQuestion(){
@@ -4876,7 +5018,7 @@ function renderGauntletQuestion(){
   if ((gauntlet.combo || 0) >= 5) setTimeout(() => { const c = body.querySelector('.qcard'); if (c) c.classList.add('card-hot'); }, 0);
   const q = gauntlet.deck[gauntlet.idx];
   body.appendChild(questionCard({
-    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w,
+    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, more: q.more,
     tag: q.t === 2 ? 'advanced' : '',
     onDone(right){
       const key = qKey(q);
