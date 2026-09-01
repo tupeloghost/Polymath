@@ -919,6 +919,22 @@ body.dt .helper-text { font-size: 17px; }body.dt .topbar-title { font-size: 25px
 }
 body.dt #version-tag { font-size: 13px; }
 
+/* go bold wager */
+.bold-btn {
+  display: block; width: 100%; margin: 0 0 10px;
+  font-family: inherit; font-size: 15px; cursor: pointer;
+  color: #ffe9b0; background: rgba(0,0,0,.3);
+  border: 1px dashed var(--brass-bright); border-radius: 8px;
+  padding: 10px;
+}
+.bold-btn:hover { background: rgba(232,166,80,.15); }
+.bold-on {
+  border-style: solid; font-weight: bold;
+  box-shadow: 0 0 14px rgba(232,166,80,.45);
+  animation: hotpulse 1.4s ease-in-out infinite;
+}
+body.dt .bold-btn { font-size: 18px; padding: 12px; }
+
 </style>
 </head>
 <body>
@@ -2981,7 +2997,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v26 · Sep 1, 2026";
+window.GAME_VERSION = "v27 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4414,7 +4430,12 @@ function renderParty(){
     onDone(right){
       if (!right) {
         p.strikes++;
-        if (p.strikes >= 2) { p.out = true; toast(`${p.name} is out!`); }
+        if (p.strikes >= 2) {
+          p.out = true;
+          toast(`${p.name} is out!`);
+          const left = party.players.filter(x => !x.out);
+          if (left.length === 2) setTimeout(() => toast(`⚔ Only ${left[0].name} and ${left[1].name} remain. No more mistakes.`), 1500);
+        }
       }
       party.turn = (party.turn + 1) % party.players.length;
       renderParty();
@@ -4500,20 +4521,29 @@ function renderDuelSetup(){
   });
 }
 function startDuelGame(names, kid){
-  window.__lastDuel = { names, kid };
+  const prev = window.__lastDuel;
+  const sameFoes = prev && prev.names[0] === names[0] && prev.names[1] === names[1];
+  const series = sameFoes ? prev.series : [0, 0];
+  window.__lastDuel = { names, kid, series };
   duel = {
-    names, kid,
+    names, kid, series,
     scores: [0, 0],
+    streaks: [0, 0],
     turn: 0, asked: 0, total: 10,
     deck: partyDeck(playPool(kid).filter(q => q.t !== 2)),
     sudden: false
   };
   renderDuelQuestion();
 }
+function duelStatusLine(){
+  const s = duel.series || [0, 0];
+  const seriesTxt = (s[0] + s[1]) > 0 ? `  ·  series ${s[0]}:${s[1]}` : '';
+  return `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}${seriesTxt}`;
+}
 function renderDuelQuestion(){
   const body = $('#duel-body');
   body.innerHTML = '';
-  $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+  $('#duel-status').textContent = duelStatusLine();
   if (!duel.sudden && duel.asked >= duel.total) { finishDuel(); return; }
   const p = duel.turn;
   let q;
@@ -4527,13 +4557,28 @@ function renderDuelQuestion(){
   }
   const qNum = Math.floor(duel.asked / 2) + 1;
   const isFinal = !duel.sudden && qNum === duel.total / 2;
-  const points = isFinal ? 2 : 1;
+  let points = isFinal ? 2 : 1;
+  const tense = !duel.sudden && duel.asked >= 8 && duel.scores[0] !== duel.scores[1];
   const banner = duel.sudden
     ? `☠️ Sudden death${duel.suddenRound >= 2 ? ', hard questions now' : ''}: ${duel.names[p]}`
     : isFinal
-    ? `⭐ Final question, worth 2: ${duel.names[p]}`
+    ? `⭐ Final question, worth 2: ${duel.names[p]}${tense ? ' · the crown hangs on this' : ''}`
     : `${duel.names[p]} · question ${qNum} of ${duel.total / 2}`;
   body.appendChild(el(`<div class="duel-turn duel-p${p}">${banner}</div>`));
+  // go bold: an optional wager before answering
+  let bold = false;
+  if (!duel.sudden && !isFinal) {
+    const boldBtn = el(`<button class="bold-btn">🎲 Go bold: worth 2 if right, lose 1 if wrong</button>`);
+    boldBtn.addEventListener('click', () => {
+      bold = true;
+      points = 2;
+      boldBtn.textContent = '🎲 Bold! Worth 2, but a miss costs 1.';
+      boldBtn.classList.add('bold-on');
+      boldBtn.disabled = true;
+      SFX.combo(6);
+    });
+    body.appendChild(boldBtn);
+  }
   const order = shuffle(q.a.map((text, i) => ({ text, right: i === q.c })));
   const dom = DOMAINS[q.d];
   const card = el(`<div class="qcard">
@@ -4583,12 +4628,23 @@ function renderDuelQuestion(){
     btn.addEventListener('click', () => {
       if (phase === 'answer') {
         phase = opt.right ? 'done' : 'steal';
+        const boldEl = body.querySelector('.bold-btn');
+        if (boldEl) boldEl.remove();
         if (opt.right) {
           duel.scores[p] += points;
+          duel.streaks[p]++;
+          if (duel.streaks[p] === 3) toast(`🔥 ${duel.names[p]} has answered three straight.`);
+          if (bold) toast(`🎲 Bold and right: 2 points for ${duel.names[p]}.`);
           SFX.correct();
-          $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+          $('#duel-status').textContent = duelStatusLine();
           reveal();
         } else {
+          duel.streaks[p] = 0;
+          if (bold) {
+            duel.scores[p] = Math.max(0, duel.scores[p] - 1);
+            toast(`🎲 Bold and wrong: ${duel.names[p]} loses a point.`);
+            $('#duel-status').textContent = duelStatusLine();
+          }
           SFX.wrong();
           btn.classList.add('wrong');
           btn.disabled = true;
@@ -4604,7 +4660,7 @@ function renderDuelQuestion(){
           duel.scores[1 - p]++;
           SFX.correct();
           toast(`${duel.names[1 - p]} steals the point!`);
-          $('#duel-status').textContent = `${duel.names[0]} ${duel.scores[0]} : ${duel.scores[1]} ${duel.names[1]}`;
+          $('#duel-status').textContent = duelStatusLine();
         } else {
           SFX.wrong();
           btn.classList.add('wrong');
@@ -4627,13 +4683,21 @@ function finishDuel(){
     return;
   }
   const w = duel.scores[0] > duel.scores[1] ? 0 : 1;
+  duel.series[w]++;
+  if (window.__lastDuel) window.__lastDuel.series = duel.series;
   SFX.reward();
+  confetti(50);
   const earned = awardLumens(15);
+  const s = duel.series;
+  const seriesLine = (s[0] + s[1]) > 1
+    ? `<div class="result-streak">Series so far: ${duel.names[0]} ${s[0]} · ${s[1]} ${duel.names[1]}${s[0] === s[1] ? '. Dead even.' : ` · ${duel.names[s[0] > s[1] ? 0 : 1]} leads.`}</div>`
+    : '';
   body.innerHTML = `
     <div class="result-card">
       <div class="result-title">The Duel Is Decided</div>
       <div class="result-score">👑</div>
       <div class="result-verdict"><b>${duel.names[w]}</b> takes the crown, ${duel.scores[w]} to ${duel.scores[1 - w]}. ${duel.names[1 - w]}, the cabinet demands a rematch.</div>
+      ${seriesLine}
       <div class="result-earn">+${earned} lumens to the cabinet for hosting</div>
       <button class="btn-primary" id="duel-rematch">Rematch: ${duel.names[1 - w]} wants revenge</button>
       <button class="btn-secondary" data-go="home">Back to the cabinet</button>
