@@ -1029,7 +1029,7 @@ body.dt .bracket-title { font-size: 16px; }
           <button class="menu-card" data-go="parlor" title="Duels, team adventures, and a party circle. One device, always open.">
             <span class="menu-emblem">&#127917;</span>
             <span class="menu-title">Play Together</span>
-            <span class="menu-badge">2 to 6 players</span>
+            <span class="menu-badge">2 to 4 players</span>
           </button>
         </div>
       </div>
@@ -3022,7 +3022,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v28 · Sep 1, 2026";
+window.GAME_VERSION = "v29 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4361,7 +4361,7 @@ function endExpedition(survived){
 function renderParlor(){
   const body = $('#parlor-body');
   body.innerHTML = `
-    <p class="helper-text">Games for 2 to 6 people sharing one device. No solo progress needed, and none is touched.</p>
+    <p class="helper-text">Games for 2 to 4 people sharing one device. No solo progress needed, and none is touched.</p>
     <div class="bridge-list">
       <button class="bridge-item" id="parlor-duel">
         <span class="bridge-domains">⚔ Head to head</span>
@@ -4374,14 +4374,9 @@ function renderParlor(){
         <span class="bridge-state">Walk the trail together. Shared hearts, shared loot, take turns answering.</span>
       </button>
       <button class="bridge-item" id="parlor-party">
-        <span class="bridge-domains">🎉 3 to 6 players</span>
+        <span class="bridge-domains">🎉 2 to 4 players</span>
         <span class="bridge-title">Last Scholar Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
-      </button>
-      <button class="bridge-item" id="parlor-tourney">
-        <span class="bridge-domains">🏟 4 or 8 players</span>
-        <span class="bridge-title">Tournament</span>
-        <span class="bridge-state">A bracket of quick duels. Win your match, advance, take the championship.</span>
       </button>
       <button class="bridge-item" id="parlor-teach">
         <span class="bridge-domains">🕯 Face to face</span>
@@ -4391,92 +4386,10 @@ function renderParlor(){
     </div>`;
   $('#parlor-duel').addEventListener('click', () => go('duel'));
   $('#parlor-coop').addEventListener('click', () => parlorNames(2, 'Set out together', (names, kid) => startExpedition(names, kid)));
-  $('#parlor-party').addEventListener('click', () => parlorNames(6, 'Start the circle', (names, kid) => startParty(names, kid), 3));
+  $('#parlor-party').addEventListener('click', () => parlorNames(4, 'Start the circle', (names, kid) => startParty(names, kid), 2));
   $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
-  $('#parlor-tourney').addEventListener('click', () => parlorNames(8, 'Draw the bracket', (names, kid) => startTournament(names, kid), 4));
 }
 
-// ---------- TOURNAMENT ----------
-let tourney = null;
-function startTournament(names, kid){
-  let field = names.slice(0, names.length >= 8 ? 8 : 4);
-  if (names.length > field.length) toast(`The bracket holds ${field.length}: the first ${field.length} names are in.`);
-  field = pickN(field, field.length);
-  const rounds = [];
-  let current = field;
-  while (current.length > 1) {
-    const matches = [];
-    for (let i = 0; i < current.length; i += 2) matches.push({ a: current[i], b: current[i + 1], winner: null });
-    rounds.push(matches);
-    current = new Array(current.length / 2).fill(null);
-  }
-  tourney = { rounds, kid, roundIdx: 0, matchIdx: 0 };
-  renderBracket();
-}
-function roundName(i, total){
-  const fromEnd = total - i;
-  return fromEnd === 1 ? 'The Final' : fromEnd === 2 ? 'Semifinals' : 'Quarterfinals';
-}
-function renderBracket(){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  $('#screen-parlor').classList.add('active');
-  window.scrollTo(0,0);
-  const body = $('#parlor-body');
-  const done = tourney.roundIdx >= tourney.rounds.length;
-  let html = '<div class="bracket">';
-  tourney.rounds.forEach((matches, ri) => {
-    html += `<div class="bracket-round"><div class="bracket-title">${roundName(ri, tourney.rounds.length)}</div>`;
-    matches.forEach(m => {
-      html += `<div class="bracket-match">
-        <span class="${m.winner === m.a ? 'bracket-win' : m.winner ? 'bracket-lose' : ''}">${m.a || '?'}</span>
-        <span class="bracket-vs">vs</span>
-        <span class="${m.winner === m.b ? 'bracket-win' : m.winner ? 'bracket-lose' : ''}">${m.b || '?'}</span>
-      </div>`;
-    });
-    html += '</div>';
-  });
-  html += '</div>';
-  body.innerHTML = html;
-  if (done) {
-    const champ = tourney.rounds[tourney.rounds.length - 1][0].winner;
-    confetti(90);
-    SFX.fanfare();
-    const earned = awardLumens(25);
-    body.appendChild(el(`<div class="result-card" style="margin-top:14px">
-      <div class="result-title">Champion of the Cabinet</div>
-      <div class="result-score">🏆</div>
-      <div class="result-verdict"><b>${champ}</b> ran the whole bracket. The shelves will remember this.</div>
-      <div class="result-earn">+${earned} lumens to the cabinet</div>
-      <button class="btn-primary" id="tourney-again">New tournament</button>
-      <button class="btn-secondary" data-go="home">Back to the cabinet</button>
-    </div>`));
-    $('#tourney-again').addEventListener('click', () => renderParlor());
-    return;
-  }
-  const m = tourney.rounds[tourney.roundIdx][tourney.matchIdx];
-  body.appendChild(el(`<div class="lesson-card" style="text-align:center; margin-top:14px">
-    <h2 class="lesson-title">Next match: ${m.a} vs ${m.b}</h2>
-    <p class="lesson-text">Three questions each. Winner advances.</p>
-    <button class="btn-primary" id="match-go">Begin the match</button>
-  </div>`));
-  $('#match-go').addEventListener('click', () => {
-    startDuelGame([m.a, m.b], tourney.kid, {
-      total: 6,
-      onWin(w){
-        m.winner = w === 0 ? m.a : m.b;
-        // seed the winner into the next round
-        if (tourney.roundIdx + 1 < tourney.rounds.length) {
-          const next = tourney.rounds[tourney.roundIdx + 1][Math.floor(tourney.matchIdx / 2)];
-          if (tourney.matchIdx % 2 === 0) next.a = m.winner; else next.b = m.winner;
-        }
-        toast(`👑 ${m.winner} advances.`);
-        tourney.matchIdx++;
-        if (tourney.matchIdx >= tourney.rounds[tourney.roundIdx].length) { tourney.roundIdx++; tourney.matchIdx = 0; }
-        renderBracket();
-      }
-    });
-  });
-}
 function parlorNames(maxPlayers, buttonText, onReady, minPlayers){
   minPlayers = minPlayers || 2;
   const body = $('#parlor-body');
