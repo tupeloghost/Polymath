@@ -1104,6 +1104,33 @@ body.dt .rivalry-line { font-size: 18px; }
 .section-desk .menu-emblem { color: var(--brass); text-shadow: none; }
 .section-desk .menu-badge { background: rgba(255,255,255,.4); color: var(--brass); }
 
+/* the point-and-click office */
+#office-scene {
+  margin: 0 0 16px;
+  border: 3px solid var(--brass);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,.55), inset 0 0 40px rgba(0,0,0,.3);
+  line-height: 0;
+}
+#office-svg { width: 100%; height: auto; display: block; }
+.scene-hot { cursor: pointer; transition: filter .15s ease; }
+.scene-hot:hover { filter: brightness(1.25) drop-shadow(0 0 8px rgba(232,207,143,.7)); }
+.scene-label {
+  font-family: Georgia, serif; font-size: 15px; fill: #ffe9b0;
+  opacity: 0; transition: opacity .15s ease;
+  paint-order: stroke; stroke: rgba(0,0,0,.75); stroke-width: 4px;
+}
+.scene-hot:hover .scene-label { opacity: 1; }
+#sc-flame { transform-origin: 507px 172px; animation: flamewob 1.1s ease-in-out infinite alternate; }
+@keyframes flamewob { from { transform: scaleY(1) rotate(-2deg); } to { transform: scaleY(1.15) rotate(2.5deg); } }
+.section-lit { animation: sectionlit 1.5s ease; }
+@keyframes sectionlit {
+  0% { box-shadow: 0 0 0 rgba(232,207,143,0); }
+  30% { box-shadow: 0 0 28px rgba(232,207,143,.7); }
+  100% { box-shadow: 0 0 0 rgba(232,207,143,0); }
+}
+
 </style>
 </head>
 <body>
@@ -1121,6 +1148,8 @@ body.dt .rivalry-line { font-size: 18px; }
 
     <button id="sound-toggle" title="Sound on or off">🔔</button>
     <button id="ambient-toggle" title="Library room tone on or off">🕯️</button>
+
+    <div id="office-scene"></div>
 
     <div id="curator-card">
       <span class="curator-face">🦉</span>
@@ -3166,7 +3195,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v35 · Sep 1, 2026";
+window.GAME_VERSION = "v36 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3327,9 +3356,9 @@ const SFX = (function(){
 // The Curator: the cabinet's resident voice. Also: real moon phase math.
 
 function moonPhase(){
-  // days since a known new moon (2000-01-06), modulo the synodic month
+  // days since a known new moon (2000-01-06 18:14 UTC = day 10962.76), modulo the synodic month
   const synodic = 29.53058867;
-  const days = (Date.now() / 86400000 - 10957.77) % synodic;
+  const days = (Date.now() / 86400000 - 10962.76) % synodic;
   const d = days < 0 ? days + synodic : days;
   if (d < 1.85)  return { icon:'🌑', name:'New Moon', tip:'Darkest skies of the month. The best night for stars.' };
   if (d < 5.54)  return { icon:'🌒', name:'Waxing Crescent', tip:'Look west after sunset for a thin silver smile.' };
@@ -3378,6 +3407,154 @@ const CURATOR = {
     return lines[Math.floor(Math.random() * lines.length)];
   }
 };
+
+</script>
+<script>
+// The office, drawn: a point-and-click room. Click furniture to go places.
+function buildOfficeScene(){
+  const holder = document.getElementById('office-scene');
+  if (!holder) return;
+  holder.innerHTML = `
+<svg viewBox="0 0 800 400" id="office-svg" aria-label="Your office. Click the furniture.">
+  <!-- back wall -->
+  <rect x="0" y="0" width="800" height="290" fill="#3a2b1b"/>
+  <rect x="0" y="0" width="800" height="290" fill="url(#wallgrain)" opacity=".5"/>
+  <line x1="0" y1="70" x2="800" y2="70" stroke="#2c1f12" stroke-width="4"/>
+  <!-- floor -->
+  <polygon points="0,290 800,290 800,400 0,400" fill="#4a3524"/>
+  <polygon points="60,290 740,290 800,400 0,400" fill="#55402c"/>
+  <g stroke="#3a2b1b" stroke-width="3" opacity=".6">
+    <line x1="180" y1="290" x2="120" y2="400"/><line x1="320" y1="290" x2="290" y2="400"/>
+    <line x1="480" y1="290" x2="510" y2="400"/><line x1="620" y1="290" x2="680" y2="400"/>
+  </g>
+  <ellipse cx="400" cy="360" rx="230" ry="34" fill="#6b2f2a" opacity=".8"/>
+  <ellipse cx="400" cy="360" rx="190" ry="26" fill="none" stroke="#c9a24a" stroke-width="2" opacity=".5"/>
+  <defs>
+    <pattern id="wallgrain" width="90" height="290" patternUnits="userSpaceOnUse">
+      <rect width="90" height="290" fill="none"/>
+      <line x1="0" y1="0" x2="0" y2="290" stroke="#2c1f12" stroke-width="3"/>
+    </pattern>
+    <radialGradient id="candleglow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#ffd98a" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#ffd98a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- window with tonight's moon -->
+  <g id="sc-window" class="scene-hot" data-depth="1">
+    <path d="M560 40 a55 55 0 0 1 110 0 v110 h-110 z" fill="#141b2b" stroke="#6b5225" stroke-width="7"/>
+    <line x1="615" y1="0" x2="615" y2="150" stroke="#6b5225" stroke-width="5"/>
+    <line x1="560" y1="95" x2="670" y2="95" stroke="#6b5225" stroke-width="5"/>
+    <circle cx="580" cy="30" r="1.6" fill="#e8e4d0"/><circle cx="650" cy="60" r="1.3" fill="#e8e4d0"/>
+    <circle cx="597" cy="120" r="1.4" fill="#e8e4d0"/><circle cx="640" cy="128" r="1.1" fill="#e8e4d0"/>
+    <text id="sc-moon" x="592" y="66" font-size="30">🌘</text>
+    <text class="scene-label" x="615" y="175" text-anchor="middle">Tonight’s sky</text>
+  </g>
+
+  <!-- the cabinet (study) -->
+  <g id="sc-cabinet" class="scene-hot" data-depth="2">
+    <rect x="60" y="60" width="170" height="240" rx="6" fill="#634728" stroke="#3a2c1c" stroke-width="4"/>
+    <rect x="72" y="72" width="146" height="52" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
+    <rect x="72" y="132" width="146" height="52" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
+    <rect x="72" y="192" width="70" height="96" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
+    <rect x="148" y="192" width="70" height="96" rx="3" fill="#7a5c3c" stroke="#3a2c1c" stroke-width="2"/>
+    <rect x="130" y="92" width="30" height="7" rx="3" fill="#c9a24a"/>
+    <rect x="130" y="152" width="30" height="7" rx="3" fill="#c9a24a"/>
+    <circle cx="132" cy="240" r="5" fill="#c9a24a"/><circle cx="158" cy="240" r="5" fill="#c9a24a"/>
+    <rect x="52" y="52" width="186" height="12" rx="4" fill="#55402c" stroke="#3a2c1c" stroke-width="3"/>
+    <text x="145" y="46" font-size="17" text-anchor="middle" fill="#c9a24a" font-family="Georgia">✦</text>
+    <text class="scene-label" x="145" y="330" text-anchor="middle">The Cabinet · study</text>
+  </g>
+
+  <!-- the game table (play) -->
+  <g id="sc-table" class="scene-hot" data-depth="3">
+    <ellipse cx="400" cy="248" rx="128" ry="42" fill="#16301c" stroke="#6b5225" stroke-width="6"/>
+    <ellipse cx="400" cy="243" rx="118" ry="36" fill="#24422a"/>
+    <rect x="322" y="270" width="14" height="66" fill="#3a2c1c"/>
+    <rect x="464" y="270" width="14" height="66" fill="#3a2c1c"/>
+    <rect x="393" y="284" width="14" height="72" fill="#2c1f12"/>
+    <g transform="rotate(-8 360 238)"><rect x="342" y="226" width="34" height="24" rx="3" fill="#f5ecd9" stroke="#8a6d3b"/></g>
+    <g transform="rotate(7 430 244)"><rect x="414" y="232" width="34" height="24" rx="3" fill="#f5ecd9" stroke="#8a6d3b"/></g>
+    <rect x="448" y="220" width="13" height="13" rx="3" fill="#f5ecd9" stroke="#8a6d3b"/>
+    <circle cx="454.5" cy="226.5" r="1.6" fill="#4a3524"/>
+    <text class="scene-label" x="400" y="315" text-anchor="middle">The game table · play</text>
+  </g>
+
+  <!-- the desk (your things) -->
+  <g id="sc-desk" class="scene-hot" data-depth="2">
+    <polygon points="580,235 760,235 780,300 560,300" fill="#4e3226" stroke="#3a2c1c" stroke-width="4"/>
+    <rect x="568" y="300" width="16" height="52" fill="#38221a"/>
+    <rect x="756" y="300" width="16" height="52" fill="#38221a"/>
+    <g transform="rotate(-5 640 235)"><rect x="606" y="216" width="60" height="20" rx="2" fill="#8a3a2e" stroke="#3a1c14" stroke-width="2"/><rect x="606" y="212" width="60" height="8" rx="2" fill="#f5ecd9"/></g>
+    <rect x="700" y="210" width="16" height="26" rx="3" fill="#2c1f12"/>
+    <ellipse cx="708" cy="210" rx="8" ry="3" fill="#141b2b"/>
+    <line x1="712" y1="206" x2="726" y2="184" stroke="#c9a24a" stroke-width="3" stroke-linecap="round"/>
+    <text class="scene-label" x="668" y="330" text-anchor="middle">Your desk</text>
+  </g>
+
+  <!-- candle (ambience) -->
+  <g id="sc-candle" class="scene-hot" data-depth="1">
+    <rect x="500" y="176" width="14" height="34" rx="3" fill="#efe4cd"/>
+    <ellipse cx="507" cy="212" rx="16" ry="6" fill="#c9a24a"/>
+    <ellipse id="sc-flame" cx="507" cy="166" rx="6" ry="11" fill="#ffb84a"/>
+    <ellipse cx="507" cy="169" rx="3" ry="6" fill="#ffe9b0"/>
+    <circle cx="507" cy="168" r="40" fill="url(#candleglow)"/>
+    <text class="scene-label" x="507" y="240" text-anchor="middle">Candle · room sound</text>
+  </g>
+
+  <!-- the owl -->
+  <g id="sc-owl" class="scene-hot" data-depth="3">
+    <rect x="282" y="120" width="8" height="80" fill="#3a2c1c"/>
+    <rect x="258" y="196" width="56" height="8" rx="4" fill="#3a2c1c"/>
+    <rect x="266" y="112" width="40" height="8" rx="4" fill="#55402c"/>
+    <text x="286" y="108" font-size="44" text-anchor="middle">🦉</text>
+    <text class="scene-label" x="286" y="235" text-anchor="middle">The Curator</text>
+  </g>
+</svg>`;
+
+  const mp = moonPhase();
+  const moonEl = document.getElementById('sc-moon');
+  if (moonEl) moonEl.textContent = mp.icon;
+
+  const go2 = (sel) => {
+    const n = document.querySelector(sel);
+    if (n) { n.scrollIntoView({ behavior: 'smooth', block: 'start' }); n.classList.add('section-lit'); setTimeout(() => n.classList.remove('section-lit'), 1600); }
+    SFX.page();
+  };
+  document.getElementById('sc-cabinet').addEventListener('click', () => go2('.section-cabinet'));
+  document.getElementById('sc-table').addEventListener('click', () => go2('.section-table'));
+  document.getElementById('sc-desk').addEventListener('click', () => go2('.section-desk'));
+  document.getElementById('sc-window').addEventListener('click', () => toast(`${mp.icon} ${mp.name} tonight. ${mp.tip}`));
+  document.getElementById('sc-owl').addEventListener('click', () => {
+    const lineEl = document.getElementById('curator-line');
+    if (lineEl && typeof CURATOR !== 'undefined') { lineEl.textContent = CURATOR.greeting() + ' ' + CURATOR.observation(window.__S || {}, {}); }
+    document.getElementById('curator-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    SFX.combo(2);
+  });
+  document.getElementById('sc-candle').addEventListener('click', () => {
+    if (typeof AMBIENT !== 'undefined') {
+      if (AMBIENT.playing()) { AMBIENT.stop(); toast('The room falls quiet.'); }
+      else { AMBIENT.start(); toast('The library breathes around you.'); }
+    }
+  });
+
+  // gentle parallax on desktop
+  const svg = document.getElementById('office-svg');
+  if (window.matchMedia('(pointer: fine)').matches) {
+    holder.addEventListener('mousemove', (e) => {
+      const r = holder.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width - 0.5;
+      const dy = (e.clientY - r.top) / r.height - 0.5;
+      svg.querySelectorAll('[data-depth]').forEach(g => {
+        const d = +g.dataset.depth;
+        g.style.transform = `translate(${(-dx * d * 3).toFixed(1)}px, ${(-dy * d * 2).toFixed(1)}px)`;
+      });
+    });
+    holder.addEventListener('mouseleave', () => {
+      svg.querySelectorAll('[data-depth]').forEach(g => { g.style.transform = ''; });
+    });
+  }
+}
 
 </script>
 <script>
@@ -3691,6 +3868,7 @@ function shuffle(arr){
   for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
   return a;
 }
+window.toast = toast;
 function countUp(elm, target, suffix){
   const dur = 700, start = performance.now();
   function tick(now){
@@ -5942,6 +6120,7 @@ if (!S.intro) {
 } else {
   renderHome();
 }
+buildOfficeScene();
 window.__challengeActive = tryLoadChallenge();
 })();
 
