@@ -2830,23 +2830,64 @@ const PG_EVENTS = [
 ];
 
 const PG_CAPITALS = [
-  ['France','Paris'],['Japan','Tokyo'],['Italy','Rome'],['Spain','Madrid'],['Portugal','Lisbon'],
-  ['Germany','Berlin'],['Austria','Vienna'],['Greece','Athens'],['Egypt','Cairo'],['Kenya','Nairobi'],
-  ['Morocco','Rabat'],['Canada','Ottawa'],['Mexico','Mexico City'],['Brazil','Brasília'],
-  ['Argentina','Buenos Aires'],['Peru','Lima'],['Chile','Santiago'],['Colombia','Bogotá'],['Cuba','Havana'],
-  ['Russia','Moscow'],['China','Beijing'],['India','New Delhi'],['Thailand','Bangkok'],['Vietnam','Hanoi'],
-  ['South Korea','Seoul'],['Indonesia','Jakarta'],['the Philippines','Manila'],['Australia','Canberra'],
-  ['New Zealand','Wellington'],['Turkey','Ankara'],['Iran','Tehran'],['Saudi Arabia','Riyadh'],
-  ['Poland','Warsaw'],['Ukraine','Kyiv'],['Sweden','Stockholm'],['Norway','Oslo'],['Denmark','Copenhagen'],
-  ['Finland','Helsinki'],['Iceland','Reykjavik'],['Ireland','Dublin'],['the United Kingdom','London'],
-  ['the Netherlands','Amsterdam'],['Switzerland','Bern'],['Czechia','Prague'],['Hungary','Budapest'],
-  ['Romania','Bucharest'],['Croatia','Zagreb'],['Ethiopia','Addis Ababa'],['Nigeria','Abuja']
+  ['France','Paris','home of the Louvre, the world’s most visited museum'],
+  ['Japan','Tokyo','the largest metropolitan area on Earth, around 37 million people'],
+  ['Italy','Rome','a city continuously inhabited for nearly 3,000 years'],
+  ['Spain','Madrid','the highest capital in western Europe, over 2,100 feet up'],
+  ['Portugal','Lisbon','older than Rome, founded by ancient seafarers'],
+  ['Germany','Berlin','a city once split in two by a wall for 28 years'],
+  ['Austria','Vienna','the city of Mozart, Beethoven, and Freud'],
+  ['Greece','Athens','named for the goddess Athena and home of the first democracy'],
+  ['Egypt','Cairo','the largest city in Africa, beside the Giza pyramids'],
+  ['Kenya','Nairobi','the only capital with a national park inside city limits'],
+  ['Morocco','Rabat','often mistaken for the larger Casablanca'],
+  ['Canada','Ottawa','chosen over larger Toronto and Montreal as a compromise'],
+  ['Mexico','Mexico City','built atop the Aztec island capital Tenochtitlan'],
+  ['Brazil','Brasília','built from nothing in just 41 months in the 1950s'],
+  ['Argentina','Buenos Aires','the birthplace of tango'],
+  ['Peru','Lima','founded by Pizarro and gateway to the old Inca empire'],
+  ['Chile','Santiago','set in a valley beneath the snowcapped Andes'],
+  ['Colombia','Bogotá','sitting 8,600 feet up on an Andean plateau'],
+  ['Cuba','Havana','famous for classic 1950s cars still on its streets'],
+  ['Russia','Moscow','home of the Kremlin and Red Square'],
+  ['China','Beijing','home of the Forbidden City, with 980 buildings'],
+  ['India','New Delhi','a planned city unveiled in 1931 beside old Delhi'],
+  ['Thailand','Bangkok','whose full ceremonial name runs over 160 letters'],
+  ['Vietnam','Hanoi','a city of a thousand years and a thousand lakes'],
+  ['South Korea','Seoul','where half of all South Koreans live in the metro area'],
+  ['Indonesia','Jakarta','sinking so fast a replacement capital is being built'],
+  ['the Philippines','Manila','one of the most densely populated cities anywhere'],
+  ['Australia','Canberra','purpose-built because Sydney and Melbourne both wanted the title'],
+  ['New Zealand','Wellington','the world’s southernmost capital of a country'],
+  ['Turkey','Ankara','chosen over famous Istanbul in 1923'],
+  ['Iran','Tehran','a city of 9 million beneath the Alborz mountains'],
+  ['Saudi Arabia','Riyadh','a desert city grown from a walled oasis town'],
+  ['Poland','Warsaw','rebuilt brick by brick after being destroyed in WWII'],
+  ['Ukraine','Kyiv','founded over 1,400 years ago on the Dnipro river'],
+  ['Sweden','Stockholm','spread across 14 islands'],
+  ['Norway','Oslo','where the Nobel Peace Prize is awarded each year'],
+  ['Denmark','Copenhagen','consistently ranked among the world’s happiest cities'],
+  ['Finland','Helsinki','a sea capital on 300 islands'],
+  ['Iceland','Reykjavik','the world’s northernmost capital, heated by volcanoes'],
+  ['Ireland','Dublin','home of Trinity College and its 1,200-year-old Book of Kells'],
+  ['the United Kingdom','London','where the Underground opened in 1863, the world’s first subway'],
+  ['the Netherlands','Amsterdam','a city with more bicycles than people'],
+  ['Switzerland','Bern','often guessed wrong as Zurich or Geneva'],
+  ['Czechia','Prague','whose castle is among the largest in the world'],
+  ['Hungary','Budapest','two old cities, Buda and Pest, joined across the Danube'],
+  ['Romania','Bucharest','home to one of the heaviest buildings ever constructed'],
+  ['Croatia','Zagreb','a medieval upper town joined to a newer lower one'],
+  ['Ethiopia','Addis Ababa','the diplomatic capital of Africa, seat of the African Union'],
+  ['Nigeria','Abuja','a planned city that replaced coastal Lagos in 1991']
 ];
 
 const PG_SIZES = [
-  { unit:'wider', d:'astronomy', items:[['Jupiter',139822],['Saturn',116464],['Uranus',50724],['Earth',12742],['Mars',6779],['Mercury',4879],['the Moon',3474],['Pluto',2377]] },
-  { unit:'heavier (on average)', d:'biology', items:[['a blue whale',140000],['an elephant',6000],['a hippo',1500],['a polar bear',450],['a lion',190],['an adult human',70],['a wolf',40],['a house cat',4.5],['a rabbit',2]] },
-  { unit:'longer', d:'earth', items:[['the Nile',4132],['the Yangtze',3915],['the Mississippi',2340],['the Danube',1770],['the Rhine',766],['the Thames',215]] }
+  { unit:'wider', d:'astronomy', measure:'across', suffix:'miles across',
+    items:[['Jupiter',86881],['Saturn',72367],['Uranus',31518],['Earth',7918],['Mars',4212],['Mercury',3032],['the Moon',2159],['Pluto',1477]] },
+  { unit:'heavier (on average)', d:'biology', measure:'weight', suffix:'pounds',
+    items:[['a blue whale',300000],['an elephant',13000],['a hippo',3300],['a polar bear',990],['a lion',420],['an adult human',150],['a wolf',90],['a house cat',10],['a rabbit',4.5]] },
+  { unit:'longer', d:'earth', measure:'length', suffix:'miles long',
+    items:[['the Nile',4132],['the Yangtze',3915],['the Mississippi',2340],['the Danube',1770],['the Rhine',766],['the Thames',215]] }
 ];
 
 const PG_WORDS = [
@@ -2882,7 +2923,7 @@ const PG_MAKERS = [
       why:`${a[0].charAt(0).toUpperCase() + a[0].slice(1)} around ${pgYear(a[1])}; ${b[0]} around ${pgYear(b[1])}.` };
   },
   function capital(){
-    const [country, cap] = pgPick(PG_CAPITALS);
+    const [country, cap, fact] = pgPick(PG_CAPITALS);
     const wrong = [];
     while (wrong.length < 3){
       const w = pgPick(PG_CAPITALS)[1];
@@ -2890,10 +2931,10 @@ const PG_MAKERS = [
     }
     const choices = pickN([cap, ...wrong], 4);
     return { d:'earth', q:`What is the capital of ${country}?`, a:choices, c:choices.indexOf(cap),
-      why:`${cap} is the capital of ${country}.` };
+      why:`${cap} is the capital of ${country}: ${fact}.` };
   },
   function capitalReverse(){
-    const [country, cap] = pgPick(PG_CAPITALS);
+    const [country, cap, fact] = pgPick(PG_CAPITALS);
     const wrong = [];
     while (wrong.length < 3){
       const w = pgPick(PG_CAPITALS)[0];
@@ -2901,16 +2942,19 @@ const PG_MAKERS = [
     }
     const choices = pickN([country, ...wrong], 4);
     return { d:'earth', q:`${cap} is the capital of...`, a:choices, c:choices.indexOf(country),
-      why:`${cap} is the capital of ${country}.` };
+      why:`${cap} is the capital of ${country}: ${fact}.` };
   },
   function bigger(){
     const cat = pgPick(PG_SIZES);
     let a = pgPick(cat.items), b = pgPick(cat.items), guard = 0;
     while ((a[0] === b[0] || Math.max(a[1], b[1]) / Math.min(a[1], b[1]) < 1.25) && guard++ < 30){ b = pgPick(cat.items); }
     const winner = a[1] > b[1] ? a : b;
+    const loser = a[1] > b[1] ? b : a;
+    const times = (winner[1] / loser[1]).toFixed(1).replace(/\.0$/, '');
     const choices = [a[0], b[0]];
+    const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
     return { d:cat.d, q:`Which is ${cat.unit}: ${a[0]} or ${b[0]}?`, a:choices, c:choices.indexOf(winner[0]),
-      why:`${winner[0].charAt(0).toUpperCase() + winner[0].slice(1)} is the ${cat.unit.split(' ')[0]} of the two.` };
+      why:`${cap(winner[0])} measures about ${winner[1].toLocaleString()} ${cat.suffix}; ${loser[0]} about ${loser[1].toLocaleString()}. That makes ${winner[0]} roughly ${times} times the ${cat.measure === 'weight' ? 'weight' : 'size'}.` };
   },
   function wordOrigin(){
     const [word, lang] = pgPick(PG_WORDS);
@@ -2937,7 +2981,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v22 · Sep 1, 2026";
+window.GAME_VERSION = "v23 · Sep 1, 2026";
 
 </script>
 <script>
