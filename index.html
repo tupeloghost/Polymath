@@ -1228,6 +1228,36 @@ body.dt .teacher-line { font-size: 17px; }
 .door-open #door-left { transform: scaleX(.15); }
 .door-open #door-right { transform: scaleX(.15); }
 
+/* field trips, debate club, memory match */
+.trip-card { text-align: center; }
+.trip-icon { font-size: 44px; margin-bottom: 8px; }
+.trip-text { font-size: 18px; }
+.trip-choice { max-width: 460px; margin-left: auto; margin-right: auto; }
+.debate-quote { font-style: italic; }
+.debate-tip { font-weight: normal; font-size: 13px; color: var(--ink-soft); }
+body.dt .debate-tip { font-size: 15px; }
+.fallacy-list { margin: 12px 0; display: grid; gap: 6px; }
+.fallacy-row { font-size: 14px; color: var(--ink-soft); padding: 6px 10px; background: rgba(0,0,0,.05); border-radius: 6px; }
+body.dt .fallacy-row { font-size: 16px; }
+.match-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.match-card {
+  min-height: 86px; cursor: pointer; font-family: inherit;
+  background: linear-gradient(180deg, #55402c, var(--wood-deep));
+  border: 2px solid var(--brass); border-radius: 8px;
+  color: #e8cf8f; font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 6px; transition: transform .15s ease, background .15s ease;
+  box-shadow: 0 3px 7px rgba(0,0,0,.45);
+}
+.match-card:hover { transform: translateY(-2px); }
+.match-up, .match-done {
+  background: linear-gradient(180deg, var(--card), var(--paper-deep));
+  color: var(--ink); font-size: 13px; line-height: 1.3;
+}
+body.dt .match-up, body.dt .match-done { font-size: 15px; }
+.match-done { opacity: .55; border-color: var(--green); cursor: default; }
+.match-face { text-align: center; }
+
 </style>
 </head>
 <body>
@@ -1294,6 +1324,11 @@ body.dt .teacher-line { font-size: 17px; }
             <span class="menu-title">Lightning</span>
             <span class="menu-badge" id="lightning-badge"></span>
           </button>
+          <button class="menu-card" data-go="trips" title="Step into history and make the choices yourself.">
+            <span class="menu-emblem">&#128652;</span>
+            <span class="menu-title">Field Trips</span>
+            <span class="menu-badge" id="trips-badge"></span>
+          </button>
           <button class="menu-card" data-go="wheel" title="Spin the wheel. Fate picks your subject.">
             <span class="menu-emblem">&#127919;</span>
             <span class="menu-title">The Wheel</span>
@@ -1322,6 +1357,11 @@ body.dt .teacher-line { font-size: 17px; }
             <span class="menu-emblem">&#128279;</span>
             <span class="menu-title">Chains</span>
             <span class="menu-badge" id="chains-badge"></span>
+          </button>
+          <button class="menu-card" data-go="debate" title="Spot what is wrong with an argument. Hear through nonsense forever.">
+            <span class="menu-emblem">&#127908;</span>
+            <span class="menu-title">Debate Club</span>
+            <span class="menu-badge" id="debate-badge"></span>
           </button>
           <button class="menu-card" data-go="bridges" title="Two subjects, one hidden link.">
             <span class="menu-emblem">&#9878;</span>
@@ -1356,6 +1396,34 @@ body.dt .teacher-line { font-size: 17px; }
       </div>
     </nav>
     <div id="version-tag"></div>
+  </section>
+
+  <!-- FIELD TRIPS -->
+  <section id="screen-trips" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <div class="topbar-title">Field Trips</div>
+      <div class="topbar-right"></div>
+    </div>
+    <div id="trips-body"></div>
+  </section>
+  <section id="screen-trip" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="trips">&larr; Trips</button>
+      <div class="topbar-title" id="trip-topbar"></div>
+      <div class="topbar-right" id="trip-progress"></div>
+    </div>
+    <div id="trip-body"></div>
+  </section>
+
+  <!-- DEBATE CLUB -->
+  <section id="screen-debate" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <div class="topbar-title">Debate Club</div>
+      <div class="topbar-right" id="debate-progress"></div>
+    </div>
+    <div id="debate-body"></div>
   </section>
 
   <!-- YOUR OFFICE (room) -->
@@ -3334,7 +3402,162 @@ function facultyLine(domain, right){
 
 </script>
 <script>
-window.GAME_VERSION = "v44 · Sep 1, 2026";
+// Field trips: step into history and make the choices yourself.
+// Each scene: story text, two choices. Choices carry an outcome, a real fact, and sometimes wisdom.
+const TRIPS = [
+  { id:'silk', icon:'🐫', title:'The Silk Road, 1280', place:'Merchant caravan, western China',
+    intro:'You are a young merchant with one cart of silk, a camel named Trouble, and a long road to Persia. Every choice matters. Gather wisdom and come home rich.',
+    scenes:[
+      { text:'At the market in Kashgar you can spend your last coins on a guide who knows the desert, or on extra water and food.',
+        a:{ label:'Hire the guide', wise:true, out:'Good choice. Your guide knows which wells are poisoned and where bandits wait.', fact:'Real Silk Road caravans depended on local guides. The route was not one road but a web of paths, and choosing wrong ones killed.' },
+        b:{ label:'Buy extra supplies', wise:false, out:'You carry plenty, but you take a wrong turn that costs four days.', fact:'The Taklamakan desert’s name is often translated as "you go in, you don’t come out." Locals crossed only along its edges.' } },
+      { text:'A sandstorm rises like a wall. Your camel kneels and refuses to move. Do you push on to the next well, or camp where you are?',
+        a:{ label:'Push on', wise:false, out:'You wander blind for hours and lose a bolt of silk to the wind. Trouble the camel is unimpressed.', fact:'Camels sense storms early and kneel to shelter. Experienced traders treated a kneeling camel as an order to stop.' },
+        b:{ label:'Camp and wait', wise:true, out:'You shelter behind the camels and lose nothing but time.', fact:'Caravans survived storms by circling camels and waiting. A buried well was better than a lost caravan.' } },
+      { text:'At a caravanserai, a Persian trader offers to buy ALL your silk now, for silver, at a fair-but-not-great price. Sell here, or carry on to Persia for triple the profit?',
+        a:{ label:'Sell now', wise:false, out:'Safe, but you watch others ride on toward bigger fortunes.', fact:'Caravanserais were fortified roadside inns, spaced a day’s travel apart. Most Silk Road goods changed hands many times; few merchants walked the whole road.' },
+        b:{ label:'Carry on', wise:true, out:'Risky and brave. The road is long but the price in Persia is triple.', fact:'Silk could multiply in value many times over between China and the Mediterranean. Risk was the whole business model.' } },
+      { text:'A man at the inn shows you strange paper and swears it is money, backed by the Khan. He will trade it for your silver "for safekeeping on the road."',
+        a:{ label:'Trust the paper', wise:true, out:'It is real. Paper money spends fine in the Khan’s lands, and robbers ignore it.', fact:'Yuan China used state paper money. Marco Polo described it in amazement, and Europeans back home called him a liar.' },
+        b:{ label:'Keep your silver', wise:false, out:'Understandable. But silver is heavy, and word of it travels to the wrong ears.', fact:'Carrying visible wealth was the great danger of the road. Paper money and credit letters existed partly to beat robbers.' } },
+      { text:'Persia at last. You can sell everything and ride home, or invest your profits in a return cargo of glass, dyes, and pistachios.',
+        a:{ label:'Sell and go home', wise:false, out:'You come home comfortable, and wiser than you left.', fact:'Goods flowed both ways: gold, glass, horses, and ideas went east while silk and spices went west.' },
+        b:{ label:'Invest in return cargo', wise:true, out:'The double journey doubles your fortune. Merchants at home say your name with respect.', fact:'The richest Silk Road traders profited in both directions. Trade routes moved religions, inventions, and diseases along with the goods.' } }
+    ]},
+  { id:'florence', icon:'🎨', title:'Florence, 1504', place:'An artist’s workshop, Italy',
+    intro:'You are an apprentice in a Florentine workshop. Leonardo da Vinci and Michelangelo both walk these streets, and they cannot stand each other. Learn everything you can.',
+    scenes:[
+      { text:'Your master offers you a first task: grind pigments for the painters, or carry messages between workshops across the city.',
+        a:{ label:'Grind pigments', wise:true, out:'Dull work, but you learn what colors are made of, and what they cost.', fact:'Renaissance blue came from lapis lazuli, mined only in Afghanistan, and could cost more than gold. Patrons paid for it by the ounce.' },
+        b:{ label:'Carry messages', wise:false, out:'You see the city, but other apprentices learn the craft while you walk.', fact:'Apprentices started around age 12 and spent years on chores before touching a brush. Workshops were businesses, not schools.' } },
+      { text:'A crowd gathers: Michelangelo’s giant David is being moved through the streets on rollers. Some men throw stones at it. Do you help guard the statue or stay clear?',
+        a:{ label:'Help guard it', wise:true, out:'You spend the night walking beside a marble giant. You will tell this story forever.', fact:'This really happened: David took four days to move, and guards protected it from stone-throwers at night.' },
+        b:{ label:'Stay clear', wise:false, out:'Safe, but you missed history sliding past on greased beams.', fact:'David was carved from a flawed marble block other sculptors had rejected and abandoned for 25 years.' } },
+      { text:'Leonardo visits your master. You may ask him ONE question. Which?',
+        a:{ label:'"How do you paint so well?"', wise:false, out:'He smiles: "By never finishing." His patrons, you have heard, do not find this funny.', fact:'Leonardo left most projects unfinished, including a giant bronze horse and many commissions. His notebooks were his true life’s work.' },
+        b:{ label:'"Why do you study water and birds?"', wise:true, out:'His eyes light up. He talks for an hour about how everything connects: water, air, blood, machines.', fact:'Leonardo filled thousands of notebook pages with anatomy, engineering, and nature studies, written in mirror-image handwriting.' } },
+      { text:'The city announces a contest: Leonardo and Michelangelo will each paint a battle scene in the same hall, head to head. Your master lets you attend one artist’s preparation.',
+        a:{ label:'Watch Leonardo', wise:true, out:'You watch him experiment with new paint. Brilliant, and doomed: the colors are already sliding off the wall.', fact:'The duel of frescoes really happened. Leonardo’s experimental technique failed, Michelangelo was called away to Rome, and neither finished.' },
+        b:{ label:'Watch Michelangelo', wise:true, out:'You watch him draw bodies like coiled springs. He barely speaks. You learn anyway.', fact:'Michelangelo considered himself a sculptor first and complained bitterly when the Pope later made him paint the Sistine ceiling.' } },
+      { text:'Your apprenticeship ends. Take a safe job painting portraits for wool merchants, or risk everything to open your own workshop?',
+        a:{ label:'Safe portraits', wise:false, out:'A comfortable life. Some nights you wonder about the other road.', fact:'Most Renaissance art was commissioned business work: portraits, altarpieces, and wedding chests, made to order.' },
+        b:{ label:'Your own workshop', wise:true, out:'Hard years, then your name on the door. Apprentices grind your pigments now.', fact:'Workshops like Verrocchio’s trained Leonardo and others. The master’s name sold the art, even when apprentices painted much of it.' } }
+    ]},
+  { id:'cholera', icon:'🕵️', title:'London, 1854', place:'Soho, during the cholera outbreak',
+    intro:'People are dying by the hundreds, and everyone blames the smelly air. You are Dr. John Snow’s assistant, and your master has a stranger idea: follow the water.',
+    scenes:[
+      { text:'Dr. Snow hands you a blank map of Soho. "Mark every death," he says. The other doctors say you should be burning incense against bad air instead.',
+        a:{ label:'Mark the deaths on the map', wise:true, out:'Dot by dot, a shape appears. The deaths cluster around something.', fact:'Mapping cases was revolutionary. Snow’s dot map became one of the most famous images in medical history.' },
+        b:{ label:'Burn incense like the others', wise:false, out:'The room smells lovely. People keep dying.', fact:'Miasma ("bad air") theory dominated for centuries. It was wrong about cholera, but it did motivate useful sanitation reforms.' } },
+      { text:'The dots crowd around the Broad Street water pump. But a workhouse nearby has few deaths, and a brewery has none. Investigate the exceptions, or is the pump proof enough?',
+        a:{ label:'Investigate the exceptions', wise:true, out:'The workhouse has its own well. The brewers drink beer all day. The exceptions prove the rule.', fact:'This is real: the brewery workers drank beer (boiled in brewing, therefore safe) and were spared. Exceptions that fit are powerful evidence.' },
+        b:{ label:'The pump is proof enough', wise:false, out:'Dr. Snow shakes his head. "The holes in a theory are where truth leaks in."', fact:'Good science attacks its own idea. Snow chased every case that did not fit, and each one made his theory stronger.' } },
+      { text:'A widow died of cholera far from Soho, in Hampstead. It makes no sense. Do you travel across town to ask her family questions, or ignore one odd case?',
+        a:{ label:'Travel and ask', wise:true, out:'Her son tells you: she loved the taste of Broad Street water and had it delivered daily. The case that made no sense proves everything.', fact:'The Hampstead widow was real and became Snow’s clinching evidence: no bad air connected her to Soho, only bottled pump water.' },
+        b:{ label:'Ignore one odd case', wise:false, out:'Snow goes himself. He returns triumphant. You fetched the incense that day.', fact:'Outliers can be noise, or they can be the key. The only way to know is to investigate them.' } },
+      { text:'The parish board is skeptical. You have one evening to convince them. Argue with medical theory, or show them the map?',
+        a:{ label:'Argue theory', wise:false, out:'Learned men can argue theory forever. Their eyes glaze.', fact:'Germ theory would not be accepted for another decade. Snow could not explain WHY water carried death, only show THAT it did.' },
+        b:{ label:'Show the map', wise:true, out:'Silence, then murmurs. A picture of the truth beats an hour of argument.', fact:'The board voted to remove the pump handle the next day. Data made visible can convince people that arguments cannot.' } },
+      { text:'The pump handle comes off, and the outbreak collapses. Officials later quietly put the handle back and reject the water theory. Do you keep the records anyway?',
+        a:{ label:'Keep the records', wise:true, out:'Years later, when germ theory arrives, your maps become the proof that was waiting. Epidemiology is born.', fact:'Snow died in 1858, before being fully vindicated. Today the John Snow pump memorial stands in Soho, and every disease map descends from his.' },
+        b:{ label:'Let it go', wise:false, out:'The truth waits decades for someone else to rediscover it.', fact:'Being right is not enough; being recorded matters. Science is memory, written down.' } }
+    ]}
+];
+
+</script>
+<script>
+// Debate Club: spot what is wrong with an argument. Critical thinking as a reflex.
+const FALLACIES = [
+  { id:'bandwagon', name:'Bandwagon', tip:'"Everyone believes it" is not proof. Crowds have been wrong about everything.' },
+  { id:'falsecause', name:'False cause', tip:'Two things happening together does not mean one caused the other.' },
+  { id:'strawman', name:'Straw man', tip:'Attacking a twisted, weaker version of what someone actually said.' },
+  { id:'authority', name:'False authority', tip:'Quoting a famous person on a topic outside their expertise.' },
+  { id:'cherry', name:'Cherry-picking', tip:'Showing only the evidence that helps, hiding the rest.' },
+  { id:'adhominem', name:'Attacking the person', tip:'Insulting the speaker instead of answering the argument.' },
+  { id:'slippery', name:'Slippery slope', tip:'Claiming one small step must lead to a chain of disasters, without proof.' },
+  { id:'either', name:'False choice', tip:'Pretending there are only two options when there are more.' },
+  { id:'anecdote', name:'One story as proof', tip:'A single personal example cannot outweigh careful data.' },
+  { id:'appealnature', name:'Appeal to nature', tip:'"Natural" does not mean good or safe. Arsenic is natural.' }
+];
+const DEBATES = [
+  { t:'Everyone is buying this stock right now, so it must be a smart investment.', f:'bandwagon', why:'Popularity is not evidence. Bubbles are made of exactly this sentence.' },
+  { t:'I wore my lucky socks and we won the game. The socks work.', f:'falsecause', why:'The win and the socks happened together. That is all. Test it: they also lost with lucky socks on, somewhere.' },
+  { t:'She says we should eat less sugar. So she wants to ban every dessert and make food joyless.', f:'strawman', why:'"Less sugar" became "ban all desserts": a twisted version that is easier to attack.' },
+  { t:'A famous actor says this diet cures everything, so it must work.', f:'authority', why:'Acting talent is not medical expertise. Ask what the actual studies show.' },
+  { t:'This casino ad shows five big winners. Gambling clearly pays off.', f:'cherry', why:'Five winners are shown; a million losers are not. The missing evidence is the story.' },
+  { t:'You can’t trust his climate argument. Have you seen how he dresses?', f:'adhominem', why:'His wardrobe has nothing to do with his data. Answer the argument, not the outfit.' },
+  { t:'If we let students retake one test, soon nobody will study, grades will mean nothing, and diplomas will be worthless.', f:'slippery', why:'One retake policy became total collapse, with no proof for any step in the chain.' },
+  { t:'Either you buy the extended warranty, or you will end up paying thousands in repairs.', f:'either', why:'There is a third option the seller skipped: the product mostly works fine, which is why warranties are profitable to sell.' },
+  { t:'My grandfather smoked daily and lived to 95. Smoking can’t be that harmful.', f:'anecdote', why:'One lucky grandfather does not cancel decades of data on millions of people. Survivors are visible; the others are not here to argue.' },
+  { t:'This supplement is 100% natural, so it must be safe.', f:'appealnature', why:'Snake venom, arsenic, and poison ivy are natural too. "Natural" tells you nothing about safety or dose.' },
+  { t:'Ice cream sales and drowning deaths rise together every year. Ice cream must cause drowning.', f:'falsecause', why:'Summer causes both: more swimming and more ice cream. The hidden third factor is the classic trap.' },
+  { t:'Nine out of ten dentists we surveyed recommend our toothpaste. (We surveyed until we got that number.)', f:'cherry', why:'If you pick which survey to publish, the number is marketing, not measurement.' },
+  { t:'My opponent wants smaller government. Apparently he wants no firefighters and no roads at all.', f:'strawman', why:'"Smaller" became "none." He can now argue against a position nobody holds.' },
+  { t:'Don’t listen to her budget plan. She once bounced a check in college.', f:'adhominem', why:'A twenty-year-old mistake does not answer the plan in front of you.' },
+  { t:'Every one of my friends got this phone, so it is clearly the best phone made.', f:'bandwagon', why:'Your friends share a budget, an age, and each other. That is a bubble, not a benchmark.' },
+  { t:'A Nobel Prize physicist says this vitamin prevents colds, so it is settled.', f:'authority', why:'This really happened: Linus Pauling, brilliant in chemistry, was wrong about vitamin C. Expertise does not transfer between fields.' },
+  { t:'If kids play games with any violence, they will soon accept real violence, and society will fall apart.', f:'slippery', why:'A chain of maybes stated as certainty. Each link needs its own evidence.' },
+  { t:'You are either with us on every point, or you are against everything we stand for.', f:'either', why:'Almost everyone lives in the enormous space between the two options offered.' },
+  { t:'I tried that study method once and failed the quiz, so it does not work.', f:'anecdote', why:'One try, one quiz, one person. The method’s record across thousands of students is the real evidence.' },
+  { t:'Chemicals in food are dangerous. I only eat chemical-free meals.', f:'appealnature', why:'Everything is chemicals: water, apples, air. The dose and the specific substance matter, not the scary word.' },
+  { t:'Crime dropped right after the new mayor took office, so her policies did it.', f:'falsecause', why:'Crime moves with many slow causes. "After" is not "because": the drop may have started years earlier.' },
+  { t:'The reviews on our own website are five stars across the board.', f:'cherry', why:'Who owns the garden picks the flowers. Check reviews the seller cannot delete.' },
+  { t:'Millions of people can’t be wrong about this remedy.', f:'bandwagon', why:'Millions of people were wrong about the Earth being flat. Counting believers is not testing the belief.' },
+  { t:'My doctor is young, so her advice about this illness can’t be trusted.', f:'adhominem', why:'Age is not an argument. Her training and the evidence are what count.' }
+];
+const MATCH_PAIRS = [
+  ['Photosynthesis','Plants turning sunlight into sugar'],
+  ['Inflation','Money buying less over time'],
+  ['Fresco','Painting on wet plaster'],
+  ['Tempo','The speed of music'],
+  ['Prime number','Divisible only by 1 and itself'],
+  ['Stoicism','Focus only on what you control'],
+  ['Tectonic plates','Slabs of crust whose motion causes quakes'],
+  ['Placebo','A fake treatment that still helps'],
+  ['Opportunity cost','What you give up by choosing'],
+  ['Metaphor','Calling one thing another to show likeness'],
+  ['Entropy','Disorder that grows on its own'],
+  ['Keystone species','Small species holding an ecosystem up'],
+  ['Compound interest','Growth earning growth'],
+  ['Etymology','The history of a word'],
+  ['Light-year','The distance light travels in a year'],
+  ['Democracy','Rule by the people'],
+  ['Camouflage','Blending in to survive'],
+  ['Harmony','Different notes sounding good together']
+];
+
+</script>
+<script>
+// Workshop bench five: train your actual ears.
+SKILLS.push(
+  {
+    id:'ear', icon:'👂', title:'Train Your Ear', mastery:7,
+    hook:'Musicians are not born hearing more than you. They practiced telling sounds apart, and it starts with one question: which note is higher? Ten minutes from now, your ears will be sharper than they were this morning.',
+    teach:`<p>Every sound has a pitch: how high or low it is. Faster vibrations sound higher.</p>
+      <p>This skill plays you <b>two notes</b>. Your only job: say which one was higher, the first or the second.</p>
+      <p>It starts easy and gets subtle. When the differences get small, close your eyes and let the notes hang in your memory for a second before you answer.</p>
+      <p>This is exactly how musicians train, and it carries over: melodies, accents in languages, even the tone of someone’s voice all get easier to hear.</p>`,
+    practice(){
+      const base = 220 + Math.random() * 440;
+      const ratio = 1.10 + Math.random() * 0.25;
+      const firstHigher = Math.random() < 0.5;
+      const f1 = firstHigher ? base * ratio : base;
+      const f2 = firstHigher ? base : base * ratio;
+      const play = () => { SFX.note(f1, .5, 0); SFX.note(f2, .5, .75); };
+      return {
+        prompt: '🔊 Two notes will play. <b>Which one was higher?</b>',
+        choices: ['The first note', 'The second note'],
+        c: firstHigher ? 0 : 1,
+        replay: play,
+        explain: firstHigher ? 'The first note was higher.' : 'The second note was higher.'
+      };
+    }
+  }
+);
+
+</script>
+<script>
+window.GAME_VERSION = "v45 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3489,6 +3712,7 @@ const SFX = (function(){
     drumroll(dur){ const n = Math.floor((dur || .7) / .05); for (let i = 0; i < n; i++) tone(900 + Math.random() * 200, .03, 'triangle', .02, i * .05); },
     crackle(){ for (let i = 0; i < 7; i++) tone(120 + Math.random() * 300, .04, 'triangle', .03, Math.random() * .8); },
     chime(){ tone(880, .6, 'sine', .05); tone(1108, .8, 'sine', .04, .3); buzz(20); },
+    note(freq, dur, delay){ tone(freq, dur || .5, 'sine', .07, delay || 0); },
     door(){ tone(260, .18, 'triangle', .045); tone(215, .2, 'triangle', .04, .14); tone(170, .24, 'triangle', .04, .3); tone(90, .12, 'triangle', .05, .5); },
     bell(){ [660, 660].forEach((f, i) => { tone(f, 1.1, 'sine', .06, i * .7); tone(f * 2.76, .5, 'sine', .02, i * .7); }); buzz([40, 200, 40]); },
     purr(){ for (let i = 0; i < 6; i++) tone(82, .09, 'triangle', .04, i * .12); tone(520, .18, 'sine', .04, .8); tone(430, .22, 'sine', .04, .92); buzz([50, 40, 50, 40, 50]); }
@@ -4078,6 +4302,20 @@ function buildCampusScene(){
     <text class="scene-label" x="530" y="400" text-anchor="middle">Detention · win back your misses</text>
   </g>
 
+  <!-- the field trip bus -->
+  <g id="c-bus" class="scene-hot">
+    <ellipse cx="72" cy="440" rx="52" ry="7" fill="#000" opacity=".35"/>
+    <rect x="24" y="398" width="96" height="34" rx="8" fill="#c9922c" stroke="#241708" stroke-width="3"/>
+    <rect x="30" y="404" width="18" height="12" rx="2" fill="#1a2340"/>
+    <rect x="52" y="404" width="18" height="12" rx="2" fill="#1a2340"/>
+    <rect x="74" y="404" width="18" height="12" rx="2" fill="#1a2340"/>
+    <rect x="98" y="402" width="18" height="16" rx="2" fill="#1a2340"/>
+    <circle cx="44" cy="432" r="8" fill="#241708"/><circle cx="100" cy="432" r="8" fill="#241708"/>
+    <circle cx="44" cy="432" r="3" fill="#8a6425"/><circle cx="100" cy="432" r="3" fill="#8a6425"/>
+    <text x="72" y="426" font-size="9" text-anchor="middle" fill="#241708" font-family="Georgia" font-weight="bold">FIELD TRIPS</text>
+    <text class="scene-label" x="72" y="392" text-anchor="middle">The field trip bus</text>
+  </g>
+
   <!-- the grand front door -->
   <g id="c-door" class="scene-hot">
     <rect x="366" y="396" width="68" height="48" fill="#241708"/>
@@ -4151,6 +4389,7 @@ function buildCampusScene(){
   on('c-trophy', () => enterRoom('c-trophy', 'the Trophy Hall', 'honors'));
   on('c-rec', () => enterRoom('c-rec', 'the Rec Hall', 'parlor'));
   on('c-detention', () => enterRoom('c-detention', 'Detention', 'detention'));
+  on('c-bus', () => enterRoom('c-bus', 'the field trip bus', 'trips'));
   on('c-door', () => {
     const d = document.getElementById('c-door');
     d.classList.add('door-open');
@@ -4672,6 +4911,8 @@ function go(name){
   if (name === 'journal') renderJournal();
   if (name === 'wheel') renderWheel();
   if (name === 'office') buildOfficeRoom();
+  if (name === 'trips') renderTrips();
+  if (name === 'debate') startDebate();
   if (name === 'detention') startDetention();
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
@@ -4862,6 +5103,8 @@ function renderHome(){
   $('#honors-badge').textContent = `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} plaques`;
   $('#journal-badge').textContent = S.journal.length ? `${S.journal.length} saved` : 'empty';
   $('#expedition-badge').textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
+  $('#trips-badge').textContent = `${Object.keys(S.tripsDone || {}).length} of ${TRIPS.length} taken`;
+  $('#debate-badge').textContent = S.debateBest ? `best: ${S.debateBest}/8` : 'untried';
   $('#workshop-badge').textContent = `${Object.keys(S.skills).length} of ${SKILLS.length} learned`;
 
   // idea of the day: one drawer, chosen by the calendar
@@ -5176,6 +5419,12 @@ function renderSkillPractice(){
       else renderSkillPractice();
     }, { once: true });
   };
+  if (p.replay) {
+    const rp = el(`<button class="btn-secondary" style="margin-bottom:10px">🔊 Play the notes again</button>`);
+    rp.addEventListener('click', p.replay);
+    card.insertBefore(rp, zone);
+    setTimeout(p.replay, 250);
+  }
   if (p.choices) {
     let answered = false;
     p.choices.forEach((text, i) => {
@@ -5418,6 +5667,11 @@ function renderParlor(){
         <span class="bridge-title">Last Scholar Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
       </button>
+      <button class="bridge-item" id="parlor-match">
+        <span class="bridge-domains">🃏 1 or 2 players</span>
+        <span class="bridge-title">Memory Match</span>
+        <span class="bridge-state">Flip cards to pair each idea with its meaning.</span>
+      </button>
       <button class="bridge-item" id="parlor-teach">
         <span class="bridge-domains">🕯 Face to face</span>
         <span class="bridge-title">Teach &amp; Test</span>
@@ -5428,6 +5682,18 @@ function renderParlor(){
   $('#parlor-coop').addEventListener('click', () => parlorNames(4, 'Set out together', (names, kid) => startExpedition(names, kid), 2));
   $('#parlor-party').addEventListener('click', () => parlorNames(8, 'Start the circle', (names, kid) => startParty(names, kid), 2));
   $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
+  $('#parlor-match').addEventListener('click', () => {
+    const body = $('#parlor-body');
+    body.innerHTML = `
+      <div class="lesson-card" style="text-align:center">
+        <h2 class="lesson-title">🃏 Memory Match</h2>
+        <p class="lesson-text">Sixteen cards, eight pairs. Each idea matches its meaning.</p>
+        <button class="btn-primary" id="match-solo">Play solo</button>
+        <button class="btn-secondary" id="match-duo">Two players</button>
+      </div>`;
+    $('#match-solo').addEventListener('click', () => startMatch(null));
+    $('#match-duo').addEventListener('click', () => parlorNames(2, 'Deal the cards', (names) => startMatch(names)));
+  });
 }
 
 function parlorNames(maxPlayers, buttonText, onReady, minPlayers){
@@ -5564,6 +5830,258 @@ function renderTeachTest(){
       }
     }));
   });
+}
+
+// ---------- FIELD TRIPS: step into history ----------
+let trip = null;
+function renderTrips(){
+  const body = $('#trips-body');
+  body.innerHTML = '<p class="helper-text">Step into a moment of history. Your choices decide how it goes. Wisdom ✨ earns lumens.</p>';
+  const list = el(`<div class="bridge-list"></div>`);
+  TRIPS.forEach(t => {
+    const best = (S.tripsDone || {})[t.id];
+    const item = el(`<button class="bridge-item ${best !== undefined ? 'bridge-done' : ''}">
+      <span class="bridge-domains">${t.icon} ${t.place}</span>
+      <span class="bridge-title">${t.title}</span>
+      <span class="bridge-state">${best !== undefined ? `✓ best wisdom: ${best}/${t.scenes.length}` : 'Board the bus'}</span>
+    </button>`);
+    item.addEventListener('click', () => startTrip(t));
+    list.appendChild(item);
+  });
+  body.appendChild(list);
+}
+function startTrip(t){
+  trip = { t, i: -1, wisdom: 0 };
+  document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('active'));
+  $('#screen-trip').classList.add('active');
+  window.scrollTo(0,0);
+  $('#trip-topbar').textContent = t.title;
+  const body = $('#trip-body');
+  body.innerHTML = '';
+  body.appendChild(el(`<div class="lesson-card trip-card">
+    <div class="trip-icon">${t.icon}</div>
+    <h2 class="lesson-title">${t.title}</h2>
+    <p class="lesson-text">${t.intro}</p>
+    <button class="btn-primary" id="trip-go">Begin</button>
+  </div>`));
+  $('#trip-go').addEventListener('click', () => { trip.i = 0; renderTripScene(); });
+}
+function renderTripScene(){
+  const t = trip.t;
+  $('#trip-progress').textContent = `${Math.min(trip.i + 1, t.scenes.length)}/${t.scenes.length} · ✨${trip.wisdom}`;
+  const body = $('#trip-body');
+  body.innerHTML = '';
+  if (trip.i >= t.scenes.length) { finishTrip(); return; }
+  const sc = t.scenes[trip.i];
+  const card = el(`<div class="lesson-card trip-card">
+    <div class="trip-icon">${t.icon}</div>
+    <p class="lesson-text trip-text">${sc.text}</p>
+    <button class="btn-primary trip-choice" id="tc-a">${sc.a.label}</button>
+    <button class="btn-primary trip-choice" id="tc-b">${sc.b.label}</button>
+  </div>`);
+  body.appendChild(card);
+  const choose = (c) => {
+    if (c.wise) { trip.wisdom++; SFX.correct(); } else SFX.wrong();
+    $('#trip-progress').textContent = `${trip.i + 1}/${t.scenes.length} · ✨${trip.wisdom}`;
+    body.innerHTML = '';
+    const oc = el(`<div class="lesson-card trip-card">
+      <div class="trip-icon">${c.wise ? '✨' : '💨'}</div>
+      <p class="lesson-text">${c.out}</p>
+      <div class="qcard-why" style="display:block">${c.fact}</div>
+      <button class="btn-primary" id="trip-next">${trip.i + 1 >= t.scenes.length ? 'Journey’s end' : 'Continue the journey'}</button>
+    </div>`);
+    oc.querySelector('.qcard-why').appendChild(starButton(t.title, c.fact, 'history'));
+    body.appendChild(oc);
+    $('#trip-next').addEventListener('click', () => { trip.i++; renderTripScene(); });
+  };
+  $('#tc-a').addEventListener('click', () => choose(sc.a));
+  $('#tc-b').addEventListener('click', () => choose(sc.b));
+}
+function finishTrip(){
+  const t = trip.t;
+  if (!S.tripsDone) S.tripsDone = {};
+  const first = S.tripsDone[t.id] === undefined;
+  const best = Math.max(S.tripsDone[t.id] || 0, trip.wisdom);
+  S.tripsDone[t.id] = best;
+  const earned = awardLumens((first ? 15 : 5) + trip.wisdom * 6);
+  if (trip.wisdom === t.scenes.length) confetti(60);
+  save();
+  $('#trip-body').innerHTML = `
+    <div class="result-card">
+      <div class="result-title">Home from ${t.title}</div>
+      <div class="result-score">✨ ${trip.wisdom}/${t.scenes.length}</div>
+      <div class="result-verdict">${trip.wisdom === t.scenes.length
+        ? 'Every choice was wise. History would have been lucky to have you.'
+        : trip.wisdom >= 3
+        ? 'A good journey. Now you know which choices you would make differently, which is the point.'
+        : 'A rough trip, and a true one: most travelers learned the hard way too. Ride again.'}</div>
+      <div class="result-earn">+${earned} lumens</div>
+      <button class="btn-primary" data-go="trips">Another trip</button>
+      <button class="btn-secondary" data-go="home">Back to campus</button>
+    </div>`;
+  $('#trip-progress').textContent = '';
+}
+
+// ---------- DEBATE CLUB: spot the flaw ----------
+let debate = null;
+function startDebate(){
+  const body = $('#debate-body');
+  body.innerHTML = `
+    <div class="lesson-card">
+      <h2 class="lesson-title">🎤 Debate Club</h2>
+      <p class="lesson-text">I will show you an argument with something wrong in it. Name the flaw. Learn these ten patterns and you will hear them everywhere: in ads, arguments, and headlines.</p>
+      <div class="fallacy-list">${FALLACIES.map(f => `<div class="fallacy-row"><b>${f.name}:</b> ${f.tip}</div>`).join('')}</div>
+      <button class="btn-primary" id="debate-go">Start a round: 8 arguments</button>
+    </div>`;
+  $('#debate-go').addEventListener('click', () => {
+    debate = { qs: shuffle(DEBATES).slice(0, 8), idx: 0, right: 0 };
+    renderDebateQuestion();
+  });
+}
+function renderDebateQuestion(){
+  const body = $('#debate-body');
+  body.innerHTML = '';
+  if (debate.idx >= debate.qs.length) { finishDebate(); return; }
+  $('#debate-progress').textContent = `${debate.idx + 1}/${debate.qs.length} · ${debate.right} right`;
+  const q = debate.qs[debate.idx];
+  const correct = FALLACIES.find(f => f.id === q.f);
+  const wrong = pickN(FALLACIES.filter(f => f.id !== q.f), 3);
+  const options = pickN([correct, ...wrong], 4);
+  const card = el(`<div class="qcard">
+    <div class="qcard-domain" style="color:#6b5b7a">🎤 Someone argues:</div>
+    <div class="qcard-question debate-quote">“${q.t}”</div>
+    <div class="qcard-answers"></div>
+    <div class="qcard-why hidden"></div>
+    <button class="btn-primary qcard-next hidden">Next argument</button>
+  </div>`);
+  const box = card.querySelector('.qcard-answers');
+  let answered = false;
+  options.forEach(opt => {
+    const btn = el(`<button class="answer-btn"><b>${opt.name}</b><span class="debate-tip"> · ${opt.tip}</span></button>`);
+    btn.addEventListener('click', () => {
+      if (answered) return;
+      answered = true;
+      const right = opt.id === q.f;
+      recordAnswer('philosophy', right);
+      if (right) debate.right++;
+      box.querySelectorAll('.answer-btn').forEach((b, i) => {
+        if (options[i].id === q.f) b.classList.add('correct'); else b.classList.add('faded');
+      });
+      if (!right) { btn.classList.remove('faded'); btn.classList.add('wrong'); }
+      const why = card.querySelector('.qcard-why');
+      why.textContent = q.why;
+      why.classList.remove('hidden');
+      why.appendChild(starButton('Spot the flaw: ' + correct.name, q.why, 'philosophy'));
+      const next = card.querySelector('.qcard-next');
+      next.classList.remove('hidden');
+      next.addEventListener('click', () => { debate.idx++; renderDebateQuestion(); }, { once: true });
+    });
+    box.appendChild(btn);
+  });
+  body.appendChild(card);
+}
+function finishDebate(){
+  const score = debate.right;
+  const isBest = score > (S.debateBest || 0);
+  if (isBest) S.debateBest = score;
+  const earned = awardLumens(score * 3);
+  if (score >= 7) confetti(50);
+  save();
+  $('#debate-body').innerHTML = `
+    <div class="result-card">
+      <div class="result-title">Round Over</div>
+      <div class="result-score">${score}/${debate.qs.length}</div>
+      <div class="result-verdict">${score >= 7 ? 'Sharp. Ads and bad arguments will have a much harder time with you now.' : score >= 5 ? 'Good ear for nonsense. It sharpens fast with practice.' : 'These patterns take a few rounds to stick. Once they do, you hear them everywhere.'}</div>
+      ${isBest && score > 0 ? '<div class="result-earn">New personal best!</div>' : ''}
+      <div class="result-earn">+${earned} lumens</div>
+      <button class="btn-primary" id="debate-again">Another round</button>
+      <button class="btn-secondary" data-go="home">Back to campus</button>
+    </div>`;
+  $('#debate-again').addEventListener('click', () => {
+    debate = { qs: shuffle(DEBATES).slice(0, 8), idx: 0, right: 0 };
+    renderDebateQuestion();
+  });
+  $('#debate-progress').textContent = '';
+}
+
+// ---------- MEMORY MATCH ----------
+let match = null;
+function startMatch(names){
+  const pairs = pickN(MATCH_PAIRS, 8);
+  const cards = [];
+  pairs.forEach((p, i) => {
+    cards.push({ pair: i, text: p[0] });
+    cards.push({ pair: i, text: p[1] });
+  });
+  match = { cards: pickN(cards, cards.length), found: 0, flipped: [], moves: 0, lock: false,
+            names: names || null, turn: 0, scores: [0, 0] };
+  renderMatch();
+}
+function renderMatch(){
+  const body = $('#parlor-body');
+  body.innerHTML = '';
+  if (match.names) body.appendChild(el(`<div class="duel-turn duel-p${match.turn}">Your turn, ${match.names[match.turn]} · ${match.names[0]} ${match.scores[0]} : ${match.scores[1]} ${match.names[1]}</div>`));
+  else body.appendChild(el(`<p class="helper-text">Find the pairs: each idea matches its meaning. Moves so far: <b>${match.moves}</b></p>`));
+  const grid = el(`<div class="match-grid"></div>`);
+  match.cards.forEach((c, i) => {
+    const cardEl = el(`<button class="match-card ${c.done ? 'match-done' : ''} ${c.up ? 'match-up' : ''}">
+      <span class="match-face">${(c.up || c.done) ? c.text : '❦'}</span>
+    </button>`);
+    cardEl.addEventListener('click', () => flipMatch(i));
+    grid.appendChild(cardEl);
+  });
+  body.appendChild(grid);
+}
+function flipMatch(i){
+  const c = match.cards[i];
+  if (match.lock || c.done || c.up) return;
+  c.up = true;
+  match.flipped.push(i);
+  SFX.page();
+  renderMatch();
+  if (match.flipped.length === 2) {
+    match.moves++;
+    match.lock = true;
+    const [a, b] = match.flipped.map(x => match.cards[x]);
+    setTimeout(() => {
+      if (a.pair === b.pair) {
+        a.done = b.done = true;
+        match.found++;
+        SFX.correct();
+        if (match.names) match.scores[match.turn]++;
+      } else {
+        a.up = b.up = false;
+        SFX.wrong();
+        if (match.names) match.turn = 1 - match.turn;
+      }
+      match.flipped = [];
+      match.lock = false;
+      if (match.found === 8) { finishMatch(); return; }
+      renderMatch();
+    }, a.pair === b.pair ? 350 : 950);
+  }
+}
+function finishMatch(){
+  const body = $('#parlor-body');
+  const earned = awardLumens(10);
+  confetti(40);
+  let verdict;
+  if (match.names) {
+    const w = match.scores[0] === match.scores[1] ? -1 : (match.scores[0] > match.scores[1] ? 0 : 1);
+    verdict = w === -1 ? `A perfect tie, ${match.scores[0]} pairs each.` : `<b>${match.names[w]}</b> wins, ${match.scores[w]} pairs to ${match.scores[1 - w]}.`;
+  } else {
+    verdict = `All 8 pairs in ${match.moves} moves.${match.moves <= 14 ? ' Outstanding memory.' : match.moves <= 20 ? ' Solid work.' : ' The pairs move around less with practice. Probably.'}`;
+  }
+  body.innerHTML = `
+    <div class="result-card">
+      <div class="result-title">All Pairs Found</div>
+      <div class="result-score">🃏</div>
+      <div class="result-verdict">${verdict}</div>
+      <div class="result-earn">+${earned} lumens</div>
+      <button class="btn-primary" id="match-again">Play again</button>
+      <button class="btn-secondary" data-go="parlor">Back to the rec hall</button>
+    </div>`;
+  $('#match-again').addEventListener('click', () => startMatch(match.names));
 }
 
 // ---------- DARES: the lowest scorer becomes the entertainment ----------
