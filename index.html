@@ -941,9 +941,10 @@ body::after {
             <span class="menu-emblem">&#127919;</span>
             <span class="menu-title">The Wheel</span>
           </button>
-          <button class="menu-card" data-go="parlor" title="Games for two people on one device. Always open.">
+          <button class="menu-card" data-go="parlor" title="Duels, team adventures, and a party circle. One device, always open.">
             <span class="menu-emblem">&#127917;</span>
-            <span class="menu-title">Two Players</span>
+            <span class="menu-title">Play Together</span>
+            <span class="menu-badge">2 to 6 players</span>
           </button>
         </div>
       </div>
@@ -4021,7 +4022,7 @@ function endExpedition(survived){
 function renderParlor(){
   const body = $('#parlor-body');
   body.innerHTML = `
-    <p class="helper-text">Games for two people sharing one device. No solo progress needed, and none is touched.</p>
+    <p class="helper-text">Games for 2 to 6 people sharing one device. No solo progress needed, and none is touched.</p>
     <div class="bridge-list">
       <button class="bridge-item" id="parlor-duel">
         <span class="bridge-domains">⚔ Head to head</span>
@@ -5076,7 +5077,7 @@ function introSequence(){
       <div class="intro-line">Welcome. One question before anything: how many of you are at the cabinet right now?</div>
       <div class="ceremony-hint intro-count">
         <button class="btn-primary" id="intro-solo" style="max-width:260px;margin:14px auto 8px">Just me</button>
-        <button class="btn-secondary" id="intro-duo" style="max-width:260px;margin:0 auto">Two of us</button>
+        <button class="btn-secondary" id="intro-duo" style="max-width:260px;margin:0 auto">Two or more of us</button>
       </div>
     </div>
   </div>`);
