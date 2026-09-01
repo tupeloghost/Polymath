@@ -1052,6 +1052,58 @@ body.dt .rivalry-line { font-size: 18px; }
 .stat-plaque::before { left: 6px; }
 .stat-plaque::after { right: 6px; }
 
+/* the office: each zone gets its own material */
+/* the game table: green felt with a wooden rim */
+.section-table {
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(255,255,255,.06), transparent 70%),
+    linear-gradient(180deg, #24422a, #16301c);
+  border-color: #6b5225;
+  box-shadow: inset 0 0 30px rgba(0,0,0,.5), 0 5px 14px rgba(0,0,0,.5);
+}
+.section-table .menu-head { color: #cfe0b8; }
+.section-table .menu-head::after { background: linear-gradient(90deg, #8aa06b, transparent); }
+.section-table .menu-card {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.55), transparent 60%),
+    linear-gradient(180deg, var(--card), var(--paper-deep));
+  border: 1px solid var(--brass);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,.55);
+  padding-bottom: 12px;
+}
+.section-table .menu-card::after { display: none; }
+.section-table .menu-title { background: transparent; border: none; box-shadow: none; }
+.section-table .menu-emblem { color: var(--brass); text-shadow: none; }
+.section-table .menu-badge { background: rgba(255,255,255,.4); color: var(--brass); }
+.section-table .menu-locked { background: linear-gradient(180deg, #cfc4a8, #b3a88c); opacity: .55; }
+.section-table .menu-locked .menu-title { color: #6b5a40; }
+/* your desk: worn leather with stitching */
+.section-desk {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.05), transparent 60%),
+    linear-gradient(180deg, #4e3226, #38221a);
+  border-color: #6b5225;
+  box-shadow: inset 0 0 26px rgba(0,0,0,.5), 0 5px 14px rgba(0,0,0,.5);
+  outline: 1px dashed rgba(216,184,120,.35);
+  outline-offset: -7px;
+}
+.section-desk .menu-head { color: #e0b898; }
+.section-desk .menu-head::after { background: linear-gradient(90deg, #a07a5c, transparent); }
+.section-desk .menu-card {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.5), transparent 60%),
+    linear-gradient(180deg, var(--card), var(--paper-deep));
+  border: 1px solid var(--brass);
+  border-radius: 8px 8px 10px 10px;
+  box-shadow: 2px 3px 0 rgba(0,0,0,.25), 4px 6px 10px rgba(0,0,0,.45);
+  padding-bottom: 12px;
+}
+.section-desk .menu-card::after { display: none; }
+.section-desk .menu-title { background: transparent; border: none; box-shadow: none; }
+.section-desk .menu-emblem { color: var(--brass); text-shadow: none; }
+.section-desk .menu-badge { background: rgba(255,255,255,.4); color: var(--brass); }
+
 </style>
 </head>
 <body>
@@ -1091,8 +1143,8 @@ body.dt .rivalry-line { font-size: 18px; }
     </div>
 
     <nav class="home-menu">
-      <div class="menu-section">
-        <div class="menu-head">Play</div>
+      <div class="menu-section section-table">
+        <div class="menu-head">The Game Table</div>
         <div class="menu-grid">
           <button class="menu-card" data-go="daily" title="Ten questions from every wing. Keeps your streak alive.">
             <span class="menu-emblem">&#9788;</span>
@@ -1125,17 +1177,17 @@ body.dt .rivalry-line { font-size: 18px; }
           </button>
         </div>
       </div>
-      <div class="menu-section">
-        <div class="menu-head">Study</div>
+      <div class="menu-section section-cabinet">
+        <div class="menu-head">The Cabinet</div>
         <div class="menu-grid">
           <button class="menu-card" data-go="workshop" title="Learn a real skill in minutes and keep it for life.">
             <span class="menu-emblem">&#128736;</span>
             <span class="menu-title">Workshop</span>
             <span class="menu-badge" id="workshop-badge"></span>
           </button>
-          <button class="menu-card" data-go="cabinet" title="Open drawers: one small idea, then one question.">
+          <button class="menu-card" data-go="cabinet" title="Open a drawer: one small idea, then one question.">
             <span class="menu-emblem">&#128452;</span>
-            <span class="menu-title">The Cabinet</span>
+            <span class="menu-title">Drawers</span>
             <span class="menu-badge" id="cabinet-badge"></span>
           </button>
           <button class="menu-card" data-go="chains" title="Five linked steps that build one big idea.">
@@ -1150,8 +1202,8 @@ body.dt .rivalry-line { font-size: 18px; }
           </button>
         </div>
       </div>
-      <div class="menu-section">
-        <div class="menu-head">Your Things</div>
+      <div class="menu-section section-desk">
+        <div class="menu-head">Your Desk</div>
         <div class="menu-grid">
           <button class="menu-card" data-go="collection" title="Spend lumens on curiosities. Each has a story.">
             <span class="menu-emblem">&#127963;</span>
@@ -3114,7 +3166,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v34 · Sep 1, 2026";
+window.GAME_VERSION = "v35 · Sep 1, 2026";
 
 </script>
 <script>
