@@ -1338,7 +1338,7 @@ body.dt .teacher-line { font-size: 17px; }
             <span class="menu-title">Museum</span>
             <span class="menu-badge" id="collection-badge"></span>
           </button>
-          <button class="menu-card" data-go="journal" title="Every idea you starred, kept in your own book.">
+          <button class="menu-card" data-go="journal" title="Every idea you starred, saved in your own book.">
             <span class="menu-emblem">&#11088;</span>
             <span class="menu-title">Your Book</span>
             <span class="menu-badge" id="journal-badge"></span>
@@ -1386,7 +1386,7 @@ body.dt .teacher-line { font-size: 17px; }
       <div class="topbar-title">The Cabinet</div>
       <div class="topbar-right" id="cabinet-count"></div>
     </div>
-    <p class="helper-text">Tap a drawer to open it. Read the idea, then answer one question to keep it.</p>
+    <p class="helper-text">Tap a drawer to open it. Read the idea, then answer one question to learn it.</p>
     <div id="cabinet-grid"></div>
   </section>
 
@@ -3334,7 +3334,7 @@ function facultyLine(domain, right){
 
 </script>
 <script>
-window.GAME_VERSION = "v43 · Sep 1, 2026";
+window.GAME_VERSION = "v44 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3428,8 +3428,8 @@ const ACHIEVEMENTS = [
   { id:'a3',  icon:'🔥', name:'Kindling',           desc:'A 3 day streak', test:s => s.streak >= 3 },
   { id:'a4',  icon:'🔥', name:'Eternal Flame',      desc:'A 7 day streak', test:s => s.streak >= 7 },
   { id:'a5',  icon:'☀️', name:'The Unbroken Month', desc:'A 30 day streak', test:s => s.streak >= 30 },
-  { id:'a6',  icon:'🗄️', name:'First Shelf',        desc:'Keep 10 drawers', test:s => Object.keys(s.nodesDone).length >= 10 },
-  { id:'a7',  icon:'🏛️', name:'The Full Cabinet',   desc:'Keep every drawer', test:s => Object.keys(s.nodesDone).length >= NODES.length },
+  { id:'a6',  icon:'🗄️', name:'First Shelf',        desc:'Learn 10 drawers', test:s => Object.keys(s.nodesDone).length >= 10 },
+  { id:'a7',  icon:'🏛️', name:'The Full Cabinet',   desc:'Learn every drawer', test:s => Object.keys(s.nodesDone).length >= NODES.length },
   { id:'a8',  icon:'🌉', name:'Bridge Builder',     desc:'Cross 10 bridges', test:s => Object.keys(s.bridgesDone).length >= 10 },
   { id:'a9',  icon:'🌐', name:'All Things Connect', desc:'Cross every bridge', test:s => Object.keys(s.bridgesDone).length >= BRIDGES.length },
   { id:'a10', icon:'⚔️', name:'Gauntlet Runner',    desc:'Score 10 in the Gauntlet', test:s => s.gauntletBest >= 10 },
@@ -4515,7 +4515,7 @@ function takeAwayCard(qs){
     <div class="takeaway-label">✨ Take this with you</div>
     <div class="takeaway-q">${q.q}</div>
     <div class="takeaway-text">${q.why}</div>
-    <div class="takeaway-hint">Tell one person today. Telling is keeping.</div>
+    <div class="takeaway-hint">Tell one person today. Teaching it locks it in.</div>
   </div>`);
   card.querySelector('.takeaway-text').appendChild(starButton(q.q, q.why, q.d));
   const shareBtn = el(`<button class="star-btn">🖼 make a card</button>`);
@@ -4763,15 +4763,15 @@ function questionCard(opts){
 function inJournal(text){ return S.journal.some(e => e.x === text); }
 function starButton(title, text, domain){
   const saved = inJournal(text);
-  const b = el(`<button class="star-btn ${saved ? 'starred' : ''}" title="Keep this in your Commonplace Book">${saved ? '★ kept' : '☆ keep this'}</button>`);
+  const b = el(`<button class="star-btn ${saved ? 'starred' : ''}" title="Save this to your Commonplace Book">${saved ? '★ saved' : '☆ save this'}</button>`);
   b.addEventListener('click', (e) => {
     e.stopPropagation();
     if (inJournal(text)) return;
     S.journal.push({ t: title, x: text, d: domain, ts: Date.now() });
     save();
-    b.textContent = '★ kept';
+    b.textContent = '★ saved';
     b.classList.add('starred');
-    toast('Kept in your Commonplace Book.');
+    toast('Saved to your book.');
     SFX.reward();
   });
   return b;
@@ -4783,7 +4783,7 @@ function teachBack(body, title, original, domain, onBack){
     <h2 class="lesson-title">Teach it back</h2>
     <p class="lesson-text">Explain <b>${title}</b> in your own words, like you are telling a friend. No grades. Writing it is what makes it stick.</p>
     <textarea class="teach-input" rows="4" placeholder="The way I understand it..."></textarea>
-    <button class="btn-primary" id="teach-save">Keep my explanation</button>
+    <button class="btn-primary" id="teach-save">Save my explanation</button>
     <button class="btn-secondary" id="teach-skip">Maybe later</button>
   </div>`);
   body.appendChild(card);
@@ -4797,7 +4797,7 @@ function teachBack(body, title, original, domain, onBack){
     checkAchievements();
     body.innerHTML = '';
     body.appendChild(el(`<div class="lesson-card">
-      <h2 class="lesson-title">Kept in your book</h2>
+      <h2 class="lesson-title">Saved to your book</h2>
       <div class="journal-entry journal-mine"><div class="journal-title">Your words</div><div class="journal-text">${text.replace(/</g,'&lt;')}</div></div>
       ${original ? `<div class="journal-entry"><div class="journal-title">The original</div><div class="journal-text">${original}</div></div>` : ''}
       <p class="lesson-text">If your version captured the heart of it, it is truly yours now.</p>
@@ -4810,7 +4810,7 @@ function teachBack(body, title, original, domain, onBack){
 function renderJournal(){
   const body = $('#journal-body');
   body.innerHTML = '';
-  $('#journal-count').textContent = `${S.journal.length} kept`;
+  $('#journal-count').textContent = `${S.journal.length} saved`;
   if (!S.journal.length) {
     body.innerHTML = `<p class="helper-text">Empty so far. Whenever an idea strikes you, tap the ☆ next to it and it will live here.</p>`;
     return;
@@ -4853,14 +4853,14 @@ function renderHome(){
     </div>`;
   $('#daily-badge').textContent = doneToday ? 'Done today ✓' : 'Ready';
   $('#daily-badge').classList.toggle('badge-done', doneToday);
-  $('#cabinet-badge').textContent = `${Object.keys(S.nodesDone).length} of ${NODES.length} kept`;
+  $('#cabinet-badge').textContent = `${Object.keys(S.nodesDone).length} of ${NODES.length} learned`;
   $('#bridges-badge').textContent = `${Object.keys(S.bridgesDone).length} of ${BRIDGES.length} crossed`;
   $('#gauntlet-badge').textContent = S.gauntletBest ? `best: ${S.gauntletBest}` : 'untried';
   $('#collection-badge').textContent = `${Object.keys(S.owned).length} of ${CURIOSITIES.length} pieces`;
   $('#chains-badge').textContent = `${Object.keys(S.chainsDone).length} of ${CHAINS.length} forged`;
   $('#lightning-badge').textContent = S.lightningBest ? `best: ${S.lightningBest}` : 'untried';
   $('#honors-badge').textContent = `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} plaques`;
-  $('#journal-badge').textContent = S.journal.length ? `${S.journal.length} kept` : 'empty';
+  $('#journal-badge').textContent = S.journal.length ? `${S.journal.length} saved` : 'empty';
   $('#expedition-badge').textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
   $('#workshop-badge').textContent = `${Object.keys(S.skills).length} of ${SKILLS.length} learned`;
 
@@ -6316,7 +6316,7 @@ function renderCabinet(){
     nodes.forEach(node => {
       const done = !!S.nodesDone[node.id];
       const locked = (node.tier||1) === 2 && !tier1Done;
-      const state = done ? '✓ kept' : locked ? '🔒 locked' : (node.tier||1) === 2 ? 'deeper' : 'open me';
+      const state = done ? '✓ learned' : locked ? '🔒 locked' : (node.tier||1) === 2 ? 'deeper' : 'open me';
       const drawer = el(`<button class="drawer ${done ? 'drawer-done' : ''} ${locked ? 'drawer-locked' : ''}">
         <span class="drawer-title">${locked ? 'A deeper drawer' : node.title}</span>
         <span class="drawer-state">${state}</span>
@@ -6362,7 +6362,7 @@ function openNode(node){
         if (right && !S.nodesDone[node.id]) {
           S.nodesDone[node.id] = true;
           const reward = awardLumens((node.tier||1) === 2 ? 25 : 15);
-          toast(`+${reward} lumens. The drawer is yours.`);
+          toast(`+${reward} lumens. One more idea learned.`);
         } else if (!right) {
           toast('Not yet. Read it once more and try again.');
         }
@@ -6887,7 +6887,7 @@ function introSequence(){
   const lines = [
     'Welcome in. I am the Curator. I look after this place.',
     'This academy teaches a little of everything: stars, money, music, the human body, and much more.',
-    'Here is how it works. I show you one idea. Then I ask one question about it. Answer right, and the idea is yours to keep.',
+    'Here is how it works. I show you one idea. Then I ask one question about it. Answer right, and you have learned it.',
     'Right answers also earn lumens: the game’s coins. You can spend them later in the Museum.',
     'Most doors start locked. Every right answer opens more of the place. That is the adventure.'
   ];
