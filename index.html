@@ -1258,6 +1258,38 @@ body.dt .match-up, body.dt .match-done { font-size: 15px; }
 .match-done { opacity: .55; border-color: var(--green); cursor: default; }
 .match-face { text-align: center; }
 
+/* density pass: the home fits in far fewer scrolls on desktop */
+body.dt #office-scene { max-width: 860px; margin: 0 auto 16px; }
+body.dt #day-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+body.dt #day-row > div { margin-bottom: 0; }
+#day-row { margin-bottom: 18px; }
+body.dt .home-menu { grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
+body.dt .home-menu .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+body.dt .menu-card { min-height: 92px; padding: 10px 6px 18px; }
+body.dt .home-menu .menu-emblem { font-size: 24px; }
+body.dt .home-menu .menu-title { font-size: 15px; padding: 2px 8px; }
+body.dt .home-menu .menu-badge { font-size: 11px; }
+/* event cards become slim banners */
+#mystery-card, #examiner-card, #popquiz-card { padding: 8px 14px; }
+#mystery-card .mystery-title, #examiner-card .mystery-title, #popquiz-card .mystery-title { font-size: 17px; margin: 1px 0; }
+#mystery-card .iod-label, #examiner-card .iod-label, #popquiz-card .iod-label { font-size: 11px; }
+#mystery-card .iod-hint, #examiner-card .iod-hint, #popquiz-card .iod-hint { font-size: 12px; }
+body.dt #mystery-card .mystery-title, body.dt #examiner-card .mystery-title, body.dt #popquiz-card .mystery-title { font-size: 19px; }
+/* topbars stay with you */
+.topbar {
+  position: sticky; top: 8px; z-index: 30;
+  background: linear-gradient(180deg, rgba(36,23,8,.96), rgba(36,23,8,.88));
+  border: 1px solid rgba(176,141,74,.45);
+  border-radius: 10px;
+  padding: 8px 12px;
+  backdrop-filter: blur(3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+/* curator card tighter */
+#curator-card { padding: 10px 14px; margin-bottom: 12px; }
+.home-stats { margin: 12px 0 14px; }
+.rank-progress { margin-bottom: 4px; }
+
 </style>
 </head>
 <body>
@@ -1289,15 +1321,17 @@ body.dt .match-up, body.dt .match-done { font-size: 15px; }
 
     <div class="home-stats" id="home-stats"></div>
 
-    <div id="schedule-card"></div>
     <div id="popquiz-card"></div>
     <div id="mystery-card"></div>
     <div id="examiner-card"></div>
+    <div id="day-row">
+    <div id="schedule-card"></div>
     <div id="today-panel">
       <div class="today-head">Today at the Academy</div>
       <div id="idea-of-day" class="today-row"></div>
       <div id="field-quest" class="today-row"></div>
       <div id="book-echo" class="today-row"></div>
+    </div>
     </div>
 
     <nav class="home-menu">
@@ -3557,7 +3591,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v45 · Sep 1, 2026";
+window.GAME_VERSION = "v46 · Sep 1, 2026";
 
 </script>
 <script>
