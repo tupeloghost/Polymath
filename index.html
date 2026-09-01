@@ -3048,7 +3048,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v31 · Sep 1, 2026";
+window.GAME_VERSION = "v32 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4552,7 +4552,7 @@ function renderTeachTest(){
   });
 }
 
-// ---------- FORFEITS: the loser becomes the entertainment ----------
+// ---------- DARES: the lowest scorer becomes the entertainment ----------
 const FORFEITS = [
   'Answer your next question in a whisper.',
   'Address the winner as "Your Brilliance" until the next game ends.',
@@ -4572,10 +4572,10 @@ const FORFEITS = [
   'Applaud the winner. Slowly. While keeping eye contact.'
 ];
 function forfeitButton(loserName){
-  const btn = el(`<button class="btn-secondary" id="forfeit-draw">🃏 ${loserName} draws a forfeit</button>`);
+  const btn = el(`<button class="btn-secondary" id="forfeit-draw">🃏 Lowest score draws a dare: that’s you, ${loserName}</button>`);
   btn.addEventListener('click', () => {
     const card = el(`<div class="forfeit-card">
-      <div class="forfeit-label">The Forfeit Deck decrees</div>
+      <div class="forfeit-label">${loserName}’s dare</div>
       <div class="forfeit-text">${FORFEITS[Math.floor(Math.random() * FORFEITS.length)]}</div>
     </div>`);
     btn.replaceWith(card);
