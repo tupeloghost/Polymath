@@ -3048,7 +3048,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v32 · Sep 1, 2026";
+window.GAME_VERSION = "v33 · Sep 1, 2026";
 
 </script>
 <script>
@@ -3683,6 +3683,10 @@ function collectionBonusPct(){ return Object.keys(S.owned).length * 2; }
 function awardLumens(base){
   const total = Math.round(base * (1 + collectionBonusPct() / 100));
   S.lumens += total;
+  if (!S.lumensExplained) {
+    S.lumensExplained = true;
+    setTimeout(() => toast('✦ Lumens are the game’s coins. You earn them by answering, and spend them in the Collection Room.'), 1200);
+  }
   save();
   SFX.reward();
   setTimeout(checkAchievements, 400);
@@ -3891,7 +3895,7 @@ function renderJournal(){
 function renderHome(){
   const doneToday = S.lastDaily === todayStr();
   $('#home-stats').innerHTML = `
-    <div class="stat-plaque"><span class="stat-num">${S.lumens}</span><span class="stat-label">Lumens</span></div>
+    <div class="stat-plaque" id="lumens-plaque" title="Lumens are the game’s coins. Earn them by answering, spend them in the Collection Room." style="cursor:pointer"><span class="stat-num">${S.lumens}</span><span class="stat-label">Lumens ⓘ</span></div>
     <div class="stat-plaque"><span class="stat-num">${S.streak}</span><span class="stat-label">Day streak${S.tokens ? ' · ' + '🕯️'.repeat(S.tokens) : ''}</span></div>
     <div class="stat-plaque"><span class="stat-num">${Object.keys(S.nodesDone).length}/${NODES.length}</span><span class="stat-label">Drawers</span></div>
     <div class="stat-plaque rank-plaque"><span class="stat-rank">${rankTitle()}</span><span class="stat-label">Your title</span></div>
@@ -4004,6 +4008,8 @@ function renderHome(){
   } else {
     echo.style.display = 'none';
   }
+
+  $('#lumens-plaque').onclick = () => toast('✦ Lumens are the game’s coins. You earn them by answering, and spend them on curiosities in the Collection Room.');
 
   const st = $('#sound-toggle');
   st.textContent = S.sound !== false ? '🔔' : '🔕';
@@ -4463,7 +4469,7 @@ function renderParty(){
         <div class="result-title">Last Scholar Standing</div>
         <div class="result-score">👑</div>
         <div class="result-verdict"><b>${alive[0].name}</b> outlasted everyone. The circle bows.</div>
-        <div class="result-earn">+${earned} lumens to the cabinet</div>
+        <div class="result-earn">+${earned} lumens for hosting the game</div>
         <button class="btn-primary" id="party-again">Play again</button>
         <button class="btn-secondary" data-go="parlor">Back to the parlor</button>
       </div>`;
@@ -4520,7 +4526,7 @@ function renderTeachTest(){
         <div class="result-title">The Candle Burns Down</div>
         <div class="result-score">${s} / ${tt.rounds}</div>
         <div class="result-verdict">${s >= 5 ? 'A great team. Teaching each other is the fastest way to learn: you both just proved it.' : 'Good work. What one of you reads, the other remembers. Play again and watch the score climb.'}</div>
-        <div class="result-earn">+${earned} lumens to the cabinet</div>
+        <div class="result-earn">+${earned} lumens for hosting the game</div>
         <button class="btn-primary" id="tt-again">Play again</button>
         <button class="btn-secondary" data-go="parlor">Back to the parlor</button>
       </div>`;
@@ -4836,9 +4842,9 @@ function finishDuel(){
     <div class="result-card">
       <div class="result-title">The Duel Is Decided</div>
       <div class="result-score">👑</div>
-      <div class="result-verdict"><b>${duel.names[w]}</b> takes the crown, ${duel.scores[w]} to ${duel.scores[1 - w]}. ${duel.names[1 - w]}, the cabinet demands a rematch.</div>
+      <div class="result-verdict"><b>${duel.names[w]}</b> takes the crown, ${duel.scores[w]} to ${duel.scores[1 - w]}.</div>
       ${seriesLine}
-      <div class="result-earn">+${earned} lumens to the cabinet for hosting</div>
+      <div class="result-earn">+${earned} lumens for hosting the game</div>
       ${rivalry ? `<div class="rivalry-line">${rivalry}</div>` : ''}
       <button class="btn-primary" id="duel-rematch">Rematch: ${duel.names[1 - w]} wants revenge</button>
       <button class="btn-secondary" data-go="home">Back to the cabinet</button>
@@ -5753,6 +5759,7 @@ function introSequence(){
     'Ah. A new visitor. Come in, come in. Mind the dust: it is older than you think.',
     'I am the Curator. This cabinet holds a little of everything worth knowing: stars, bodies, money, music, myths, and more.',
     'The rules are simple. I show you one small idea. Then I ask one question. Answer right, and the idea is yours to keep. Forever.',
+    'Right answers also earn lumens: the coins of this place. Save them up and spend them on treasures in the Collection Room.',
     'Most doors here are locked, for now. Every right answer opens this place a little more. That is the whole adventure.'
   ];
   let i = 0;
