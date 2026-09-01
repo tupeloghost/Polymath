@@ -1426,6 +1426,117 @@ body.dt #campus-moon-icon { font-size: 52px; }
 @keyframes starflyby { from { transform: translateX(0); } to { transform: translateX(-115cqw); } }
 #office-scene { container-type: inline-size; }
 
+/* ---------- v49: the campus, clearer and more alive ---------- */
+#campus-wrap {
+  border: 3px solid #6b4a22; outline: 1px solid rgba(232,207,143,.35);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 10px 34px rgba(0,0,0,.55), inset 0 0 0 1px rgba(0,0,0,.6);
+}
+.campus-vignette {
+  position: absolute; inset: 0; pointer-events: none; z-index: 2;
+  background: radial-gradient(ellipse 90% 80% at 50% 42%, transparent 62%, rgba(6,4,10,.5) 100%);
+}
+/* brass nameplates: always readable, so you always know what is what */
+.zone-name {
+  position: absolute; left: 50%; bottom: 4%; transform: translateX(-50%);
+  white-space: nowrap; font-family: var(--serif); font-weight: 700; letter-spacing: .4px;
+  font-size: clamp(9px, 2.1cqw, 14.5px); line-height: 1.35; color: #f5e2b2;
+  background: linear-gradient(180deg, rgba(58,38,14,.92), rgba(30,18,6,.92));
+  border: 1px solid rgba(212,171,94,.75); border-radius: 7px; padding: 1px 9px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.5); pointer-events: none; z-index: 3;
+  text-shadow: 0 1px 2px rgba(0,0,0,.8);
+}
+.hot-zone { z-index: 3; }
+.hot-zone:hover .zone-name { color: #fff3d0; border-color: #ffd98a; }
+.zone-label { bottom: auto; top: 50%; transform: translate(-50%,-50%); z-index: 4; font-size: clamp(10px, 2cqw, 15px); }
+.zone-badge {
+  font-size: clamp(8.5px, 1.7cqw, 12.5px); z-index: 3;
+  top: auto; right: auto; bottom: calc(4% + clamp(16px, 4cqw, 26px)); left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
+}
+.badge-glow { color: #ffe9b0; border-color: rgba(255,205,110,.9); animation: plaquepulse 2.6s ease-in-out infinite; }
+@keyframes plaquepulse {
+  0%,100% { box-shadow: 0 0 0 rgba(255,190,90,0); }
+  50% { box-shadow: 0 0 14px rgba(255,190,90,.7); }
+}
+#campus-map-btn {
+  position: absolute; top: 3%; left: 2.5%; z-index: 5;
+  font-family: var(--serif); font-weight: 700; font-size: clamp(11px, 2cqw, 15px);
+  color: #f5e2b2; background: rgba(24,14,5,.82); border: 1px solid rgba(212,171,94,.7);
+  border-radius: 999px; padding: 4px 14px; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+}
+#campus-map-btn:hover { color: #fff3d0; border-color: #ffd98a; box-shadow: 0 0 14px rgba(255,190,90,.5); }
+.bell-rung { animation: bellshake .8s ease; }
+@keyframes bellshake { 0%,100% { transform: rotate(0); } 20% { transform: rotate(3deg); } 45% { transform: rotate(-3deg); } 70% { transform: rotate(2deg); } }
+
+/* chimney smoke */
+.campus-smoke { position: absolute; left: 55%; top: 12%; width: 4%; height: 10%; pointer-events: none; z-index: 2; }
+.puff {
+  position: absolute; left: 50%; bottom: 0; width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(220,214,200,.5), rgba(220,214,200,0) 70%);
+  animation: puffrise 7s linear infinite; opacity: 0;
+}
+.puff.p2 { animation-delay: 2.3s; }
+.puff.p3 { animation-delay: 4.6s; }
+@keyframes puffrise {
+  0% { transform: translate(-50%,0) scale(.6); opacity: 0; }
+  12% { opacity: .55; }
+  100% { transform: translate(-140%,-460%) scale(3.2); opacity: 0; }
+}
+/* fireflies on the lawn */
+.firefly {
+  position: absolute; width: 5px; height: 5px; border-radius: 50%; pointer-events: none; z-index: 2;
+  background: #ffe9a0; box-shadow: 0 0 8px 2px rgba(255,224,130,.8);
+  animation: ffdrift 11s ease-in-out infinite, ffblink 3.2s ease-in-out infinite;
+}
+.firefly.f1 { left: 12%; top: 88%; animation-delay: 0s, .4s; }
+.firefly.f2 { left: 30%; top: 93%; animation-delay: 2s, 1.1s; }
+.firefly.f3 { left: 66%; top: 91%; animation-delay: 4s, 2.2s; }
+.firefly.f4 { left: 84%; top: 87%; animation-delay: 6s, .9s; }
+.firefly.f5 { left: 48%; top: 95%; animation-delay: 8s, 1.7s; }
+@keyframes ffdrift {
+  0%,100% { transform: translate(0,0); }
+  25% { transform: translate(14px,-16px); }
+  50% { transform: translate(-10px,-26px); }
+  75% { transform: translate(8px,-8px); }
+}
+@keyframes ffblink { 0%,100% { opacity: 0; } 50% { opacity: .95; } }
+
+/* the school directory */
+.dir-overlay {
+  position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center;
+  background: rgba(8,5,2,.72); opacity: 0; transition: opacity .25s ease; padding: 16px;
+}
+.dir-overlay.dir-in { opacity: 1; }
+.dir-card {
+  width: min(560px, 96vw); max-height: 86vh; overflow-y: auto;
+  background: linear-gradient(180deg, #2c1d0e, #201406);
+  border: 2px solid rgba(212,171,94,.7); border-radius: 16px; padding: 18px 18px 14px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.7);
+}
+.dir-head { font-family: var(--display); font-size: 24px; color: #f5e2b2; margin-bottom: 2px; }
+.dir-sub { font-family: var(--serif); font-size: 15px; color: #c9b58c; margin-bottom: 12px; }
+.dir-row {
+  display: flex; align-items: center; gap: 12px; cursor: pointer;
+  padding: 9px 10px; border-radius: 10px; border: 1px solid transparent;
+}
+.dir-row:hover { background: rgba(232,207,143,.08); border-color: rgba(212,171,94,.45); }
+.dir-icon { font-size: 24px; width: 32px; text-align: center; flex: none; }
+.dir-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.dir-name { font-family: var(--serif); font-weight: 700; font-size: 17px; color: #f0e0bc; }
+.dir-desc { font-family: var(--serif); font-size: 14px; color: #b8a683; }
+.dir-status {
+  flex: none; font-family: var(--serif); font-size: 13px; color: #ffd9a0;
+  background: rgba(20,12,4,.7); border: 1px solid rgba(176,141,74,.5); border-radius: 8px; padding: 2px 9px;
+}
+.dir-close {
+  display: block; width: 100%; margin-top: 10px; padding: 10px; cursor: pointer;
+  font-family: var(--serif); font-size: 15px; color: #c9b58c;
+  background: none; border: 1px solid rgba(176,141,74,.45); border-radius: 10px;
+}
+.dir-close:hover { color: #f0e0bc; border-color: rgba(212,171,94,.8); }
+
 </style>
 </head>
 <body>
@@ -3727,7 +3838,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v48 · Sep 1, 2026";
+window.GAME_VERSION = "v49 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4357,17 +4468,17 @@ function buildCampusScene(){
   if (!holder || typeof CAMPUS_ART === 'undefined') return;
   const mp = moonPhase();
   const zones = [
-    { id:'z-library',   x:23.5, y:35, w:15,   h:21, label:'Library · the drawers', go:'cabinet' },
-    { id:'z-class',     x:39,   y:35, w:20.5, h:21, label:'Classroom · daily run', go:'daily' },
-    { id:'z-office',    x:61.5, y:35, w:14.5, h:21, label:'Your office', go:'office' },
-    { id:'z-workshop',  x:23.5, y:56.5, w:15, h:17, label:'Workshop · real skills', go:'workshop' },
-    { id:'z-museum',    x:39,   y:56.5, w:20.5, h:17, label:'Museum · your collection', go:'collection' },
-    { id:'z-trophy',    x:61.5, y:56.5, w:14.5, h:17, label:'Trophy hall · honors', go:'honors' },
-    { id:'z-rec',       x:23.5, y:74.5, w:15, h:19, label:'Rec room · play together', go:'parlor' },
-    { id:'z-door',      x:42,   y:73, w:16,   h:24, label:'The front door', go:null },
-    { id:'z-detention', x:61.5, y:74.5, w:15, h:19, label:'Detention · win back your misses', go:'detention' },
-    { id:'z-bell',      x:43,   y:6,  w:14,   h:19, label:'The bell tower raven', go:null },
-    { id:'z-bus',       x:5,    y:76, w:22,   h:22, label:'The field trip bus · adventures', go:'trips' }
+    { id:'z-library',   x:23.5, y:35, w:15,   h:21, icon:'🗄️', name:'Library',       sub:'Open a drawer, learn one idea',      k:'library',   go:'cabinet' },
+    { id:'z-class',     x:39,   y:35, w:20.5, h:21, icon:'🏫', name:'Classroom',     sub:'Today’s ten-question run',           k:'class',     go:'daily' },
+    { id:'z-office',    x:61.5, y:35, w:14.5, h:21, icon:'🦉', name:'Your Office',   sub:'Your room, your things, the owl',    k:'office',    go:'office' },
+    { id:'z-workshop',  x:23.5, y:56.5, w:15, h:17, icon:'🛠️', name:'Workshop',      sub:'Practice real-life skills',          k:'workshop',  go:'workshop' },
+    { id:'z-museum',    x:39,   y:56.5, w:20.5, h:17, icon:'🏺', name:'Museum',       sub:'Spend lumens on curiosities',        k:'museum',    go:'collection' },
+    { id:'z-trophy',    x:61.5, y:56.5, w:14.5, h:17, icon:'🏆', name:'Trophy Hall',  sub:'Every plaque you have earned',       k:'trophy',    go:'honors' },
+    { id:'z-rec',       x:23.5, y:74.5, w:15, h:19, icon:'🎲', name:'Rec Room',      sub:'Games for two or more players',      k:'rec',       go:'parlor' },
+    { id:'z-door',      x:42,   y:73, w:16,   h:24, icon:'🚪', name:'Front Door',    sub:'The school directory: every room',   k:null,        go:null },
+    { id:'z-detention', x:61.5, y:74.5, w:15, h:19, icon:'🧹', name:'Detention',     sub:'Win back the ones you missed',       k:'detention', go:'detention' },
+    { id:'z-bell',      x:43,   y:6,  w:14,   h:19, icon:'🐦‍⬛', name:'Bell Tower',    sub:'The raven has opinions',             k:null,        go:null, noplate:true },
+    { id:'z-bus',       x:5,    y:76, w:22,   h:22, icon:'🚌', name:'Field Trip Bus', sub:'Step into history and choose',      k:'bus',       go:'trips' }
   ];
   holder.innerHTML = `
     <div id="campus-wrap">
@@ -4377,10 +4488,29 @@ function buildCampusScene(){
         <span class="zone-label">Tonight’s sky</span>
       </div>
       ${zones.map(z => `<div id="${z.id}" class="hot-zone" style="left:${z.x}%;top:${z.y}%;width:${z.w}%;height:${z.h}%">
-        <span class="zone-label">${z.label}</span>
-        ${z.id === 'z-detention' ? '<span id="c-detention-count" class="zone-badge"></span>' : ''}
+        ${z.noplate ? '' : `<span class="zone-name">${z.name}</span>`}
+        <span class="zone-label">${z.sub}</span>
+        ${z.k ? `<span class="zone-badge" data-status="${z.k}"${z.k === 'detention' ? ' id="c-detention-count"' : ''}></span>` : ''}
       </div>`).join('')}
+      <div class="campus-smoke"><span class="puff p1"></span><span class="puff p2"></span><span class="puff p3"></span></div>
+      <span class="firefly f1"></span><span class="firefly f2"></span><span class="firefly f3"></span>
+      <span class="firefly f4"></span><span class="firefly f5"></span>
+      <div class="campus-vignette"></div>
+      <button id="campus-map-btn" title="What is each room?">🗺 Map</button>
     </div>`;
+
+  // live plaques: each room reports what waits inside
+  window.updateCampusStatus = function(){
+    if (!window.sceneHooks3) return;
+    const st = sceneHooks3.status();
+    document.querySelectorAll('.zone-badge[data-status]').forEach(b => {
+      const v = st[b.dataset.status];
+      if (v != null) b.textContent = v;
+      if (b.dataset.status === 'class') b.classList.toggle('badge-glow', v !== 'done ✓');
+      if (b.dataset.status === 'detention') b.classList.toggle('badge-glow', v !== 'empty');
+    });
+  };
+  updateCampusStatus();
 
   const wrap = document.getElementById('campus-wrap');
   function enterZone(z){
@@ -4391,8 +4521,7 @@ function buildCampusScene(){
     ov.className = 'room-fade';
     const lb = document.createElement('div');
     lb.className = 'room-fade-label';
-    lb.textContent = 'Entering ' + z.label.split(' ·')[0].toLowerCase().replace(/^your/, 'your') + '…';
-    lb.textContent = 'Entering ' + z.label.split(' ·')[0] + '…';
+    lb.textContent = 'Entering the ' + z.name.replace(/^Your /, '') + '…';
     ov.appendChild(lb);
     document.body.appendChild(ov);
     requestAnimationFrame(() => ov.classList.add('room-fade-in'));
@@ -4416,13 +4545,41 @@ function buildCampusScene(){
     'Caw. Detention is downstairs. I am not saying you belong there. I am implying it.',
     'Caw. Fun fact: a group of ravens is called a conspiracy. We earned that.'
   ];
-  document.getElementById('z-bell').addEventListener('click', () => { toast('🐦‍⬛ ' + RAVEN[Math.floor(Math.random() * RAVEN.length)]); SFX.combo(1); });
-  document.getElementById('z-door').addEventListener('click', () => {
-    SFX.door();
-    toast('🚪 You step inside. Your schedule is on the board.');
-    const sc = document.getElementById('schedule-card');
-    if (sc) sc.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('z-bell').addEventListener('click', () => {
+    SFX.bell();
+    const w = document.getElementById('z-bell');
+    w.classList.remove('bell-rung'); void w.getBoundingClientRect(); w.classList.add('bell-rung');
+    toast('🐦‍⬛ ' + RAVEN[Math.floor(Math.random() * RAVEN.length)]);
   });
+
+  // the front door opens the school directory: every room, what it does, its status
+  function openDirectory(){
+    SFX.door();
+    const st = window.sceneHooks3 ? sceneHooks3.status() : {};
+    const ov = document.createElement('div');
+    ov.className = 'dir-overlay';
+    ov.innerHTML = `<div class="dir-card">
+      <div class="dir-head">🏫 The Academy Directory</div>
+      <div class="dir-sub">Every room, and what waits inside. Tap one to go.</div>
+      ${zones.filter(z => z.go).map(z => `
+        <div class="dir-row" data-zid="${z.id}">
+          <span class="dir-icon">${z.icon}</span>
+          <span class="dir-body"><span class="dir-name">${z.name}</span><span class="dir-desc">${z.sub}</span></span>
+          <span class="dir-status">${z.k && st[z.k] != null ? st[z.k] : ''}</span>
+          <span class="row-go">›</span>
+        </div>`).join('')}
+      <button class="dir-close">Stay outside</button>
+    </div>`;
+    ov.addEventListener('click', e => {
+      if (e.target === ov || e.target.closest('.dir-close')) { ov.remove(); return; }
+      const r = e.target.closest('.dir-row');
+      if (r) { ov.remove(); enterZone(zones.find(z => z.id === r.dataset.zid)); }
+    });
+    document.body.appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add('dir-in'));
+  }
+  document.getElementById('z-door').addEventListener('click', openDirectory);
+  document.getElementById('campus-map-btn').addEventListener('click', openDirectory);
   document.getElementById('campus-moon').addEventListener('click', () => toast(`${mp.icon} ${mp.name} tonight. ${mp.tip}`));
 
   // shooting stars over the painting
@@ -4948,6 +5105,24 @@ function go(name){
   SFX.page();
 }
 window.goScreen = (name) => go(name);
+window.sceneHooks3 = {
+  // live status lines for the campus room plaques and the front-door directory
+  status(){
+    const td = todayStr();
+    const held = Object.keys(S.misses).length;
+    return {
+      library:   Object.keys(S.nodesDone).length + '/' + NODES.length,
+      class:     S.lastDaily === td ? 'done ✓' : 'class is on',
+      office:    S.lumens + ' ✦',
+      workshop:  Object.keys(S.skills).length + '/' + SKILLS.length,
+      museum:    Object.keys(S.owned).length + '/' + CURIOSITIES.length,
+      trophy:    Object.keys(S.achievements).length + '/' + ACHIEVEMENTS.length,
+      rec:       '2+ players',
+      detention: held ? held + ' held' : 'empty',
+      bus:       Object.keys(S.tripsDone || {}).length + '/' + TRIPS.length
+    };
+  }
+};
 window.sceneHooks2 = {
   roomUse(k){ return (S.roomUse && S.roomUse[k]) || 0; },
   luckyStar(){
@@ -5188,6 +5363,8 @@ function renderHome(){
     confetti(50);
     toast(`🔔 Perfect attendance! All three periods done. +${got} lumens. (${S.attendanceCount} day${S.attendanceCount === 1 ? '' : 's'} total)`);
   }
+
+  if (window.updateCampusStatus) window.updateCampusStatus();
 
   // pop quiz: some days a teacher ambushes you
   const pq = $('#popquiz-card');
