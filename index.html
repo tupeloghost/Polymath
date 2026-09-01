@@ -1592,6 +1592,12 @@ body.ph .reality-value { font-size: 34px; }
 .reality-final { font-family: var(--display); font-size: 40px; color: #8a5a14; text-align: center; margin: 12px 0; }
 .duel-again { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
 
+/* ---------- v53: Number Showdown + Myth Hunt ---------- */
+.myth-btns { display: flex; gap: 12px; margin: 16px 0 6px; flex-wrap: wrap; }
+.myth-btns .btn-primary { flex: 1; min-width: 140px; }
+.myth-btns .mh-myth { filter: hue-rotate(-18deg) saturate(1.15); }
+.myth-btns .btn-primary:disabled { opacity: .5; }
+
 </style>
 </head>
 <body>
@@ -3960,6 +3966,86 @@ const REALITY = [
 
 </script>
 <script>
+// Myth Hunt: is it true, or is it a myth everyone repeats?
+// Half are famous myths that cause real bad decisions. Half are facts that sound too strange to be true.
+// { t: statement, myth: true if it is false, why: the correction or confirmation }
+const MYTHS = [
+  { t:'Humans only use 10% of their brains.', myth:true,
+    why:'Myth. Brain scans show nearly every region active over a day. The myth survives because it sells the idea of untapped magic. Your brain is already fully hired.' },
+  { t:'Sugar makes kids hyperactive.', myth:true,
+    why:'Myth. In blind studies, kids on sugar and kids on placebo behave the same; only the parents who KNEW about the sugar rated their kids as wilder. The hype is in the adults.' },
+  { t:'A goldfish’s memory lasts about three seconds.', myth:true,
+    why:'Myth. Goldfish remember feeding routines for months and can learn mazes. If a goldfish can hold a grudge, so can your test subjects.' },
+  { t:'The Great Wall of China is visible from space with the naked eye.', myth:true,
+    why:'Myth. Astronauts confirm it is not; it is long but narrow, like trying to see a hair from a mile away. Cities at night are far easier to spot.' },
+  { t:'Bulls charge because the cape is red.', myth:true,
+    why:'Myth. Bulls cannot see red at all; they charge at the movement. The cape is red mostly to hide bloodstains from the audience.' },
+  { t:'Cracking your knuckles causes arthritis.', myth:true,
+    why:'Myth. One doctor cracked the knuckles of one hand for 60 years as an experiment: no difference. The pop is just gas bubbles in joint fluid.' },
+  { t:'You lose most of your body heat through your head.', myth:true,
+    why:'Myth. You lose about 10%, roughly matching its share of your skin. The military study behind the myth used subjects dressed warmly everywhere EXCEPT the head.' },
+  { t:'Bats are blind.', myth:true,
+    why:'Myth. All bats can see, and many see quite well. Echolocation is a bonus sense on top, not a replacement. "Blind as a bat" slanders a great navigator.' },
+  { t:'Lightning never strikes the same place twice.', myth:true,
+    why:'Myth. The Empire State Building is struck about 20 to 25 times a year. Lightning loves the same tall places over and over; stay away from all of them.' },
+  { t:'Napoleon was unusually short.', myth:true,
+    why:'Myth. He was about 5 foot 7, average for a Frenchman of his era. British cartoonists shrank him for propaganda, and the joke outlived the war.' },
+  { t:'You must wait 24 hours before reporting a missing person.', myth:true,
+    why:'Myth, and a dangerous one from TV. Police everywhere say report immediately; the first hours matter most. Never wait.' },
+  { t:'Shaving makes hair grow back thicker.', myth:true,
+    why:'Myth. Shaved hair has a blunt tip that FEELS coarser, but thickness and speed are set by your follicles, which never notice the razor.' },
+  { t:'Einstein failed math in school.', myth:true,
+    why:'Myth. He mastered calculus by 15 and called the rumor false himself. The myth is comforting, which is exactly why it spread.' },
+  { t:'You swallow about eight spiders a year in your sleep.', myth:true,
+    why:'Myth. Spiders avoid the huffing, rumbling cave of a sleeping human. This "fact" spread partly as a demonstration of how easily fake facts spread.' },
+  { t:'A shot of alcohol warms you up in the cold.', myth:true,
+    why:'Myth, and a deadly one. Alcohol moves warm blood to your skin so you FEEL warm while your core cools faster. Hypothermia victims are often found with alcohol in them.' },
+  { t:'The flu shot can give you the flu.', myth:true,
+    why:'Myth. The injected vaccine contains no live virus; it cannot infect you. Feeling achy for a day is your immune system doing exactly its job.' },
+  { t:'Coffee stunts children’s growth.', myth:true,
+    why:'Myth. No study has ever linked coffee to height. The claim came from century-old ads for a coffee substitute called Postum. It was marketing.' },
+  { t:'Detox teas and juice cleanses flush toxins from your body.', myth:true,
+    why:'Myth. Your liver and kidneys detox you around the clock for free. "Detox" products mostly detox your wallet.' },
+  { t:'Some people are left-brained (logical) and some are right-brained (creative).', myth:true,
+    why:'Myth. Brain scans of over 1,000 people found no dominant side in anyone. Skills differ; hemispheres cooperate. Do not let a quiz put you in a box.' },
+  { t:'Antibiotics help you get over a cold.', myth:true,
+    why:'Myth. Colds are viruses; antibiotics only kill bacteria. Taking them anyway breeds resistant superbugs, which is everyone’s problem.' },
+  { t:'Honey found in 3,000-year-old Egyptian tombs was still edible.', myth:false,
+    why:'True. Honey is so low in water and so acidic that microbes cannot live in it. Sealed properly, it is effectively immortal. Check your pantry; that "expired" honey is fine.' },
+  { t:'An octopus has three hearts.', myth:false,
+    why:'True. Two pump blood to the gills, one to the body, and the main heart stops when it swims, which is why octopuses prefer to crawl.' },
+  { t:'Botanically, a banana is a berry and a strawberry is not.', myth:false,
+    why:'True. Botanical berries must form from one flower with one ovary, seeds inside. Bananas qualify; strawberries wear their seeds outside and do not.' },
+  { t:'Oxford University is older than the Aztec Empire.', myth:false,
+    why:'True. Teaching at Oxford began around 1096; the Aztec capital was founded in 1325. History overlaps far more strangely than the timeline in your head.' },
+  { t:'Wombats produce cube-shaped poop.', myth:false,
+    why:'True. Their intestines have zones of different stiffness that press cubes, which stack on rocks to mark territory without rolling away. Nature invented the die.' },
+  { t:'A day on Venus is longer than a year on Venus.', myth:false,
+    why:'True. Venus spins so slowly that it circles the Sun (225 Earth days) faster than it turns once (243 Earth days). Sunrise to sunrise is longer than New Year to New Year.' },
+  { t:'Sharks existed before trees.', myth:false,
+    why:'True. Sharks appeared about 450 million years ago; true trees about 390 million. Sharks also predate Saturn’s rings and have survived five mass extinctions.' },
+  { t:'Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.', myth:false,
+    why:'True. The pyramid was about 2,500 years old when Cleopatra was born; the Moon landing came about 2,000 years after her. Ancient Egypt was ancient to the ancients.' },
+  { t:'Hot water can freeze faster than cold water.', myth:false,
+    why:'True. It is called the Mpemba effect, observed since Aristotle and still being argued about by physicists. Reality keeps a few mysteries in the freezer.' },
+  { t:'Your stomach grows a completely new lining every few days.', myth:false,
+    why:'True. Stomach acid is strong enough to dissolve metal, so the lining sacrifices and replaces its surface cells about every three days. You are under constant renovation.' },
+  { t:'There are more possible chess games than atoms in the observable universe.', myth:false,
+    why:'True. Atoms: about 10 to the 80th power. Chess games: about 10 to the 120th. A small board of simple rules out-counts the cosmos. That is what possibilities do.' },
+  { t:'The national animal of Scotland is the unicorn.', myth:false,
+    why:'True. Chosen in the 1300s as a proud, untamable beast that legend said could only be captured unfairly. Nations pick their symbols with their hearts.' },
+  { t:'A sloth can hold its breath longer than a dolphin.', myth:false,
+    why:'True. Sloths can slow their heart and last about 40 minutes underwater; dolphins surface after about 10. Slowness, it turns out, is a superpower.' },
+  { t:'The Eiffel Tower is about 6 inches taller in summer.', myth:false,
+    why:'True. Iron expands in heat. Bridges have expansion joints for exactly this reason. Every large structure you see was designed for a breathing, stretching world.' },
+  { t:'Human bodies literally glow with their own light.', myth:false,
+    why:'True. We emit faint bioluminescence about 1,000 times weaker than the eye can detect, strongest in the afternoon. You are, measurably, a source of light.' },
+  { t:'There are more trees on Earth than stars in the Milky Way.', myth:false,
+    why:'True. About 3 trillion trees versus a few hundred billion stars. Both numbers are down to counting; both are worth protecting.' }
+];
+
+</script>
+<script>
 // Workshop bench five: train your actual ears.
 SKILLS.push(
   {
@@ -3989,7 +4075,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v52 · Sep 1, 2026";
+window.GAME_VERSION = "v53 · Sep 1, 2026";
 
 </script>
 <script>
@@ -6047,6 +6133,16 @@ function renderParlor(){
         <span class="bridge-title">Last Scholar Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
       </button>
+      <button class="bridge-item" id="parlor-showdown">
+        <span class="bridge-domains">🌡 2 to 6 players</span>
+        <span class="bridge-title">Number Showdown</span>
+        <span class="bridge-state">Everyone secretly guesses a real-life number on a slider. Closest to the truth takes the round.</span>
+      </button>
+      <button class="bridge-item" id="parlor-myth">
+        <span class="bridge-domains">🔍 2 to 6 players</span>
+        <span class="bridge-title">Myth Hunt</span>
+        <span class="bridge-state">True, or a myth everyone repeats? Find out which famous "facts" you have been fooled by.</span>
+      </button>
       <button class="bridge-item" id="parlor-match">
         <span class="bridge-domains">🃏 1 or 2 players</span>
         <span class="bridge-title">Memory Match</span>
@@ -6062,6 +6158,8 @@ function renderParlor(){
   $('#parlor-coop').addEventListener('click', () => parlorNames(4, 'Set out together', (names, kid) => startExpedition(names, kid), 2));
   $('#parlor-party').addEventListener('click', () => parlorNames(8, 'Start the circle', (names, kid) => startParty(names, kid), 2));
   $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
+  $('#parlor-showdown').addEventListener('click', () => parlorNames(6, 'Start the showdown', (names) => startShowdown(names)));
+  $('#parlor-myth').addEventListener('click', () => parlorNames(6, 'Start the hunt', (names) => startMythHunt(names)));
   $('#parlor-match').addEventListener('click', () => {
     const body = $('#parlor-body');
     body.innerHTML = `
@@ -6461,6 +6559,157 @@ function finishDebate(){
 
 // ---------- MEMORY MATCH ----------
 let match = null;
+// Number Showdown: everyone secretly guesses the same real number; closest wins the round
+const SHOW_COLORS = ['#7fa8c0','#c08a7f','#8ac07f','#c0b47f','#a87fc0','#7fc0b4'];
+function startShowdown(names){
+  const items = shuffle(REALITY).slice(0, 5);
+  const players = names.map((n, i) => ({ name: n, pts: 0, color: SHOW_COLORS[i % SHOW_COLORS.length] }));
+  let round = 0;
+  const body = $('#parlor-body');
+  const fmt = (item, n) => (item.pre || '') + n.toLocaleString('en-US') + (item.suf || '');
+  const chips = () => `<div class="party-standings">${players.map(p =>
+    `<span class="party-chip"><i class="rb-dot" style="background:${p.color}"></i>${p.name} · ${p.pts}</span>`).join('')}</div>`;
+  function playRound(){
+    const item = items[round];
+    const guesses = [];
+    let turn = 0;
+    function ask(){
+      const p = players[turn];
+      body.innerHTML = `
+        <div class="qcard reality-card" style="text-align:center">
+          <div class="qcard-domain" style="color:#c9a24a">Round ${round + 1} of ${items.length}</div>
+          <div class="qcard-question">Hand the device to <b>${p.name}</b>. Everyone else, look away.</div>
+          <button class="btn-primary" id="sd-ready">Ready. Show me the question.</button>
+        </div>`;
+      $('#sd-ready').onclick = () => {
+        const mid = Math.round((item.min + item.max) / 2 / item.step) * item.step;
+        body.innerHTML = `
+          <div class="qcard reality-card">
+            <div class="qcard-domain" style="color:#c9a24a">🌡️ Your guess, ${p.name}</div>
+            <div class="qcard-question">${item.q}</div>
+            <div class="reality-value" id="rv"></div>
+            <input type="range" id="rslider" class="reality-slider" min="${item.min}" max="${item.max}" step="${item.step}" value="${mid}">
+            <div class="reality-minmax"><span>${fmt(item, item.min)}</span><span>${fmt(item, item.max)}</span></div>
+            <button class="btn-primary" id="sd-lock">Lock it in</button>
+          </div>`;
+        const sl = $('#rslider'), rv = $('#rv');
+        const upd = () => { rv.textContent = fmt(item, +sl.value); };
+        sl.addEventListener('input', upd);
+        upd();
+        $('#sd-lock').onclick = () => {
+          guesses.push({ p, guess: +sl.value });
+          SFX.page();
+          turn++;
+          turn < players.length ? ask() : reveal();
+        };
+      };
+    }
+    function reveal(){
+      const range = item.max - item.min;
+      let best = Infinity;
+      guesses.forEach(g => { g.off = Math.abs(g.guess - item.ans); if (g.off < best) best = g.off; });
+      const winners = guesses.filter(g => g.off === best);
+      const bullseye = winners.some(w => w.off / range <= 0.02);
+      winners.forEach(g => { g.p.pts += 2; if (g.off / range <= 0.02) g.p.pts += 1; });
+      SFX.reward();
+      const pos = v => Math.min(98, Math.max(2, (v - item.min) / range * 100)).toFixed(1);
+      body.innerHTML = `
+        <div class="qcard reality-card">
+          <div class="qcard-question">${item.q}</div>
+          <div class="reality-verdict">The real number is <b>${fmt(item, item.ans)}</b>. Closest: <b>${winners.map(w => w.p.name).join(' and ')}</b>, +2 points${bullseye ? ' and a 🎯 bullseye bonus' : ''}.</div>
+          <div class="reality-bar">${guesses.map(g =>
+            `<span class="rb-guess" style="left:${pos(g.guess)}%;background:${g.p.color};box-shadow:0 0 8px ${g.p.color}"></span>`).join('')}<span class="rb-truth" style="left:${pos(item.ans)}%"></span></div>
+          <div class="reality-legend">${guesses.map(g =>
+            `<span><i class="rb-dot" style="background:${g.p.color}"></i>${g.p.name}: ${fmt(item, g.guess)}</span>`).join('')}<span><i class="rb-dot rb-t"></i> the truth</span></div>
+          <div class="qcard-why">${item.why}</div>
+          ${chips()}
+          <button class="btn-primary" id="sd-next">${round + 1 < items.length ? 'Next round' : 'Final results'}</button>
+        </div>`;
+      $('#sd-next').onclick = () => { round++; round < items.length ? playRound() : finish(); };
+    }
+    ask();
+  }
+  function finish(){
+    const top = Math.max(...players.map(p => p.pts));
+    const champs = players.filter(p => p.pts === top);
+    const low = Math.min(...players.map(p => p.pts));
+    const loser = champs.length < players.length ? players.find(p => p.pts === low) : null;
+    SFX.fanfare();
+    confetti(70);
+    body.innerHTML = `
+      <div class="result-card">
+        <div class="result-title">Number Showdown</div>
+        <div class="result-score">🎯</div>
+        <div class="result-verdict"><b>${champs.map(c => c.name).join(' and ')}</b> ${champs.length > 1 ? 'share' : 'has'} the sharpest gut tonight: ${top} points.</div>
+        ${chips()}
+        <button class="btn-primary" id="sd-again">Play again</button>
+        <button class="btn-secondary" data-go="parlor">Back to the rec hall</button>
+      </div>`;
+    if (loser) body.querySelector('.result-card').insertBefore(forfeitButton(loser.name), $('#sd-again'));
+    $('#sd-again').onclick = () => startShowdown(names);
+  }
+  playRound();
+}
+
+// Myth Hunt: true, or a myth everyone repeats?
+function startMythHunt(names){
+  const rounds = Math.min(16, names.length * 4);
+  const deck = shuffle(MYTHS).slice(0, rounds);
+  const players = names.map(n => ({ name: n, pts: 0 }));
+  let idx = 0;
+  const body = $('#parlor-body');
+  const chips = cur => `<div class="party-standings">${players.map(p =>
+    `<span class="party-chip ${p === cur ? 'party-now' : ''}">${p.name} · ${p.pts}</span>`).join('')}</div>`;
+  function ask(){
+    const item = deck[idx];
+    const p = players[idx % players.length];
+    body.innerHTML = `
+      <div class="qcard">
+        <div class="qcard-domain" style="color:#c9a24a">🔍 Statement ${idx + 1} of ${deck.length} · your turn, ${p.name}</div>
+        <div class="qcard-question">“${item.t}”</div>
+        <div class="myth-btns">
+          <button class="btn-primary" id="mh-true">It’s true</button>
+          <button class="btn-primary mh-myth" id="mh-myth">It’s a myth</button>
+        </div>
+        <div id="mh-reveal"></div>
+        ${chips(p)}
+      </div>`;
+    const answer = saysMyth => {
+      $('#mh-true').disabled = true;
+      $('#mh-myth').disabled = true;
+      const right = saysMyth === item.myth;
+      if (right) { p.pts++; SFX.correct(); } else { SFX.wrong(); }
+      $('#mh-reveal').innerHTML = `
+        <div class="reality-verdict">${right ? '✅ Right, ' + p.name + '.' : '❌ Fooled, ' + p.name + '.'} ${item.myth ? 'It is a myth.' : 'It is true.'}</div>
+        <div class="qcard-why">${item.why}</div>
+        <button class="btn-primary" id="mh-next">${idx + 1 < deck.length ? 'Next statement' : 'Final results'}</button>`;
+      $('#mh-next').onclick = () => { idx++; idx < deck.length ? ask() : finish(); };
+    };
+    $('#mh-true').onclick = () => answer(false);
+    $('#mh-myth').onclick = () => answer(true);
+  }
+  function finish(){
+    const top = Math.max(...players.map(p => p.pts));
+    const champs = players.filter(p => p.pts === top);
+    const low = Math.min(...players.map(p => p.pts));
+    const loser = champs.length < players.length ? players.find(p => p.pts === low) : null;
+    SFX.fanfare();
+    confetti(70);
+    body.innerHTML = `
+      <div class="result-card">
+        <div class="result-title">Myth Hunt</div>
+        <div class="result-score">🔍</div>
+        <div class="result-verdict"><b>${champs.map(c => c.name).join(' and ')}</b> ${champs.length > 1 ? 'are' : 'is'} the hardest to fool: ${top} of ${Math.ceil(deck.length / players.length)} right.</div>
+        ${chips()}
+        <button class="btn-primary" id="mh-again">Play again</button>
+        <button class="btn-secondary" data-go="parlor">Back to the rec hall</button>
+      </div>`;
+    if (loser) body.querySelector('.result-card').insertBefore(forfeitButton(loser.name), $('#mh-again'));
+    $('#mh-again').onclick = () => startMythHunt(names);
+  }
+  ask();
+}
+
 function startMatch(names){
   const pairs = pickN(MATCH_PAIRS, 8);
   const cards = [];
