@@ -912,6 +912,13 @@ body.dt #daily-body .qcard-question, body.dt #gauntlet-body .qcard-question, bod
 /* full desktop legibility pass: nothing stays tiny on a big screen */
 body.dt .helper-text { font-size: 17px; }body.dt .topbar-title { font-size: 25px; }body.dt .topbar-right { font-size: 17px; }body.dt .btn-back { font-size: 16px; padding: 8px 16px; }body.dt .curator-line { font-size: 18px; }body.dt .curator-moon { font-size: 15px; }body.dt .curator-name { font-size: 14px; }body.dt .row-label { font-size: 13px; }body.dt .row-main { font-size: 20px; }body.dt .row-sub { font-size: 16px; }body.dt .row-btn { font-size: 15px; padding: 10px 18px; }body.dt .today-head { font-size: 15px; }body.dt .menu-title { font-size: 18px; }body.dt .menu-badge { font-size: 13px; padding: 2px 10px; }body.dt .menu-emblem { font-size: 32px; }body.dt .menu-card { min-height: 116px; gap: 6px; }body.dt .menu-head { font-size: 16px; }body.dt .stat-num { font-size: 30px; }body.dt .stat-rank { font-size: 18px; }body.dt .stat-label { font-size: 14px; }body.dt .rank-progress-label { font-size: 15px; }body.dt .mystery-title { font-size: 24px; }body.dt .iod-label, body.dt .iod-hint { font-size: 14px; }body.dt .tagline { font-size: 18px; }body.dt .result-title { font-size: 26px; }body.dt .result-verdict { font-size: 18px; }body.dt .result-earn { font-size: 20px; }body.dt .result-streak { font-size: 16px; }body.dt .curator-result { font-size: 16px; }body.dt .takeaway-label { font-size: 15px; }body.dt .takeaway-q { font-size: 16px; }body.dt .takeaway-text { font-size: 18px; }body.dt .takeaway-hint { font-size: 14px; }body.dt .bridge-title { font-size: 20px; }body.dt .bridge-domains { font-size: 16px; }body.dt .bridge-state { font-size: 15px; }body.dt .drawer-title { font-size: 17px; }body.dt .drawer-state { font-size: 14px; }body.dt .shelf-label { font-size: 19px; }body.dt .shelf-btn { font-size: 14px; padding: 6px 14px; }body.dt .shelf-hint { font-size: 13px; }body.dt .lesson-title { font-size: 28px; }body.dt .lesson-domain { font-size: 16px; }body.dt .qcard-domain { font-size: 16px; }body.dt .qcard-tag { font-size: 13px; }body.dt .star-btn { font-size: 14px; }body.dt .more-box { font-size: 16px; }body.dt .journal-title { font-size: 18px; }body.dt .journal-text { font-size: 16px; }body.dt .journal-domain { font-size: 13px; }body.dt .ladder-row { font-size: 17px; }body.dt .ladder-req { font-size: 14px; }body.dt .ledger-domain { font-size: 16px; }body.dt .ledger-pct { font-size: 14px; }body.dt .plaque-name { font-size: 16px; }body.dt .plaque-desc { font-size: 14px; }body.dt .plaque-icon { font-size: 36px; }body.dt .curio-name { font-size: 16px; }body.dt .curio-domain { font-size: 13px; }body.dt .curio-price { font-size: 15px; }body.dt .curio-icon { font-size: 40px; }body.dt .skill-hook { font-size: 19px; }body.dt .skill-teach p { font-size: 18px; }body.dt .skill-input { font-size: 26px; }body.dt .btn-primary, body.dt .btn-secondary { font-size: 18px; padding: 14px; }body.dt .wheel-result { font-size: 24px; }body.dt .boss-banner { font-size: 22px; }body.dt .fq-done { font-size: 16px; }body.dt .kid-toggle { font-size: 16px; }body.dt #toast { font-size: 17px; padding: 12px 24px; }body.dt .echo-label { font-size: 14px; }body.dt .papers .teach-input { font-size: 13px; }body.dt #expedition-map { font-size: 17px; }body.dt .map-stop { width: 34px; height: 34px; line-height: 32px; font-size: 16px; }
 
+/* version tag */
+#version-tag {
+  text-align: center; margin-top: 24px;
+  font-size: 12px; color: #6b5a40; font-style: italic;
+}
+body.dt #version-tag { font-size: 13px; }
+
 </style>
 </head>
 <body>
@@ -1035,6 +1042,7 @@ body.dt .helper-text { font-size: 17px; }body.dt .topbar-title { font-size: 25px
         </div>
       </div>
     </nav>
+    <div id="version-tag"></div>
   </section>
 
   <!-- DAILY RUN -->
@@ -2929,6 +2937,10 @@ function partyDeck(pool){
 }
 </script>
 <script>
+window.GAME_VERSION = "v22 · Sep 1, 2026";
+
+</script>
+<script>
 // The Revelations pack: questions whose answers you will want to tell someone.
 // w:1 marks a "worth retelling" fact, eligible for the end-of-session take-away.
 QUESTIONS.push(
@@ -3928,6 +3940,8 @@ function renderHome(){
   } else {
     $('#today-panel').style.display = '';
   }
+
+  $('#version-tag').textContent = window.GAME_VERSION || '';
 
   checkAchievements();
 }
