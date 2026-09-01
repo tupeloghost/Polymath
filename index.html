@@ -1026,10 +1026,10 @@ body.dt .bracket-title { font-size: 16px; }
             <span class="menu-emblem">&#127919;</span>
             <span class="menu-title">The Wheel</span>
           </button>
-          <button class="menu-card" data-go="parlor" title="Duels, team adventures, and a party circle. One device, always open.">
+          <button class="menu-card" data-go="parlor" title="Duels, team adventures, and a party circle. Best with 2, room for more.">
             <span class="menu-emblem">&#127917;</span>
             <span class="menu-title">Play Together</span>
-            <span class="menu-badge">2 to 4 players</span>
+            <span class="menu-badge">for 2 or more</span>
           </button>
         </div>
       </div>
@@ -3022,7 +3022,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v29 · Sep 1, 2026";
+window.GAME_VERSION = "v30 · Sep 1, 2026";
 
 </script>
 <script>
@@ -4225,9 +4225,9 @@ function startExpedition(coopNames, kid){
 }
 function expTurnBanner(body){
   if (!exp.coop) return;
-  body.appendChild(el(`<div class="duel-turn duel-p${exp.turn}">${exp.coop[exp.turn]}, this one is yours</div>`));
+  body.appendChild(el(`<div class="duel-turn duel-p${exp.turn % 2}">${exp.coop[exp.turn]}, this one is yours</div>`));
 }
-function expPassTurn(){ if (exp.coop) exp.turn = 1 - exp.turn; }
+function expPassTurn(){ if (exp.coop) exp.turn = (exp.turn + 1) % exp.coop.length; }
 function expIcon(stop, idx){
   const cur = idx === exp.i, done = idx < exp.i;
   const icon = stop.type === 'q' ? DOMAINS[stop.d || 'astronomy'].emblem
@@ -4338,7 +4338,7 @@ function endExpedition(survived){
   if (isBest) S.expeditionBest = keep;
   const earned = awardLumens(keep);
   if (survived) confetti(50);
-  const names = exp.coop ? `${exp.coop[0]} and ${exp.coop[1]}` : 'You';
+  const names = exp.coop ? (exp.coop.length === 2 ? `${exp.coop[0]} and ${exp.coop[1]}` : exp.coop.slice(0, -1).join(', ') + ', and ' + exp.coop[exp.coop.length - 1]) : 'You';
   body.innerHTML = `
     <div class="result-card">
       <div class="result-title">${survived ? 'The Road Home' : 'Carried Back on a Cart'}</div>
@@ -4361,7 +4361,7 @@ function endExpedition(survived){
 function renderParlor(){
   const body = $('#parlor-body');
   body.innerHTML = `
-    <p class="helper-text">Games for 2 to 4 people sharing one device. No solo progress needed, and none is touched.</p>
+    <p class="helper-text">Games for two or more people sharing one device. No solo progress needed, and none is touched.</p>
     <div class="bridge-list">
       <button class="bridge-item" id="parlor-duel">
         <span class="bridge-domains">⚔ Head to head</span>
@@ -4369,12 +4369,12 @@ function renderParlor(){
         <span class="bridge-state">Ten questions, five each. Winner takes the crown.</span>
       </button>
       <button class="bridge-item" id="parlor-coop">
-        <span class="bridge-domains">🗺 Side by side</span>
-        <span class="bridge-title">Expedition for Two</span>
-        <span class="bridge-state">Walk the trail together. Shared hearts, shared loot, take turns answering.</span>
+        <span class="bridge-domains">🗺 2 to 4, side by side</span>
+        <span class="bridge-title">Expedition Together</span>
+        <span class="bridge-state">Walk the trail as a team. Shared hearts, shared loot, take turns answering.</span>
       </button>
       <button class="bridge-item" id="parlor-party">
-        <span class="bridge-domains">🎉 2 to 4 players</span>
+        <span class="bridge-domains">🎉 2 players or a whole room</span>
         <span class="bridge-title">Last Scholar Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
       </button>
@@ -4385,8 +4385,8 @@ function renderParlor(){
       </button>
     </div>`;
   $('#parlor-duel').addEventListener('click', () => go('duel'));
-  $('#parlor-coop').addEventListener('click', () => parlorNames(2, 'Set out together', (names, kid) => startExpedition(names, kid)));
-  $('#parlor-party').addEventListener('click', () => parlorNames(4, 'Start the circle', (names, kid) => startParty(names, kid), 2));
+  $('#parlor-coop').addEventListener('click', () => parlorNames(4, 'Set out together', (names, kid) => startExpedition(names, kid), 2));
+  $('#parlor-party').addEventListener('click', () => parlorNames(8, 'Start the circle', (names, kid) => startParty(names, kid), 2));
   $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
 }
 
