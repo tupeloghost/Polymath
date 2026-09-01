@@ -2791,6 +2791,144 @@ QUESTIONS.forEach(q => { if (MORE[q.q]) q.more = MORE[q.q]; });
 
 </script>
 <script>
+// Party question generator: builds fresh questions from fact tables.
+// Combined with the written vault, group games draw from thousands of possible questions.
+
+const PG_EVENTS = [
+  ['the Great Pyramid was built', -2560], ['Stonehenge was raised', -2500],
+  ['the first recorded Olympic games were held', -776], ['Rome was founded (by legend)', -753],
+  ['the Buddha was born', -563], ['Confucius was born', -551],
+  ['the Parthenon was completed', -432], ['Alexander the Great died', -323],
+  ['work began on the Great Wall of China', -220], ['Julius Caesar was assassinated', -44],
+  ['Pompeii was buried by Vesuvius', 79], ['the Colosseum opened', 80],
+  ['Rome fell in the west', 476], ['Charlemagne was crowned emperor', 800],
+  ['Vikings reached North America', 1000], ['the Normans conquered England', 1066],
+  ['the Magna Carta was signed', 1215], ['the Black Death reached Europe', 1347],
+  ['Gutenberg printed with movable type', 1450], ['Constantinople fell', 1453],
+  ['Columbus crossed the Atlantic', 1492], ['the Mona Lisa was painted', 1503],
+  ['Luther posted his 95 theses', 1517], ['Magellan’s crew circled the globe', 1522],
+  ['Shakespeare was born', 1564], ['Galileo pointed a telescope at the sky', 1609],
+  ['the Mayflower sailed', 1620], ['Newton published his laws of motion', 1687],
+  ['America declared independence', 1776], ['the French Revolution began', 1789],
+  ['Napoleon lost at Waterloo', 1815], ['the first photograph was taken', 1826],
+  ['the telegraph sent its first message', 1844], ['Darwin published On the Origin of Species', 1859],
+  ['the telephone was invented', 1876], ['the practical light bulb arrived', 1879],
+  ['the Eiffel Tower opened', 1889], ['the first films were shown to the public', 1895],
+  ['the Wright brothers flew', 1903], ['the Titanic sank', 1912],
+  ['penicillin was discovered', 1928], ['World War II ended', 1945],
+  ['the DNA double helix was described', 1953], ['Sputnik reached orbit', 1957],
+  ['humans walked on the Moon', 1969], ['the Berlin Wall fell', 1989],
+  ['the World Wide Web went public', 1991], ['the iPhone launched', 2007]
+];
+
+const PG_CAPITALS = [
+  ['France','Paris'],['Japan','Tokyo'],['Italy','Rome'],['Spain','Madrid'],['Portugal','Lisbon'],
+  ['Germany','Berlin'],['Austria','Vienna'],['Greece','Athens'],['Egypt','Cairo'],['Kenya','Nairobi'],
+  ['Morocco','Rabat'],['Canada','Ottawa'],['Mexico','Mexico City'],['Brazil','Brasília'],
+  ['Argentina','Buenos Aires'],['Peru','Lima'],['Chile','Santiago'],['Colombia','Bogotá'],['Cuba','Havana'],
+  ['Russia','Moscow'],['China','Beijing'],['India','New Delhi'],['Thailand','Bangkok'],['Vietnam','Hanoi'],
+  ['South Korea','Seoul'],['Indonesia','Jakarta'],['the Philippines','Manila'],['Australia','Canberra'],
+  ['New Zealand','Wellington'],['Turkey','Ankara'],['Iran','Tehran'],['Saudi Arabia','Riyadh'],
+  ['Poland','Warsaw'],['Ukraine','Kyiv'],['Sweden','Stockholm'],['Norway','Oslo'],['Denmark','Copenhagen'],
+  ['Finland','Helsinki'],['Iceland','Reykjavik'],['Ireland','Dublin'],['the United Kingdom','London'],
+  ['the Netherlands','Amsterdam'],['Switzerland','Bern'],['Czechia','Prague'],['Hungary','Budapest'],
+  ['Romania','Bucharest'],['Croatia','Zagreb'],['Ethiopia','Addis Ababa'],['Nigeria','Abuja']
+];
+
+const PG_SIZES = [
+  { unit:'wider', d:'astronomy', items:[['Jupiter',139822],['Saturn',116464],['Uranus',50724],['Earth',12742],['Mars',6779],['Mercury',4879],['the Moon',3474],['Pluto',2377]] },
+  { unit:'heavier (on average)', d:'biology', items:[['a blue whale',140000],['an elephant',6000],['a hippo',1500],['a polar bear',450],['a lion',190],['an adult human',70],['a wolf',40],['a house cat',4.5],['a rabbit',2]] },
+  { unit:'longer', d:'earth', items:[['the Nile',4132],['the Yangtze',3915],['the Mississippi',2340],['the Danube',1770],['the Rhine',766],['the Thames',215]] }
+];
+
+const PG_WORDS = [
+  ['algebra','Arabic'],['coffee','Arabic'],['sugar','Arabic'],['sofa','Arabic'],['magazine','Arabic'],
+  ['piano','Italian'],['opera','Italian'],['umbrella','Italian'],['studio','Italian'],
+  ['ballet','French'],['menu','French'],['croissant','French'],
+  ['kindergarten','German'],['waltz','German'],['rucksack','German'],
+  ['tsunami','Japanese'],['karaoke','Japanese'],['origami','Japanese'],['emoji','Japanese'],
+  ['robot','Czech'],['shampoo','Hindi'],['pajamas','Hindi'],['bungalow','Hindi'],['jungle','Hindi'],
+  ['yogurt','Turkish'],['bazaar','Persian'],
+  ['chocolate','Nahuatl (Aztec)'],['tomato','Nahuatl (Aztec)'],['avocado','Nahuatl (Aztec)'],
+  ['hurricane','Taíno (Caribbean)'],['kayak','Inuit'],['boomerang','Aboriginal Australian'],
+  ['tattoo','Polynesian'],['safari','Swahili']
+];
+
+function pgPick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+function pgShuffle(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function pgYear(y){ return y < 0 ? Math.abs(y) + ' BCE' : y + ' CE'; }
+
+const PG_MAKERS = [
+  function firstEvent(){
+    let a = pgPick(PG_EVENTS), b = pgPick(PG_EVENTS), guard = 0;
+    while (Math.abs(a[1] - b[1]) < 25 && guard++ < 30){ b = pgPick(PG_EVENTS); }
+    if (a[1] > b[1]) [a, b] = [b, a];
+    const first = Math.random() < 0.5;
+    return { d:'history',
+      q:`Which happened first?`,
+      a:[`When ${a[0]}`, `When ${b[0]}`], c:0,
+      why:`${a[0].charAt(0).toUpperCase() + a[0].slice(1)} around ${pgYear(a[1])}; ${b[0]} around ${pgYear(b[1])}.` };
+  },
+  function capital(){
+    const [country, cap] = pgPick(PG_CAPITALS);
+    const wrong = [];
+    while (wrong.length < 3){
+      const w = pgPick(PG_CAPITALS)[1];
+      if (w !== cap && !wrong.includes(w)) wrong.push(w);
+    }
+    const choices = pickN([cap, ...wrong], 4);
+    return { d:'earth', q:`What is the capital of ${country}?`, a:choices, c:choices.indexOf(cap),
+      why:`${cap} is the capital of ${country}.` };
+  },
+  function capitalReverse(){
+    const [country, cap] = pgPick(PG_CAPITALS);
+    const wrong = [];
+    while (wrong.length < 3){
+      const w = pgPick(PG_CAPITALS)[0];
+      if (w !== country && !wrong.includes(w)) wrong.push(w);
+    }
+    const choices = pickN([country, ...wrong], 4);
+    return { d:'earth', q:`${cap} is the capital of...`, a:choices, c:choices.indexOf(country),
+      why:`${cap} is the capital of ${country}.` };
+  },
+  function bigger(){
+    const cat = pgPick(PG_SIZES);
+    let a = pgPick(cat.items), b = pgPick(cat.items), guard = 0;
+    while ((a[0] === b[0] || Math.max(a[1], b[1]) / Math.min(a[1], b[1]) < 1.25) && guard++ < 30){ b = pgPick(cat.items); }
+    const winner = a[1] > b[1] ? a : b;
+    const choices = [a[0], b[0]];
+    return { d:cat.d, q:`Which is ${cat.unit}: ${a[0]} or ${b[0]}?`, a:choices, c:choices.indexOf(winner[0]),
+      why:`${winner[0].charAt(0).toUpperCase() + winner[0].slice(1)} is the ${cat.unit.split(' ')[0]} of the two.` };
+  },
+  function wordOrigin(){
+    const [word, lang] = pgPick(PG_WORDS);
+    const langs = [...new Set(PG_WORDS.map(w => w[1]))];
+    const wrong = pickN(langs.filter(l => l !== lang), 3);
+    const choices = pickN([lang, ...wrong], 4);
+    return { d:'language', q:`English borrowed the word "${word}" from...`, a:choices, c:choices.indexOf(lang),
+      why:`"${word.charAt(0).toUpperCase() + word.slice(1)}" came to English from ${lang}.` };
+  }
+];
+
+function genPartyQuestion(){
+  return pgPick(PG_MAKERS)();
+}
+// build a deck mixing written questions with generated ones, about half and half
+function partyDeck(pool){
+  const written = pgShuffle(pool);
+  const out = [];
+  written.forEach(q => {
+    out.push(q);
+    out.push(genPartyQuestion());
+  });
+  return out;
+}
+</script>
+<script>
 // The Revelations pack: questions whose answers you will want to tell someone.
 // w:1 marks a "worth retelling" fact, eligible for the end-of-session take-away.
 QUESTIONS.push(
@@ -4182,7 +4320,7 @@ function playPool(kid){
 // Last Scholar Standing: 3-6 players, two strikes and you are out
 let party = null;
 function startParty(names, kid){
-  party = { players: names.map(n => ({ name: n, strikes: 0, out: false })), turn: 0, kid, deck: shuffle(playPool(kid)), idx: 0 };
+  party = { players: names.map(n => ({ name: n, strikes: 0, out: false })), turn: 0, kid, deck: partyDeck(playPool(kid)), idx: 0 };
   renderParty();
 }
 function renderParty(){
@@ -4296,7 +4434,7 @@ function renderDuelSetup(){
       names: [($('#duel-p1').value.trim() || 'Player 1'), ($('#duel-p2').value.trim() || 'Player 2')],
       scores: [0, 0],
       turn: 0, asked: 0, total: 10,
-      deck: shuffle(playPool($('#duel-kid').checked).filter(q => q.t !== 2)),
+      deck: partyDeck(playPool($('#duel-kid').checked).filter(q => q.t !== 2)),
       sudden: false
     };
     renderDuelQuestion();
