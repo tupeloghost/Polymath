@@ -472,6 +472,21 @@ body {
 .duel-p0 { color: #ffd9a0; background: rgba(176,110,40,.25); border: 1px solid rgba(176,141,74,.6); }
 .duel-p1 { color: #b8d4ff; background: rgba(60,90,140,.25); border: 1px solid rgba(90,120,170,.6); }
 
+/* party + kid toggle */
+.kid-toggle {
+  display: block; margin: 10px auto; font-size: 14px; color: var(--ink-soft);
+  cursor: pointer; font-style: italic;
+}
+.kid-toggle input { transform: scale(1.2); margin-right: 6px; accent-color: #8a6d3b; }
+.party-standings { text-align: center; margin-bottom: 10px; }
+.party-chip {
+  display: inline-block; margin: 3px; padding: 4px 12px;
+  border: 1px solid var(--brass); border-radius: 14px;
+  color: #e8d9b5; font-size: 13px; background: rgba(0,0,0,.25);
+}
+.party-now { border-color: #ffe9b0; box-shadow: 0 0 10px rgba(232,207,143,.4); font-weight: bold; }
+.party-out { opacity: .4; text-decoration: line-through; }
+
 /* atmosphere: dust motes + candle glow */
 #dust-layer { position: fixed; inset: 0; pointer-events: none; z-index: 5; overflow: hidden; }
 .mote {
@@ -851,6 +866,13 @@ body::after {
 @media (max-width: 480px) {
   .ledger-row { grid-template-columns: 110px 1fr 80px; }
   .qcard-question { font-size: 17px; }
+}
+@media (max-width: 560px) {
+  .masthead { padding-top: 46px; }
+  #sound-toggle { top: 6px; right: 10px; width: 36px; height: 36px; font-size: 15px; }
+  #ambient-toggle { top: 6px; right: 52px; width: 36px; height: 36px; font-size: 14px; }
+  .answer-btn { padding: 14px; }
+  .btn-back { padding: 8px 14px; }
 }
 
 </style>
@@ -3839,18 +3861,21 @@ function finishSkill(){
 let exp = null;
 function randDomain(){ const k = Object.keys(DOMAINS); return k[Math.floor(Math.random() * k.length)]; }
 function pickQ(domain, advanced){
-  let pool = QUESTIONS.filter(q => q.d === domain && (advanced ? q.t === 2 : q.t !== 2));
+  const base = (exp && exp.kid) ? playPool(true) : QUESTIONS;
+  let pool = base.filter(q => q.d === domain && (advanced ? q.t === 2 : q.t !== 2));
+  if (!pool.length) pool = base.filter(q => q.d === domain);
   if (!pool.length) pool = QUESTIONS.filter(q => q.d === domain);
   return pool[Math.floor(Math.random() * pool.length)];
 }
-function startExpedition(coopNames){
+function startExpedition(coopNames, kid){
   const route = [
     { type:'q' }, { type:'q' }, { type:'fork' }, { type:'treasure' },
     { type:'q' }, { type:'q' }, { type:'heart' }, { type:'fork' },
     { type:'q' }, { type:'treasure' }, { type:'q' }, { type:'boss', left:3 }
   ];
   route.forEach(s => { if (s.type === 'q') s.d = randDomain(); });
-  exp = { route, i: 0, hearts: 3, loot: 0, coop: coopNames || null, turn: 0 };
+  exp = { route, i: 0, hearts: 3, loot: 0, coop: coopNames || null, turn: 0, kid: !!kid };
+  if (exp.kid) exp.route.forEach(s => { if (s.type === 'q') s.d = KID_DOMAINS[Math.floor(Math.random() * KID_DOMAINS.length)]; });
   if (exp.coop) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     $('#screen-expedition').classList.add('active');
@@ -4008,6 +4033,11 @@ function renderParlor(){
         <span class="bridge-title">Expedition for Two</span>
         <span class="bridge-state">Walk the trail together. Shared hearts, shared loot, take turns answering.</span>
       </button>
+      <button class="bridge-item" id="parlor-party">
+        <span class="bridge-domains">🎉 3 to 6 players</span>
+        <span class="bridge-title">Last Scholar Standing</span>
+        <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
+      </button>
       <button class="bridge-item" id="parlor-teach">
         <span class="bridge-domains">🕯 Face to face</span>
         <span class="bridge-title">Teach &amp; Test</span>
@@ -4015,21 +4045,83 @@ function renderParlor(){
       </button>
     </div>`;
   $('#parlor-duel').addEventListener('click', () => go('duel'));
-  $('#parlor-coop').addEventListener('click', () => parlorNames('Set out together', (names) => startExpedition(names)));
-  $('#parlor-teach').addEventListener('click', () => parlorNames('Light the candle', (names) => startTeachTest(names)));
+  $('#parlor-coop').addEventListener('click', () => parlorNames(2, 'Set out together', (names, kid) => startExpedition(names, kid)));
+  $('#parlor-party').addEventListener('click', () => parlorNames(6, 'Start the circle', (names, kid) => startParty(names, kid), 3));
+  $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
 }
-function parlorNames(buttonText, onReady){
+function parlorNames(maxPlayers, buttonText, onReady, minPlayers){
+  minPlayers = minPlayers || 2;
   const body = $('#parlor-body');
+  const inputs = Array.from({length: maxPlayers}, (_, i) =>
+    `<input class="duel-name" id="pn${i+1}" maxlength="14" placeholder="Player ${i+1}${i >= minPlayers ? ' (optional)' : ''}">`).join('');
   body.innerHTML = `
     <div class="lesson-card" style="text-align:center">
       <h2 class="lesson-title">Who is playing?</h2>
-      <input class="duel-name" id="pn1" maxlength="14" placeholder="Player 1 name">
-      <input class="duel-name" id="pn2" maxlength="14" placeholder="Player 2 name">
+      ${inputs}
+      <label class="kid-toggle"><input type="checkbox" id="kid-mode"> Gentle questions (good for young players)</label>
       <button class="btn-primary" id="pn-go">${buttonText}</button>
     </div>`;
   $('#pn-go').addEventListener('click', () => {
-    onReady([($('#pn1').value.trim() || 'Player 1'), ($('#pn2').value.trim() || 'Player 2')]);
+    const names = [];
+    for (let i = 1; i <= maxPlayers; i++){
+      const v = $('#pn' + i).value.trim();
+      if (v) names.push(v);
+    }
+    while (names.length < minPlayers) names.push('Player ' + (names.length + 1));
+    onReady(names, $('#kid-mode').checked);
   });
+}
+// gentler pool: no advanced questions, friendly subjects
+const KID_DOMAINS = ['astronomy','biology','earth','body','music','art','mythology','language','history','math'];
+function playPool(kid){
+  return kid ? QUESTIONS.filter(q => q.t !== 2 && KID_DOMAINS.includes(q.d)) : QUESTIONS;
+}
+
+// Last Scholar Standing: 3-6 players, two strikes and you are out
+let party = null;
+function startParty(names, kid){
+  party = { players: names.map(n => ({ name: n, strikes: 0, out: false })), turn: 0, kid, deck: shuffle(playPool(kid)), idx: 0 };
+  renderParty();
+}
+function renderParty(){
+  const body = $('#parlor-body');
+  body.innerHTML = '';
+  const alive = party.players.filter(p => !p.out);
+  if (alive.length === 1) {
+    SFX.fanfare();
+    confetti(70);
+    const earned = awardLumens(15);
+    body.innerHTML = `
+      <div class="result-card">
+        <div class="result-title">Last Scholar Standing</div>
+        <div class="result-score">👑</div>
+        <div class="result-verdict"><b>${alive[0].name}</b> outlasted everyone. The circle bows.</div>
+        <div class="result-earn">+${earned} lumens to the cabinet</div>
+        <button class="btn-primary" id="party-again">Play again</button>
+        <button class="btn-secondary" data-go="parlor">Back to the parlor</button>
+      </div>`;
+    $('#party-again').addEventListener('click', () => startParty(party.players.map(p => p.name), party.kid));
+    return;
+  }
+  while (party.players[party.turn].out) party.turn = (party.turn + 1) % party.players.length;
+  const p = party.players[party.turn];
+  const standings = party.players.map(pl =>
+    `<span class="party-chip ${pl.out ? 'party-out' : ''} ${pl === p ? 'party-now' : ''}">${pl.name} ${pl.out ? '✗' : '♥'.repeat(2 - pl.strikes)}</span>`).join('');
+  body.appendChild(el(`<div class="party-standings">${standings}</div>`));
+  body.appendChild(el(`<div class="duel-turn duel-p${party.turn % 2}">${p.name}, your question</div>`));
+  const q = party.deck[party.idx % party.deck.length];
+  party.idx++;
+  body.appendChild(questionCard({
+    domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, noRecord: true,
+    onDone(right){
+      if (!right) {
+        p.strikes++;
+        if (p.strikes >= 2) { p.out = true; toast(`${p.name} is out!`); }
+      }
+      party.turn = (party.turn + 1) % party.players.length;
+      renderParty();
+    }
+  }));
 }
 
 // Teach & Test: read aloud, then your partner answers
@@ -4094,6 +4186,7 @@ function renderDuelSetup(){
       <p class="lesson-text">Ten questions, five each, taking turns on this device. Highest score claims the crown. Ties go to sudden death.</p>
       <input class="duel-name" id="duel-p1" maxlength="14" placeholder="Player 1 name" value="">
       <input class="duel-name" id="duel-p2" maxlength="14" placeholder="Player 2 name" value="">
+      <label class="kid-toggle"><input type="checkbox" id="duel-kid"> Gentle questions (good for young players)</label>
       <button class="btn-primary" id="duel-start">Begin the duel</button>
     </div>`;
   $('#duel-start').addEventListener('click', () => {
@@ -4101,7 +4194,7 @@ function renderDuelSetup(){
       names: [($('#duel-p1').value.trim() || 'Player 1'), ($('#duel-p2').value.trim() || 'Player 2')],
       scores: [0, 0],
       turn: 0, asked: 0, total: 10,
-      deck: shuffle(QUESTIONS.filter(q => q.t !== 2)),
+      deck: shuffle(playPool($('#duel-kid').checked).filter(q => q.t !== 2)),
       sudden: false
     };
     renderDuelQuestion();
