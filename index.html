@@ -3721,9 +3721,11 @@ function genPartyQuestion(){
 }
 // build a deck mixing written questions with generated ones, about half and half
 function partyDeck(pool){
-  const written = pgShuffle(pool);
+  // pool arrives never-seen-first (orderFresh); keep that order so fresh
+  // questions come up before repeats. _w marks written questions for seen-tracking.
   const out = [];
-  written.forEach(q => {
+  pool.forEach(q => {
+    q._w = 1;
     out.push(q);
     out.push(genPartyQuestion());
   });
@@ -4046,6 +4048,297 @@ const MYTHS = [
 
 </script>
 <script>
+// Memory Match expansion: 32 more idea/meaning pairs
+MATCH_PAIRS.push(
+  ['Supply and demand','Prices rise when many want few'],
+  ['Gravity','Mass pulling on mass'],
+  ['Renaissance','Europe’s rebirth of art and learning'],
+  ['Ecosystem','Living things and their home, connected'],
+  ['Momentum','Moving mass that resists stopping'],
+  ['Diversification','Not putting all eggs in one basket'],
+  ['Hypothesis','A guess you can test'],
+  ['Allegory','A story with a hidden second meaning'],
+  ['Octave','The same note, higher or lower'],
+  ['Constellation','A star picture drawn by humans'],
+  ['Immune system','Your body’s defense army'],
+  ['Erosion','Wind and water carving the land'],
+  ['Barter','Trading goods without money'],
+  ['Friction','The force that resists sliding'],
+  ['Interest','The price of borrowing money'],
+  ['Adaptation','A trait shaped to fit survival'],
+  ['Rhetoric','The art of persuading'],
+  ['Orbit','Falling around something forever'],
+  ['Budget','A plan for where money goes'],
+  ['Perspective','Drawing depth on a flat surface'],
+  ['Neuron','A brain cell that sends signals'],
+  ['Inertia','Objects keeping their current motion'],
+  ['Empathy','Feeling with another person'],
+  ['Archipelago','A chain of islands'],
+  ['Crescendo','Music growing gradually louder'],
+  ['Vaccine','Training the body on a harmless preview'],
+  ['Monopoly','One seller controlling a market'],
+  ['Metamorphosis','A body rebuilding into a new form'],
+  ['Irony','Saying one thing, meaning its opposite'],
+  ['Equator','Earth’s waistline, halfway between poles'],
+  ['Sonnet','A fourteen-line poem with rules'],
+  ['Habitat','Where a creature naturally lives']
+);
+
+</script>
+<script>
+// Reality Check expansion: 36 more numbers that change real decisions
+REALITY.push(
+  { q:'Saving $200 a month at 7% growth becomes how much in 40 years?',
+    min:96000, max:1000000, step:2000, ans:525000, pre:'$',
+    why:'About $525,000, from $96,000 actually saved. The other $429,000 is compound growth doing the heavy lifting. Time in the market beats timing the market.' },
+  { q:'On a $300,000 house with a 30-year mortgage at 7%, how much do you pay in total?',
+    min:300000, max:1200000, step:10000, ans:718000, pre:'$',
+    why:'About $718,000. More than half of what you pay is interest. Extra payments early in the loan attack that number directly; even $100 extra a month saves tens of thousands.' },
+  { q:'A new car loses what percent of its value in the first 5 years?',
+    min:0, max:100, step:1, ans:60, suf:'%',
+    why:'About 60%. A 3-year-old car with low miles is the famous sweet spot: someone else paid the steepest part of the curve for you.' },
+  { q:'Among Americans who carry a credit card balance, what is the average balance?',
+    min:0, max:20000, step:100, ans:6500, pre:'$',
+    why:'About $6,500. At 24% APR that costs roughly $130 a month in pure interest, forever, until the balance dies. Kill the balance and you just gave yourself a raise.' },
+  { q:'Raising a child to age 18 in the US costs about how much (not counting college)?',
+    min:50000, max:600000, step:5000, ans:310000, pre:'$',
+    why:'About $310,000, roughly $1,400 a month. Not a reason against kids; a reason to know the number before it knows you.' },
+  { q:'The average American wedding costs about how much?',
+    min:0, max:100000, step:1000, ans:35000, pre:'$',
+    why:'About $35,000, a house down payment for one day. Couples who spend less on weddings are, in studies, no less happily married. Spend on the marriage.' },
+  { q:'The average American spends how many minutes a day watching TV and streams?',
+    min:0, max:600, step:10, ans:180, suf:' min',
+    why:'About 180 minutes. Three hours a day is 45 full days a year. Nobody needs it at zero, but even reclaiming one of those hours funds any skill in this academy.' },
+  { q:'What percent of American adults read zero books in the past year?',
+    min:0, max:100, step:1, ans:23, suf:'%',
+    why:'About 23%, roughly one in four. The gap between readers and non-readers compounds like interest, and reading anything at all puts you ahead of it.' },
+  { q:'On average, forming a new habit takes about how many days?',
+    min:0, max:250, step:1, ans:66, suf:' days',
+    why:'About 66 days, not the famous 21. Knowing the real number saves you from quitting at day 30 thinking you are broken. You are on schedule.' },
+  { q:'Without review, what percent of new information do you forget within a day?',
+    min:0, max:100, step:1, ans:70, suf:'%',
+    why:'About 70%, per Ebbinghaus’s forgetting curve. This is why Detention exists in this school: one review at the right moment rescues most of what you learned.' },
+  { q:'Your heart beats about how many times a day?',
+    min:0, max:300000, step:5000, ans:100000, suf:' beats',
+    why:'About 100,000. Each 1-point drop in resting heart rate from exercise saves it millions of beats a year. Cardio is maintenance on the only pump you get.' },
+  { q:'Walking a mile takes about how many steps?',
+    min:500, max:5000, step:100, ans:2000, suf:' steps',
+    why:'About 2,000. So the famous 10,000 steps is roughly 5 miles. Even 7,000 a day shows most of the health benefit in studies; the round number is marketing.' },
+  { q:'A pound of body fat stores about how many calories?',
+    min:500, max:10000, step:100, ans:3500, suf:' cal',
+    why:'About 3,500. A 500-calorie daily deficit is a pound a week; crash diets promising 10 pounds a week are promising water and muscle, not fat.' },
+  { q:'One 90-minute unit of sleep is called a cycle. How long is one full sleep cycle?',
+    min:10, max:240, step:5, ans:90, suf:' min',
+    why:'About 90 minutes. Waking mid-cycle is why 8 hours can feel worse than 7.5. Count backward from your alarm in 90-minute blocks and pick your bedtime.' },
+  { q:'A typical 10-minute shower uses about how many gallons of water?',
+    min:0, max:100, step:1, ans:20, suf:' gal',
+    why:'About 20 gallons. A shorter shower saves more water than most gestures people feel proud of; so does fixing one dripping faucet (about 3,000 gallons a year).' },
+  { q:'What percent of food in America ends up wasted?',
+    min:0, max:100, step:1, ans:35, suf:'%',
+    why:'About 35 to 40%. For a family, that is roughly $1,500 a year in the trash. A shopping list and an honest freezer are quietly worth a vacation.' },
+  { q:'The average American commute, one way, is how many minutes?',
+    min:0, max:90, step:1, ans:27, suf:' min',
+    why:'About 27 minutes, nearly an hour a day. Researchers find long commutes rank among the least happy minutes of life. Worth weighing against a bigger house.' },
+  { q:'What percent of car trips Americans take are under 3 miles?',
+    min:0, max:100, step:1, ans:45, suf:'%',
+    why:'About 45%. A 3-mile bike ride takes 15 minutes and counts as exercise. The car is often not saving the time it feels like it saves.' },
+  { q:'An average emergency room visit in the US costs about how much?',
+    min:0, max:10000, step:100, ans:2400, pre:'$',
+    why:'About $2,400 before insurance. Urgent care handles many of the same problems for about a tenth of that. Knowing which door to walk through is a financial skill.' },
+  { q:'What percent of American adults have a will?',
+    min:0, max:100, step:1, ans:32, suf:'%',
+    why:'About 32%. Without one, the state decides who gets everything, including who raises your kids. An afternoon of paperwork protects everyone you love.' },
+  { q:'The average person speaks about how many words a day?',
+    min:0, max:50000, step:500, ans:16000, suf:' words',
+    why:'About 16,000, men and women nearly identical, despite the stereotype. What separates communicators is not volume but the 100 words chosen carefully.' },
+  { q:'The human brain is not fully developed until about what age?',
+    min:10, max:40, step:1, ans:25, suf:' years old',
+    why:'About 25, and the last part to finish is judgment and impulse control. Be patient with young people, including your younger self. The wiring literally was not done.' },
+  { q:'How many neurons does a human brain contain, in billions?',
+    min:1, max:200, step:1, ans:86, suf:' billion',
+    why:'About 86 billion, each connected to thousands of others. Every fact in this academy is being stored on hardware more complex than anything humans have built.' },
+  { q:'Your taste buds are replaced about every how many days?',
+    min:1, max:60, step:1, ans:14, suf:' days',
+    why:'About every 2 weeks. This is why foods you hated as a kid deserve a retrial as an adult: the equipment is literally new. Try the vegetable again.' },
+  { q:'Humans share about what percent of their DNA with bananas?',
+    min:0, max:100, step:1, ans:60, suf:'%',
+    why:'About 60%, because all life runs on the same basic cellular machinery. You are distant cousins with your breakfast. Biology is one family tree.' },
+  { q:'How many ants are there for every one human on Earth?',
+    min:0, max:10000000, step:50000, ans:2500000, suf:' ants',
+    why:'About 2.5 million ants per person, around 20 quadrillion total. Their combined weight rivals humanity’s. You are outnumbered; be polite at picnics.' },
+  { q:'One teaspoon of honey is the entire life’s work of about how many bees?',
+    min:1, max:100, step:1, ans:12, suf:' bees',
+    why:'About 12 bees, working their whole lives. A third of your food depends on pollinators, which is the practical reason to care what happens to them.' },
+  { q:'What percent of Earth’s surface is ocean?',
+    min:0, max:100, step:1, ans:71, suf:'%',
+    why:'About 71%, and we have mapped Mars better than our own sea floor. Most of your planet is unexplored. The frontier is not gone; it is wet.' },
+  { q:'How many official national parks does the United States have?',
+    min:10, max:200, step:1, ans:63, suf:' parks',
+    why:'63, and an annual pass to every one costs $80, one of the great bargains in America. Time outdoors measurably lowers stress hormones. This number is an invitation.' },
+  { q:'Shakespeare invented or first recorded about how many English words?',
+    min:0, max:5000, step:50, ans:1700, suf:' words',
+    why:'About 1,700, including "lonely," "gossip," and "bedroom." Language is not a museum; it is built by people bold enough to coin what they need.' },
+  { q:'How many languages are spoken in the world today?',
+    min:100, max:20000, step:100, ans:7000, suf:' languages',
+    why:'About 7,000, and one dies roughly every few weeks. Learning even a little of a second one measurably sharpens the brain at any age.' },
+  { q:'What percent of the world lives in extreme poverty (under about $2 a day)?',
+    min:0, max:100, step:1, ans:9, suf:'%',
+    why:'About 9%, down from about 38% in 1990. Most people guess far higher. The world is in better shape than the news feed suggests, and it got there fast.' },
+  { q:'What percent of the world’s adults can read?',
+    min:0, max:100, step:1, ans:87, suf:'%',
+    why:'About 87%, up from about 12% two centuries ago. You are living in the most literate moment in human history, and this game is a small use of that miracle.' },
+  { q:'In the year 1800, what percent of children died before their fifth birthday?',
+    min:0, max:100, step:1, ans:43, suf:'%',
+    why:'About 43%, nearly half. Today, worldwide, it is under 4%. Vaccines, clean water, and soap are the quiet heroes of the greatest rescue ever staged.' },
+  { q:'Your smartphone has roughly how many thousand times the computing power of the Apollo 11 moon computer?',
+    min:1, max:1000, step:1, ans:100, suf:' thousand times',
+    why:'About 100,000 times. The machine in your pocket dwarfs what flew people to the Moon. What it does is decided entirely by what you point it at.' }
+);
+
+</script>
+<script>
+// Myth Hunt expansion: 56 more statements. Myths that steer bad decisions, and truths that sound impossible.
+MYTHS.push(
+  { t:'You need to drink 8 glasses of water a day.', myth:true,
+    why:'Myth. There is no science behind the number; food provides a big share of your water and thirst is a reliable guide. Drink when thirsty, more in heat and exercise.' },
+  { t:'Humans have exactly five senses.', myth:true,
+    why:'Myth. Balance, temperature, pain, hunger, and the sense of where your limbs are (proprioception) are all separate senses. Most counts land above twenty.' },
+  { t:'Your blood is blue inside your body until it touches air.', myth:true,
+    why:'Myth. Blood is always red, just darker when low on oxygen. Veins look blue because of how light filters through skin.' },
+  { t:'Chameleons change color mainly to match their background.', myth:true,
+    why:'Myth. They mostly change color to signal mood, talk to other chameleons, and manage temperature. It is a mood ring, not camouflage.' },
+  { t:'Different parts of your tongue taste different things.', myth:true,
+    why:'Myth. The famous tongue map came from a mistranslated 1901 study. Every region tastes everything. Your own tongue could have debunked this at any time.' },
+  { t:'Ostriches bury their heads in the sand when scared.', myth:true,
+    why:'Myth. They flop low to the ground or run at 45 mph. No animal survives by suffocating itself; the image came from them tending ground nests.' },
+  { t:'Vikings wore horned helmets.', myth:true,
+    why:'Myth. No horned Viking helmet has ever been found. The horns came from 1800s opera costumes. Real Viking style was more practical and, frankly, cooler.' },
+  { t:'People in Columbus’s time believed the Earth was flat.', myth:true,
+    why:'Myth. Educated people had known Earth was round since the ancient Greeks, who even measured its size. The debate with Columbus was about distance, and his critics were right.' },
+  { t:'The Salem witches were burned at the stake.', myth:true,
+    why:'Myth. In Salem the convicted were hanged; burning was a European practice. The deeper lesson survives either way: panic plus certainty is a deadly mix.' },
+  { t:'Fortune cookies come from ancient China.', myth:true,
+    why:'Myth. They were popularized by Japanese immigrants in California. In China they are sold as an American curiosity.' },
+  { t:'Coffee and tea dehydrate you.', myth:true,
+    why:'Myth. The water in the cup far outweighs the mild diuretic effect; caffeinated drinks hydrate you on net. Your morning coffee counts toward your fluids.' },
+  { t:'MSG in food causes headaches.', myth:true,
+    why:'Myth. Blind studies find no effect; the scare began with one speculative 1968 letter. MSG is in tomatoes and parmesan, and no one fears those.' },
+  { t:'Eating carrots improves your night vision.', myth:true,
+    why:'Myth, and a genuine WWII propaganda campaign: Britain credited carrots to hide the real secret, radar. Carrots are healthy; they are not headlights.' },
+  { t:'Swallowed gum stays in your stomach for 7 years.', myth:true,
+    why:'Myth. Gum is indigestible but passes through in days like anything else. The body is a corridor, not a museum.' },
+  { t:'You must wait 30 minutes after eating before swimming.', myth:true,
+    why:'Myth. No drowning has ever been attributed to a full stomach; at worst you might get a mild cramp. Generations of poolside waiting, for nothing.' },
+  { t:'Dogs see only in black and white.', myth:true,
+    why:'Myth. Dogs see blues and yellows; they mainly lack red-green vision. A blue toy on green grass pops for them; a red one disappears.' },
+  { t:'If you touch a baby bird, its mother will smell you and abandon it.', myth:true,
+    why:'Myth. Most birds barely smell at all, and parents do not abandon chicks over handling. If a fledgling is in danger, moving it to a bush nearby is fine.' },
+  { t:'Humans evolved from chimpanzees.', myth:true,
+    why:'Myth. Chimps are cousins, not ancestors: both species descend from a common ancestor about 7 million years ago. Evolution is a branching tree, not a ladder.' },
+  { t:'Adding salt makes water boil noticeably faster.', myth:true,
+    why:'Myth. The amount used in cooking changes the boiling point by a fraction of a degree. Salt the pasta water for flavor, not physics.' },
+  { t:'Going outside with wet hair gives you a cold.', myth:true,
+    why:'Myth. Colds are viruses; you catch them from people, not weather. Winter colds spike because everyone crowds indoors together, sharing air.' },
+  { t:'Twinkies stay fresh for decades.', myth:true,
+    why:'Myth. Shelf life is about 45 days. The immortal Twinkie is a joke that hardened into a belief, which is exactly how most myths are born.' },
+  { t:'Mount Everest is the tallest mountain on Earth measured from base to peak.', myth:true,
+    why:'Myth. Everest is highest above sea level, but Mauna Kea in Hawaii is taller base-to-peak; most of it hides underwater. Definitions decide records.' },
+  { t:'Food dropped on the floor is safe if you grab it within five seconds.', myth:true,
+    why:'Myth. Bacteria transfer on contact, instantly. What matters is the floor, the food’s moisture, and your immune system. The five seconds are theater.' },
+  { t:'Lemmings hurl themselves off cliffs in mass suicides.', myth:true,
+    why:'Myth. A 1958 Disney film crew staged it by driving lemmings off a cliff for the camera. The lesson is not about lemmings; it is about trusting footage.' },
+  { t:'Hair and fingernails keep growing after death.', myth:true,
+    why:'Myth. Skin dehydrates and pulls back, making both look longer. Growth requires living cells. The truth is somehow creepier than the myth.' },
+  { t:'Some people have a true photographic memory.', myth:true,
+    why:'Myth. No adult has ever passed a controlled test of it. Great memory champions use trained techniques like memory palaces, which anyone can learn. That is better news.' },
+  { t:'Frankenstein is the name of the monster.', myth:true,
+    why:'Myth. Frankenstein is the scientist; the creature has no name. Mary Shelley wrote it at 18, and her point was about the maker, not the monster.' },
+  { t:'A penny dropped from a skyscraper could kill someone below.', myth:true,
+    why:'Myth. A penny tumbles and tops out around 25 mph; it would sting. Physics caps light, flat objects. (A dropped bolt is another story: hard hats exist for a reason.)' },
+  { t:'Microwaves cook food from the inside out.', myth:true,
+    why:'Myth. Microwaves penetrate roughly an inch and cook outside-in like anything else; the middle heats by conduction. That is why the center of the burrito is cold.' },
+  { t:'The seasons happen because Earth moves closer to and farther from the Sun.', myth:true,
+    why:'Myth. Earth is actually closest to the Sun in January. Seasons come from the planet’s tilt, which is why the hemispheres have opposite seasons at once.' },
+  { t:'Emergency rooms and police see clear spikes of strange behavior on full moons.', myth:true,
+    why:'Myth. Large studies find no lunar effect. We remember the wild full-moon night and forget the calm ones; that memory trick has a name, confirmation bias.' },
+  { t:'The word sushi means raw fish.', myth:true,
+    why:'Myth. Sushi refers to the vinegared rice. Plenty of sushi contains no raw fish at all, and raw fish alone is sashimi.' },
+  { t:'Tyrannosaurus rex and early humans walked the Earth at the same time.', myth:true,
+    why:'Myth. About 66 million years separate the last T. rex from the first human. Fun twist: birds are literal living dinosaurs, so one may be outside your window.' },
+  { t:'Bananas grow on trees.', myth:true,
+    why:'Myth. The banana plant is the world’s largest herb; its "trunk" is tightly rolled leaves. Also, every store banana is a clone of the same variety.' },
+  { t:'Peanuts are nuts.', myth:true,
+    why:'Myth. Peanuts are legumes, cousins of peas and lentils, growing underground. Cashews, meanwhile, grow attached to an apple-like fruit. The nut aisle is full of lies.' },
+  { t:'The Bible says the forbidden fruit was an apple.', myth:true,
+    why:'Myth. Scripture says only "fruit." The apple likely came from a Latin pun: malum means both "evil" and "apple." A translator’s joke became 2,000 years of paintings.' },
+  { t:'Marie Antoinette said "Let them eat cake."', myth:true,
+    why:'Myth. The line appeared in Rousseau’s writing when she was a child in Austria. History’s most famous quotes are frequently misattributed; check before you repeat.' },
+  { t:'Thomas Edison invented the lightbulb.', myth:true,
+    why:'Myth. At least 20 inventors built earlier versions; Edison’s team made it practical and long-lasting, and he won the marketing. Invention is usually a relay, not a solo.' },
+  { t:'A cumulus cloud can weigh more than a million pounds.', myth:false,
+    why:'True. The water droplets in an average fluffy cloud weigh about 1.1 million pounds. It floats because the weight is spread across a vast volume of rising air.' },
+  { t:'Bananas are slightly radioactive.', myth:false,
+    why:'True. Their potassium includes a radioactive isotope; scientists even joke about a "banana equivalent dose." You would need millions at once to matter. Eat the banana.' },
+  { t:'A teaspoon of neutron star material would weigh billions of tons.', myth:false,
+    why:'True. Neutron stars pack a sun and a half of mass into a city-sized ball. The universe builds things our words barely survive describing.' },
+  { t:'Some turtles can breathe through their rear ends.', myth:false,
+    why:'True. Several species absorb oxygen through their cloaca, which lets them stay underwater through a frozen winter. Nature has no dignity, only solutions.' },
+  { t:'The Sahara was green with lakes and hippos just a few thousand years ago.', myth:false,
+    why:'True. Around 6,000 years ago the Sahara held lakes, grasslands, and cattle herders; rock paintings of swimmers survive in the desert. Climates can pivot fast.' },
+  { t:'Sea otters hold hands while sleeping so they do not drift apart.', myth:false,
+    why:'True. They also wrap themselves in kelp as an anchor, and each otter has a favorite rock kept in an armpit pouch. Tool use, plus a pocket.' },
+  { t:'The Moon has moonquakes.', myth:false,
+    why:'True. Apollo seismometers recorded quakes lasting up to an hour, ringing the Moon like a bell. Future lunar buildings will need earthquake codes.' },
+  { t:'Tiny animals called tardigrades have survived the vacuum of space.', myth:false,
+    why:'True. In 2007 tardigrades survived 10 days of raw space, radiation and all, then reproduced back on Earth. They can dry to a husk and revive years later.' },
+  { t:'The shortest war in history lasted under 40 minutes.', myth:false,
+    why:'True. The Anglo-Zanzibar War of 1896 ran about 38 minutes. Most records are broken by trying harder; some are broken by giving up faster.' },
+  { t:'Russia has more surface area than Pluto.', myth:false,
+    why:'True. Russia covers about 17.1 million square kilometers; Pluto’s surface is about 16.7 million. Planets are big, but so is Russia.' },
+  { t:'One lightning bolt carries enough energy to toast about 100,000 slices of bread.', myth:false,
+    why:'True, roughly a billion joules. The catch is that it arrives in a millisecond, which is why we cannot harvest it and why you should not be the toast.' },
+  { t:'Bees can learn to recognize individual human faces.', myth:false,
+    why:'True. With a brain of under a million neurons, honeybees pass face-recognition tests. Intelligence is not about size; it is about wiring and need.' },
+  { t:'Nintendo was founded in 1889.', myth:false,
+    why:'True. It began as a playing-card company in Kyoto and spent 80 years trying taxis, hotels, and rice before video games. Reinvention can take a century.' },
+  { t:'Your body carries about as many bacterial cells as human cells.', myth:false,
+    why:'True, roughly 38 trillion bacteria to 30 trillion human cells. Most are allies that digest food and train your immune system. You are a walking ecosystem.' },
+  { t:'Some cats are allergic to humans.', myth:false,
+    why:'True, though it is rare: our dander, soaps, and smoke can trigger feline asthma. The allergy door swings both ways.' },
+  { t:'Scientists believe it rains diamonds inside Neptune.', myth:false,
+    why:'True. Lab experiments squeezing carbon at Neptune-like pressures produce diamond "rain." Uranus likely too. The universe wastes nothing, not even weather.' },
+  { t:'Anne Frank, Martin Luther King Jr., and Barbara Walters were all born in the same year.', myth:false,
+    why:'True: 1929. History compresses strangely; people we file in different eras were classmates in time. Timelines deserve a second look.' },
+  { t:'A single pineapple takes about two years to grow.', myth:false,
+    why:'True. Each plant produces one fruit at a time, over 18 months to 2 years. A $3 pineapple is one of the most patient bargains in the store.' },
+  { t:'A mantis shrimp can punch with the acceleration of a bullet.', myth:false,
+    why:'True. Its club accelerates faster than a .22 and boils the water around it with the shockwave, which can strike prey a second time. Aquariums keep them away from glass.' },
+  { t:'Sound travels about four times faster in water than in air.', myth:false,
+    why:'True, about 4.3 times faster. Whales can hear each other across hundreds of miles, which is also why ship noise is a real problem for them.' },
+  { t:'Ounce for ounce, your thigh bone is stronger than concrete.', myth:false,
+    why:'True. Bone is a living composite that heals itself and gets denser with use; lifting weights literally strengthens your skeleton. No bridge can say that.' },
+  { t:'Antarctica is the largest desert on Earth.', myth:false,
+    why:'True. A desert is defined by dryness, not heat, and Antarctica’s interior gets almost no precipitation. It out-deserts the Sahara by millions of square miles.' },
+  { t:'A lightning bolt is about five times hotter than the surface of the Sun.', myth:false,
+    why:'True: around 50,000°F versus the Sun’s 10,000°F surface. Thunder is the sound of air exploding from that heat. Count the seconds, divide by five, that is the miles away.' },
+  { t:'Crows remember human faces and hold grudges for years.', myth:false,
+    why:'True. In experiments, crows scolded researchers who once trapped them, years later, and taught their offspring to do the same. Be kind to crows. They keep files.' },
+  { t:'The man who invented the Pringles can had his ashes buried in one.', myth:false,
+    why:'True. Fredric Baur was so proud of the design that his family honored the request in 2008. Love your work, within reason.' },
+  { t:'Alaska is both the westernmost and easternmost state in the US.', myth:false,
+    why:'True. The Aleutian Islands cross the 180° line of longitude into the Eastern Hemisphere. Geography has loopholes, and Alaska found one.' },
+  { t:'Maine is the closest US state to Africa.', myth:false,
+    why:'True. A peninsula in Maine sits closer to Morocco than Florida does; the Atlantic narrows toward the north. Maps in your head lie; globes tell the truth.' },
+  { t:'Two clean pieces of the same metal can weld themselves together in space.', myth:false,
+    why:'True, it is called cold welding: with no air layer between them, the atoms cannot tell where one piece ends. Spacecraft engineers design around it.' },
+  { t:'Over long distances, a fit human can outrun a horse.', myth:false,
+    why:'True on hot days over marathon distances. Sweating and two legs make humans elite endurance runners; our ancestors literally jogged prey into exhaustion.' },
+  { t:'Hippos make their own sunscreen.', myth:false,
+    why:'True. Their skin secretes a red-orange fluid that blocks UV and fights bacteria, which fueled the old "hippos sweat blood" legend. Evolution beat the pharmacy.' }
+);
+
+</script>
+<script>
 // Workshop bench five: train your actual ears.
 SKILLS.push(
   {
@@ -4075,7 +4368,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v53 · Sep 1, 2026";
+window.GAME_VERSION = "v54 · Sep 1, 2026";
 
 </script>
 <script>
@@ -5210,6 +5503,45 @@ function qKey(q){
   for (let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) | 0; }
   return 'q' + (h >>> 0).toString(36);
 }
+// ---------- never-repeat dealing ----------
+// this device remembers every card it has shown, per pool; games deal unseen
+// cards first, and a pool only recycles once every card in it has been played
+const SEEN_KEY = 'polymath_seen_v1';
+function seenLoad(){ try { return JSON.parse(localStorage.getItem(SEEN_KEY)) || {}; } catch(e){ return {}; } }
+function seenSave(st){ try { localStorage.setItem(SEEN_KEY, JSON.stringify(st)); } catch(e){} }
+function markSeen(name, keys){
+  const st = seenLoad();
+  const set = new Set(st[name] || []);
+  keys.forEach(k => set.add(k));
+  st[name] = [...set];
+  seenSave(st);
+}
+function drawFresh(name, pool, n, keyFn){
+  const st = seenLoad();
+  const seen = new Set(st[name] || []);
+  const fresh = shuffle(pool.filter(x => !seen.has(keyFn(x))));
+  let picked;
+  if (fresh.length >= n) picked = fresh.slice(0, n);
+  else {
+    picked = fresh.concat(shuffle(pool.filter(x => seen.has(keyFn(x))))).slice(0, n);
+    st[name] = []; // full cycle complete: everything is fresh again
+  }
+  const set = new Set(st[name] || []);
+  picked.forEach(x => set.add(keyFn(x)));
+  st[name] = [...set];
+  seenSave(st);
+  return picked;
+}
+// for deck games that consume an unknown number of cards: order the whole
+// pool never-seen-first and mark cards only as they are actually shown
+function orderFresh(name, pool, keyFn){
+  const st = seenLoad();
+  const seen = new Set(st[name] || []);
+  const fresh = shuffle(pool.filter(x => !seen.has(keyFn(x))));
+  if (!fresh.length) { st[name] = []; seenSave(st); return shuffle(pool.slice()); }
+  return fresh.concat(shuffle(pool.filter(x => seen.has(keyFn(x)))));
+}
+
 // spaced repetition ladder: a miss returns after ~1 day, then 3, then 7. Three wins in a row and it is owned.
 const REVIEW_DELAYS = [20*3600*1000, 3*86400*1000, 7*86400*1000];
 function dueMisses(){
@@ -5960,7 +6292,12 @@ function pickQ(domain, advanced){
   let pool = base.filter(q => q.d === domain && (advanced ? q.t === 2 : q.t !== 2));
   if (!pool.length) pool = base.filter(q => q.d === domain);
   if (!pool.length) pool = QUESTIONS.filter(q => q.d === domain);
-  return pool[Math.floor(Math.random() * pool.length)];
+  const seen = new Set(seenLoad()['mq'] || []);
+  const fresh = pool.filter(q => !seen.has(qKey(q)));
+  const src = fresh.length ? fresh : pool;
+  const q = src[Math.floor(Math.random() * src.length)];
+  markSeen('mq', [qKey(q)]);
+  return q;
 }
 function startExpedition(coopNames, kid){
   const route = [
@@ -6205,7 +6542,7 @@ function playPool(kid){
 // Last Scholar Standing: 3-6 players, two strikes and you are out
 let party = null;
 function startParty(names, kid){
-  party = { players: names.map(n => ({ name: n, strikes: 0, out: false })), turn: 0, kid, deck: partyDeck(playPool(kid)), idx: 0 };
+  party = { players: names.map(n => ({ name: n, strikes: 0, out: false })), turn: 0, kid, deck: partyDeck(orderFresh('mq', playPool(kid), qKey)), idx: 0 };
   renderParty();
 }
 function renderParty(){
@@ -6241,6 +6578,7 @@ function renderParty(){
   body.appendChild(el(`<div class="duel-turn duel-p${party.turn % 2}">Your turn, ${p.name}</div>`));
   const q = party.deck[party.idx % party.deck.length];
   party.idx++;
+  if (q._w) markSeen('mq', [qKey(q)]);
   body.appendChild(questionCard({
     domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, more: q.more, noRecord: true,
     onDone(right){
@@ -6262,7 +6600,7 @@ function renderParty(){
 // Teach & Test: read aloud, then your partner answers
 let tt = null;
 function startTeachTest(names){
-  tt = { names, round: 0, rounds: 6, score: 0, pool: shuffle(NODES).slice(0, 6) };
+  tt = { names, round: 0, rounds: 6, score: 0, pool: drawFresh('lessons', NODES, 6, n => n.title) };
   renderTeachTest();
 }
 function renderTeachTest(){
@@ -6404,7 +6742,7 @@ function finishTrip(){
 let debate = null;
 // ---------- reality check: guess the real number, meet your own gut ----------
 function startReality(){
-  const qs = shuffle(REALITY).slice(0, 8);
+  const qs = drawFresh('reality', REALITY, 8, x => x.q);
   let idx = 0, score = 0, earned = 0;
   const body = $('#reality-body');
   const fmt = (item, n) => (item.pre || '') + n.toLocaleString('en-US') + (item.suf || '');
@@ -6562,7 +6900,7 @@ let match = null;
 // Number Showdown: everyone secretly guesses the same real number; closest wins the round
 const SHOW_COLORS = ['#7fa8c0','#c08a7f','#8ac07f','#c0b47f','#a87fc0','#7fc0b4'];
 function startShowdown(names){
-  const items = shuffle(REALITY).slice(0, 5);
+  const items = drawFresh('reality', REALITY, 5, x => x.q);
   const players = names.map((n, i) => ({ name: n, pts: 0, color: SHOW_COLORS[i % SHOW_COLORS.length] }));
   let round = 0;
   const body = $('#parlor-body');
@@ -6654,7 +6992,7 @@ function startShowdown(names){
 // Myth Hunt: true, or a myth everyone repeats?
 function startMythHunt(names){
   const rounds = Math.min(16, names.length * 4);
-  const deck = shuffle(MYTHS).slice(0, rounds);
+  const deck = drawFresh('myths', MYTHS, rounds, x => x.t);
   const players = names.map(n => ({ name: n, pts: 0 }));
   let idx = 0;
   const body = $('#parlor-body');
@@ -6711,7 +7049,7 @@ function startMythHunt(names){
 }
 
 function startMatch(names){
-  const pairs = pickN(MATCH_PAIRS, 8);
+  const pairs = drawFresh('pairs', MATCH_PAIRS, 8, p => p[0]);
   const cards = [];
   pairs.forEach((p, i) => {
     cards.push({ pair: i, text: p[0] });
@@ -6860,7 +7198,7 @@ function startDuelGame(names, kid, opts){
     scores: [0, 0],
     streaks: [0, 0],
     turn: 0, asked: 0, total: opts.total || 10,
-    deck: partyDeck(playPool(kid).filter(q => q.t !== 2)),
+    deck: partyDeck(orderFresh('mq', playPool(kid).filter(q => q.t !== 2), qKey)),
     sudden: false,
     onWin: opts.onWin || null
   };
@@ -6889,6 +7227,7 @@ function renderDuelQuestion(){
   } else {
     q = duel.deck[duel.asked % duel.deck.length];
   }
+  if (q._w) markSeen('mq', [qKey(q)]);
   const qNum = Math.floor(duel.asked / 2) + 1;
   const isFinal = !duel.sudden && qNum === duel.total / 2;
   let points = isFinal ? 2 : 1;
