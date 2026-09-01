@@ -3237,7 +3237,7 @@ function partyDeck(pool){
 }
 </script>
 <script>
-window.GAME_VERSION = "v39 · Sep 1, 2026";
+window.GAME_VERSION = "v40 · Sep 1, 2026";
 
 </script>
 <script>
@@ -5910,15 +5910,17 @@ function finishDaily(){
   else verdict = 'Every wrong answer is a lesson scheduled for later.';
   body.innerHTML = `
     <div class="result-card">
-      <div class="result-title">Run Complete</div>
+      <div class="result-title">${daily.detention ? 'Detention Served' : 'Run Complete'}</div>
       <div class="result-score">0 / ${daily.qs.length}</div>
       <div class="result-verdict">${verdict}</div>
       <div class="curator-result">🦉 “${CURATOR.afterRun(score, daily.qs.length)}”</div>
       <div class="result-earn">+${earned} lumens${perfect ? ' · perfect run bonus' : ''}${streakBonus ? ' · streak bonus' : ''}${collectionBonusPct() ? ` · collection +${collectionBonusPct()}%` : ''}</div>
-      ${daily.focus ? '' : `<div class="result-streak">🔥 Streak: ${S.streak} day${S.streak === 1 ? '' : 's'}</div>`}
+      ${(daily.focus || daily.detention) ? '' : `<div class="result-streak">🔥 Streak: ${S.streak} day${S.streak === 1 ? '' : 's'}</div>`}
       ${tokenNote ? `<div class="result-streak">${tokenNote}</div>` : ''}
       ${rankProgress().next ? `<div class="result-streak">${rankProgress().toGo} correct answers until <b>${rankProgress().next.name}</b></div>` : ''}
-      ${daily.focus
+      ${daily.detention
+        ? `<button class="btn-primary" data-go="home">Back to campus</button>`
+        : daily.focus
         ? `<button class="btn-primary" id="focus-again">Run this wing again</button>
            <button class="btn-secondary" data-go="cabinet">Back to the cabinet</button>`
         : `<input class="duel-name" id="ch-name" maxlength="14" placeholder="Your name" value="${(() => { try { return (localStorage.getItem('polymath_name') || '').replace(/"/g,''); } catch(e){ return ''; } })()}">
@@ -5926,7 +5928,7 @@ function finishDaily(){
            <button class="btn-primary" data-go="daily">Run again</button>
            <button class="btn-secondary" data-go="home">Back to the cabinet</button>`}
     </div>`;
-  if (!daily.focus) {
+  if (!daily.focus && !daily.detention) {
     const keys = daily.qs.map(q => qKey(q));
     $('#ch-send').addEventListener('click', () => {
       shareChallenge(($('#ch-name').value.trim() || 'A friend'), score, keys);
