@@ -1625,6 +1625,18 @@ body.ph .hero-door { font-size: 14px; padding: 12px 4px 9px; }
 }
 .reveal-toggle:hover { color: #f0e0bc; border-color: rgba(212,171,94,.9); }
 
+/* ---------- v58: the Subjects hub ---------- */
+#subjects-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+.subject-card {
+  background: linear-gradient(180deg, rgba(58,38,14,.5), rgba(30,18,6,.65));
+  border: 1px solid rgba(176,141,74,.45); border-left: 4px solid #c9a24a;
+  border-radius: 12px; padding: 12px 14px;
+}
+.subject-head { font-family: var(--serif); font-weight: 700; font-size: 19px; }
+.subject-stats { font-family: var(--serif); font-size: 14px; color: #b9a67f; margin: 3px 0 9px; }
+.subject-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
 </style>
 </head>
 <body>
@@ -1647,7 +1659,7 @@ body.ph .hero-door { font-size: 14px; padding: 12px 4px 9px; }
     <div id="hero-card">
       <button class="btn-primary" id="hero-next"></button>
       <div id="hero-doors">
-        <button class="hero-door" data-go="cabinet"><span class="hero-emoji">🗄️</span><span>Learn</span></button>
+        <button class="hero-door" data-go="subjects"><span class="hero-emoji">📚</span><span>Subjects</span></button>
         <button class="hero-door" data-go="parlor"><span class="hero-emoji">🎲</span><span>Together</span></button>
         <button class="hero-door" id="hero-all"><span class="hero-emoji">🗝️</span><span>All rooms</span></button>
       </div>
@@ -1734,6 +1746,11 @@ body.ph .hero-door { font-size: 14px; padding: 12px 4px 9px; }
             <span class="menu-title">Workshop</span>
             <span class="menu-badge" id="workshop-badge"></span>
           </button>
+          <button class="menu-card" data-go="subjects" title="Pick one subject and learn just that.">
+            <span class="menu-emblem">&#128218;</span>
+            <span class="menu-title">Subjects</span>
+            <span class="menu-badge" id="subjects-badge"></span>
+          </button>
           <button class="menu-card" data-go="cabinet" title="Open a drawer: one small idea, then one question.">
             <span class="menu-emblem">&#128452;</span>
             <span class="menu-title">Drawers</span>
@@ -1810,6 +1827,17 @@ body.ph .hero-door { font-size: 14px; padding: 12px 4px 9px; }
       <div class="topbar-right" id="debate-progress"></div>
     </div>
     <div id="debate-body"></div>
+  </section>
+
+  <!-- SUBJECTS -->
+  <section id="screen-subjects" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">Subjects</div>
+      <div class="topbar-right" id="subjects-count"></div>
+    </div>
+    <p class="helper-text">Pick one subject and learn just that. Practice deals questions you have not seen.</p>
+    <div id="subjects-grid"></div>
   </section>
 
   <!-- REALITY CHECK -->
@@ -7118,7 +7146,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v57 · Sep 2, 2026";
+window.GAME_VERSION = "v58 · Sep 2, 2026";
 
 </script>
 <script>
@@ -8417,6 +8445,7 @@ function go(name){
   if (name === 'trips') renderTrips();
   if (name === 'debate') startDebate();
   if (name === 'reality') startReality();
+  if (name === 'subjects') renderSubjects();
   if (name === 'detention') startDetention();
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
@@ -8675,6 +8704,8 @@ function renderHome(){
   $('#trips-badge').textContent = `${Object.keys(S.tripsDone || {}).length} of ${TRIPS.length} taken`;
   $('#debate-badge').textContent = S.debateBest ? `best: ${S.debateBest}/8` : 'untried';
   $('#reality-badge').textContent = S.realityBest ? `best: ${S.realityBest}/24` : 'untried';
+  const sb = $('#subjects-badge');
+  if (sb) sb.textContent = `${Object.keys(S.exams || {}).length} of ${Object.keys(DOMAINS).length} diplomas`;
   $('#workshop-badge').textContent = `${Object.keys(S.skills).length} of ${SKILLS.length} learned`;
 
   // idea of the day: one drawer, chosen by the calendar
@@ -10472,8 +10503,42 @@ function startDetention(){
   toast(`🪑 ${qs.length} missed question${qs.length === 1 ? '' : 's'} await. Answer right to walk free.`);
   renderDailyQuestion();
 }
+// the subjects hub: every wing as a big card, tap to learn just that
+function renderSubjects(){
+  const grid = $('#subjects-grid');
+  grid.innerHTML = '';
+  const dks = Object.keys(DOMAINS);
+  $('#subjects-count').textContent = dks.length + ' wings';
+  dks.forEach(dk => {
+    const dom = DOMAINS[dk];
+    const st = S.domainStats[dk] || { right: 0, wrong: 0 };
+    const tries = st.right + st.wrong;
+    const acc = tries ? Math.round(st.right / tries * 100) : null;
+    const drawers = NODES.filter(n => n.d === dk);
+    const drawersDone = drawers.filter(n => S.nodesDone[n.id]).length;
+    const qCount = QUESTIONS.filter(q => q.d === dk).length;
+    const card = el(`<div class="subject-card" style="border-left-color:${dom.color}">
+      <div class="subject-head" style="color:${dom.color}">${dom.emblem} ${dom.name}${S.exams[dk] ? ' <span title="Diploma earned">🏵️</span>' : ''}</div>
+      <div class="subject-stats">${acc === null ? 'Untried' : st.right + ' right · ' + acc + '% accuracy'} · ${drawersDone}/${drawers.length} drawers · ${qCount} questions</div>
+      <div class="subject-actions">
+        <button class="shelf-btn" data-act="practice">⚔ Practice 10</button>
+        <button class="shelf-btn" data-act="study">🗄️ Its drawers</button>
+      </div>
+    </div>`);
+    card.querySelector('[data-act="practice"]').addEventListener('click', () => startFocus(dk));
+    card.querySelector('[data-act="study"]').addEventListener('click', () => {
+      go('cabinet');
+      setTimeout(() => {
+        const sh = document.getElementById('shelf-' + dk);
+        if (sh) { sh.scrollIntoView({ behavior: 'smooth', block: 'start' }); sh.classList.add('section-lit'); setTimeout(() => sh.classList.remove('section-lit'), 1600); }
+      }, 120);
+    });
+    grid.appendChild(card);
+  });
+}
+
 function startFocus(domain){
-  const pool = shuffle(QUESTIONS.filter(q => q.d === domain)).slice(0, DAILY_LEN);
+  const pool = drawFresh('study', QUESTIONS.filter(q => q.d === domain), DAILY_LEN, qKey);
   daily = { qs: pool, idx: 0, right: 0, earned: 0, focus: domain };
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   $('#screen-daily').classList.add('active');
@@ -10646,7 +10711,7 @@ function renderCabinet(){
     const spines = nodes.map(n => `<span class="spine ${S.nodesDone[n.id] ? 'spine-done' : ''}" style="${S.nodesDone[n.id] ? `background:${dom.color}` : ''}"></span>`).join('');
     const hasDiploma = !!S.exams[dk];
     const examReady = stars(dk) === 3 && !hasDiploma;
-    const shelf = el(`<div class="shelf">
+    const shelf = el(`<div class="shelf" id="shelf-${dk}">
       <div class="shelf-label" style="color:${dom.color}">${dom.emblem} ${dom.name}<span class="shelf-stars">${starStr(dk)}</span>${hasDiploma ? ' <span class="diploma-seal" title="Diploma earned">🏵️</span>' : ''}<span class="spines">${spines}</span></div>
       <div class="shelf-actions">
         <button class="shelf-btn" data-focus="${dk}">⚔ Focus run</button>
