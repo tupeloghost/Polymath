@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Polymath Academy</title>
+<title>The Curiosity Cabinet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1598,6 +1598,33 @@ body.ph .reality-value { font-size: 34px; }
 .myth-btns .mh-myth { filter: hue-rotate(-18deg) saturate(1.15); }
 .myth-btns .btn-primary:disabled { opacity: .5; }
 
+/* ---------- v57: The Curiosity Cabinet, simplified home ---------- */
+.tucked { display: none !important; }
+#hero-card { margin: 6px 0 14px; }
+#hero-next {
+  display: block; width: 100%; padding: 18px 16px;
+  font-size: 20px; letter-spacing: .5px;
+}
+body.ph #hero-next { padding: 20px 14px; font-size: 18px; }
+#hero-doors { display: flex; gap: 10px; margin-top: 10px; }
+.hero-door {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 6px 10px; cursor: pointer;
+  font-family: var(--serif); font-weight: 700; font-size: 15.5px; color: #e8d9b4;
+  background: linear-gradient(180deg, rgba(58,38,14,.55), rgba(30,18,6,.7));
+  border: 1px solid rgba(176,141,74,.55); border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.35);
+}
+.hero-door:hover { color: #fff3d0; border-color: rgba(255,205,110,.9); box-shadow: 0 0 14px rgba(255,190,90,.4); }
+.hero-emoji { font-size: 26px; line-height: 1; }
+body.ph .hero-door { font-size: 14px; padding: 12px 4px 9px; }
+.reveal-toggle {
+  display: block; width: 100%; margin: 14px 0 10px; padding: 10px;
+  font-family: var(--serif); font-size: 15px; color: #b9a67f; text-align: center;
+  background: none; border: 1px dashed rgba(176,141,74,.5); border-radius: 10px; cursor: pointer;
+}
+.reveal-toggle:hover { color: #f0e0bc; border-color: rgba(212,171,94,.9); }
+
 </style>
 </head>
 <body>
@@ -1608,7 +1635,7 @@ body.ph .reality-value { font-size: 34px; }
   <section id="screen-home" class="screen active">
     <header class="masthead">
       <div class="masthead-rule"></div>
-      <h1>The Polymath Academy</h1>
+      <h1>The Curiosity Cabinet</h1>
       <p class="tagline">A night school for curious minds.</p>
       <button id="charter-link" title="Why this school exists">📜 Our Charter</button>
       <div class="masthead-rule"></div>
@@ -1617,7 +1644,14 @@ body.ph .reality-value { font-size: 34px; }
     <button id="sound-toggle" title="Sound on or off">🔔</button>
     <button id="ambient-toggle" title="Library room tone on or off">🕯️</button>
 
-    <div id="office-scene"></div>
+    <div id="hero-card">
+      <button class="btn-primary" id="hero-next"></button>
+      <div id="hero-doors">
+        <button class="hero-door" data-go="cabinet"><span class="hero-emoji">🗄️</span><span>Learn</span></button>
+        <button class="hero-door" data-go="parlor"><span class="hero-emoji">🎲</span><span>Together</span></button>
+        <button class="hero-door" id="hero-all"><span class="hero-emoji">🗝️</span><span>All rooms</span></button>
+      </div>
+    </div>
 
     <div id="curator-card">
       <span class="curator-face">🦉</span>
@@ -1643,7 +1677,11 @@ body.ph .reality-value { font-size: 34px; }
     </div>
     </div>
 
-    <nav class="home-menu">
+    <button class="reveal-toggle" id="campus-toggle">🏫 Visit the campus</button>
+    <div id="office-scene" class="tucked"></div>
+
+    <button class="reveal-toggle" id="menu-toggle">🚪 See every room laid out</button>
+    <nav class="home-menu tucked">
       <div class="menu-section section-table">
         <div class="menu-head">The Game Table</div>
         <div class="menu-grid">
@@ -7080,7 +7118,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v56 · Sep 1, 2026";
+window.GAME_VERSION = "v57 · Sep 2, 2026";
 
 </script>
 <script>
@@ -7800,7 +7838,7 @@ function buildCampusScene(){
     const ov = document.createElement('div');
     ov.className = 'dir-overlay';
     ov.innerHTML = `<div class="dir-card">
-      <div class="dir-head">🏫 The Academy Directory</div>
+      <div class="dir-head">🗝️ Every Room in the Cabinet</div>
       <div class="dir-sub">Every room, and what waits inside. Tap one to go.</div>
       ${zones.filter(z => z.go).map(z => `
         <div class="dir-row" data-zid="${z.id}">
@@ -7821,6 +7859,7 @@ function buildCampusScene(){
   }
   document.getElementById('z-door').addEventListener('click', openDirectory);
   document.getElementById('campus-map-btn').addEventListener('click', openDirectory);
+  window.openDirectory = openDirectory;
   document.getElementById('campus-moon').addEventListener('click', () => toast(`${mp.icon} ${mp.name} tonight. ${mp.tip}`));
 
   // shooting stars over the painting
@@ -7962,7 +8001,7 @@ function makeFactCard(text, domainKey, title){
   g.font = '30px Georgia';
   g.fillText('❦', W/2, H - 190);
   g.font = 'small-caps 34px Georgia';
-  g.fillText('The Polymath Academy', W/2, H - 130);
+  g.fillText('The Curiosity Cabinet', W/2, H - 130);
 
   const a = document.createElement('a');
   a.download = 'polymath-card.png';
@@ -8386,6 +8425,30 @@ function go(name){
   SFX.page();
 }
 window.goScreen = (name) => go(name);
+// tucked sections: the campus painting and the full room menu, remembered per device
+const UI_KEY = 'polymath_ui_v1';
+function uiPrefs(){ try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch(e){ return {}; } }
+function wireReveal(btnId, targetSel, prefKey, openLabel, closeLabel){
+  const btn = document.getElementById(btnId), target = document.querySelector(targetSel);
+  if (!btn || !target) return;
+  const apply = open => {
+    target.classList.toggle('tucked', !open);
+    btn.textContent = open ? closeLabel : openLabel;
+  };
+  apply(!!uiPrefs()[prefKey]);
+  btn.addEventListener('click', () => {
+    const p = uiPrefs();
+    p[prefKey] = !p[prefKey];
+    try { localStorage.setItem(UI_KEY, JSON.stringify(p)); } catch(e){}
+    apply(p[prefKey]);
+    SFX.page();
+  });
+}
+wireReveal('campus-toggle', '#office-scene', 'campus', '🏫 Visit the campus', '🏫 Tuck the campus away');
+wireReveal('menu-toggle', '.home-menu', 'menu', '🚪 See every room laid out', '🚪 Tuck the rooms away');
+const heroAll = document.getElementById('hero-all');
+if (heroAll) heroAll.addEventListener('click', () => { if (window.openDirectory) openDirectory(); });
+
 // the founder's charter: why this school exists
 const charterBtn = document.getElementById('charter-link');
 if (charterBtn) charterBtn.addEventListener('click', () => {
@@ -8670,6 +8733,18 @@ function renderHome(){
   }
 
   if (window.updateCampusStatus) window.updateCampusStatus();
+
+  // hero: one obvious next step
+  const hero = $('#hero-next');
+  if (hero) {
+    let label, dest;
+    if (!p1) { label = '☀️ Start today’s class · 10 questions'; dest = 'daily'; }
+    else if (!p2) { label = '🗄️ Next up: open one drawer'; dest = 'cabinet'; }
+    else if (!p3) { label = '🛠️ Last one today: practice a skill'; dest = 'workshop'; }
+    else { label = '✅ All done today. Play anything you like'; dest = null; }
+    hero.textContent = label;
+    hero.onclick = () => { if (dest) go(dest); else if (window.openDirectory) openDirectory(); };
+  }
 
   // pop quiz: some days a teacher ambushes you
   const pq = $('#popquiz-card');
@@ -10355,7 +10430,7 @@ function shareChallenge(name, score, keys){
   const link = buildChallengeLink(name, score, keys);
   try { localStorage.setItem('polymath_name', name); } catch(e){}
   if (navigator.share) {
-    navigator.share({ title: 'The Polymath Academy', text: `${name} scored ${score}/${keys.length} and challenges you to the same questions.`, url: link }).catch(() => {});
+    navigator.share({ title: 'The Curiosity Cabinet', text: `${name} scored ${score}/${keys.length} and challenges you to the same questions.`, url: link }).catch(() => {});
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(link).then(() => toast('Challenge link copied. Send it to someone.')).catch(() => toast('Could not copy. Long-press the link to copy it.'));
   }
