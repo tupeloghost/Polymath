@@ -1637,6 +1637,12 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
 .subject-stats { font-family: var(--serif); font-size: 14px; color: #b9a67f; margin: 3px 0 9px; }
 .subject-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+/* ---------- v60: clarity sweep ---------- */
+.menu-sub {
+  display: block; font-family: var(--serif); font-size: 13px; font-weight: 500;
+  color: #a8946e; line-height: 1.3; margin-top: 3px; letter-spacing: .1px;
+}
+
 </style>
 </head>
 <body>
@@ -1660,7 +1666,7 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       <button class="btn-primary" id="hero-next"></button>
       <div id="hero-doors">
         <button class="hero-door" data-go="subjects"><span class="hero-emoji">📚</span><span>Subjects</span></button>
-        <button class="hero-door" data-go="parlor"><span class="hero-emoji">🎲</span><span>Together</span></button>
+        <button class="hero-door" data-go="parlor"><span class="hero-emoji">🎲</span><span>Play together</span></button>
         <button class="hero-door" id="hero-all"><span class="hero-emoji">🗝️</span><span>All rooms</span></button>
       </div>
     </div>
@@ -1836,7 +1842,7 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       <div class="topbar-title">Subjects</div>
       <div class="topbar-right" id="subjects-count"></div>
     </div>
-    <p class="helper-text">Pick one subject and learn just that. Practice deals questions you have not seen.</p>
+    <p class="helper-text">Pick one subject and learn just that. Every quiz deals questions you have not seen before.</p>
     <div id="subjects-grid"></div>
   </section>
 
@@ -7146,7 +7152,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v59 · Sep 2, 2026";
+window.GAME_VERSION = "v60 · Sep 2, 2026";
 
 </script>
 <script>
@@ -8454,6 +8460,14 @@ function go(name){
   SFX.page();
 }
 window.goScreen = (name) => go(name);
+// every room button shows its one-line description; hover tooltips do not exist on phones
+document.querySelectorAll('.menu-card[title]').forEach(btn => {
+  const sub = document.createElement('span');
+  sub.className = 'menu-sub';
+  sub.textContent = btn.getAttribute('title');
+  btn.appendChild(sub);
+});
+
 // tucked sections: the campus painting and the full room menu, remembered per device
 const UI_KEY = 'polymath_ui_v1';
 function uiPrefs(){ try { return JSON.parse(localStorage.getItem(UI_KEY)) || {}; } catch(e){ return {}; } }
@@ -8682,7 +8696,7 @@ function renderHome(){
   $('#home-stats').innerHTML = `
     <div class="stat-plaque" id="lumens-plaque" title="Lumens are the game’s coins. Earn them by answering, spend them in the Museum." style="cursor:pointer"><span class="stat-num">${S.lumens}</span><span class="stat-label">Lumens ⓘ</span></div>
     <div class="stat-plaque"><span class="stat-num">${S.streak}</span><span class="stat-label">Day streak${S.tokens ? ' · ' + '🕯️'.repeat(S.tokens) : ''}</span></div>
-    <div class="stat-plaque"><span class="stat-num">${Object.keys(S.nodesDone).length}/${NODES.length}</span><span class="stat-label">Drawers</span></div>
+    <div class="stat-plaque"><span class="stat-num">${Object.keys(S.nodesDone).length}/${NODES.length}</span><span class="stat-label">Lessons learned</span></div>
     <div class="stat-plaque rank-plaque"><span class="stat-rank">${rankTitle()}</span><span class="stat-label">Your title</span></div>
     <div class="rank-progress">
       ${rankProgress().next
@@ -10521,8 +10535,8 @@ function renderSubjects(){
       <div class="subject-head" style="color:${dom.color}">${dom.emblem} ${dom.name}${S.exams[dk] ? ' <span title="Diploma earned">🏵️</span>' : ''}</div>
       <div class="subject-stats">${acc === null ? 'Untried' : st.right + ' right · ' + acc + '% accuracy'} · ${drawersDone}/${drawers.length} drawers · ${qCount} questions</div>
       <div class="subject-actions">
-        <button class="shelf-btn" data-act="practice">⚔ Practice 10</button>
-        <button class="shelf-btn" data-act="study">🗄️ Its drawers</button>
+        <button class="shelf-btn" data-act="practice">✏️ Quiz me: 10 questions</button>
+        <button class="shelf-btn" data-act="study">📖 Read its short lessons</button>
       </div>
     </div>`);
     card.querySelector('[data-act="practice"]').addEventListener('click', () => startFocus(dk));
@@ -10714,7 +10728,7 @@ function renderCabinet(){
     const shelf = el(`<div class="shelf" id="shelf-${dk}">
       <div class="shelf-label" style="color:${dom.color}">${dom.emblem} ${dom.name}<span class="shelf-stars">${starStr(dk)}</span>${hasDiploma ? ' <span class="diploma-seal" title="Diploma earned">🏵️</span>' : ''}<span class="spines">${spines}</span></div>
       <div class="shelf-actions">
-        <button class="shelf-btn" data-focus="${dk}">⚔ Focus run</button>
+        <button class="shelf-btn" data-focus="${dk}">✏️ Quiz me: 10 questions</button>
         ${examReady ? `<button class="shelf-btn shelf-btn-exam" data-exam="${dk}">📜 Take the wing exam</button>` : ''}
         ${!examReady && !hasDiploma ? `<span class="shelf-hint">3★ unlocks the exam</span>` : ''}
       </div>
