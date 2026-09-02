@@ -7146,7 +7146,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v58 · Sep 2, 2026";
+window.GAME_VERSION = "v59 · Sep 2, 2026";
 
 </script>
 <script>
@@ -8819,9 +8819,9 @@ function renderHome(){
   const myst = $('#mystery-card');
   if (mysteryToday && S.mysteryClaimed !== todayStr()) {
     myst.style.display = '';
-    myst.innerHTML = `<div class="iod-label">A drawer you have never seen before</div>
+    myst.innerHTML = `<div class="iod-label">Only here some days</div>
       <div class="mystery-title">🗝️ The Mystery Drawer</div>
-      <div class="iod-hint">It was not here yesterday. Open it.</div>`;
+      <div class="iod-hint">A surprise inside. Open it before midnight; it may be gone tomorrow.</div>`;
     myst.onclick = () => openMystery();
   } else { myst.style.display = 'none'; myst.onclick = null; }
 
