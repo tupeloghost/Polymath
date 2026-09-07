@@ -1795,8 +1795,8 @@ body.dt .codex-page { break-inside: avoid; }
     <header class="masthead">
       <div class="masthead-rule"></div>
       <h1>The Curiosity Cabinet</h1>
-      <p class="tagline">A night school for curious minds.</p>
-      <button id="charter-link" title="Why this school exists">📜 Our Charter</button>
+      <p class="tagline">A collection for curious minds.</p>
+      <button id="charter-link" title="Why this place exists">📜 Our Charter</button>
       <div class="masthead-rule"></div>
     </header>
 
@@ -1830,7 +1830,7 @@ body.dt .codex-page { break-inside: avoid; }
     <div id="day-row">
     <div id="schedule-card"></div>
     <div id="today-panel">
-      <div class="today-head">Today at the Academy</div>
+      <div class="today-head">Today at the Cabinet</div>
       <div id="idea-of-day" class="today-row"></div>
       <div id="field-quest" class="today-row"></div>
       <div id="book-echo" class="today-row"></div>
@@ -1994,7 +1994,7 @@ body.dt .codex-page { break-inside: avoid; }
       <div class="topbar-title">The Tale So Far</div>
       <div class="topbar-right" id="tale-count"></div>
     </div>
-    <p class="helper-text">The story of Alma, her cabinet, and the school she left you. Tap any chapter to read it again.</p>
+    <p class="helper-text">The story of Alma, her cabinet, and the collection she left you. Tap any chapter to read it again.</p>
     <div id="tale-body"></div>
   </section>
 
@@ -3924,7 +3924,7 @@ const STORY = [
     when: () => true,
     lines: [
       'The envelope was waiting under your door, and it has your name on it in careful old handwriting.',
-      '"You do not know me. I am leaving you a cabinet, an owl, and a school. All three are older than they look, and all three have been badly treated."',
+      '"You do not know me. I am leaving you a cabinet, an owl, and a collection that is not where it should be. All three are older than they look, and all three have been badly treated."',
       '"The cabinet is empty. That was my doing, and I am sorry. Fill it and you will understand why I had to take it apart."',
       '"There is no money in this. There is only everything I knew. Start with one question, and do not let anyone tell you which questions are worth asking."',
       'It is signed with a single letter: A.'
@@ -3936,7 +3936,7 @@ const STORY = [
     when: (S) => S.totalRight >= 5,
     lines: [
       'The owl watches you from the top of the empty cabinet, and finally speaks.',
-      '"Her name was Alma. She built this school and she filled that cabinet with forty-two objects, and then one night she wrapped every one of them up and sent them away."',
+      '"Her name was Alma. She made this place, she filled that cabinet with forty-two objects, and then one night she wrapped every one of them up and sent them away."',
       '"People assumed she had lost her mind. I was here. She was the sharpest person in the building."',
       '"Buy back what you can. Work out what each object is. And read what she tucked inside the wrappings, because she did not do any of this by accident."'
     ]
@@ -3959,7 +3959,7 @@ const STORY = [
     lines: [
       'The raven drops onto the windowsill, uninvited, the way he does everything.',
       '"Caw. The owl is telling you the sweet version. Ask him who came to the door that night."',
-      '"They did not just close this school. They came for the collection. Said it was disorderly. Said children should be taught useful things in a useful order."',
+      '"They did not just shut this place down. They came for the collection. Said it was disorderly. Said children should be taught useful things in a useful order."',
       '"She emptied the cabinet before they could empty it for her. That is not madness. That is a woman winning."'
     ]
   },
@@ -3980,7 +3980,7 @@ const STORY = [
     when: (S) => Object.keys(S.restored || {}).length >= 16,
     lines: [
       'A man in a good coat is standing in the hall, holding a clipboard he does not need.',
-      '"I am told the collection is being reassembled. I inspected this school the first time."',
+      '"I am told the collection is being put back together. I inspected this place the first time."',
       '"You should know that nothing here was ever on any syllabus. No exams, no order, no proper sequence of learning. Just a woman handing children objects and asking what they noticed."',
       'He looks at your shelves a little too long before he leaves.',
       '"She used to say the same thing to me every visit. I have never quite got it out of my head."'
@@ -4023,14 +4023,14 @@ const STORY = [
     ]
   },
   {
-    id: 's10', title: 'The School Reopens',
+    id: 's10', title: 'The Doors Open Again',
     speaker: 'The Curator', face: '🦉',
     when: (S) => Object.keys(S.restored || {}).length >= 42 && (S.storyDone || {}).s9,
     lines: [
       'In the morning the owl is on the gatepost, looking down the road, which is a thing he never does.',
       '"There is a lamp on in the classroom and I did not light it. Someone came up the drive at dawn and left a question on the step."',
       'He turns to you, and for once there is no lecture in it.',
-      '"Congratulations. You are the Curator. The cabinet is full, the ledger is written, and the school is open."',
+      '"Congratulations. You are the Curator. The cabinet is full, the ledger is written, and the doors are open."',
       '"You know how this works now. You take the strange object, you sit with it, you work out what it is, and then you tell somebody."'
     ]
   }
@@ -7763,7 +7763,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v69 · Sep 7, 2026";
+window.GAME_VERSION = "v70 · Sep 7, 2026";
 
 </script>
 <script>
@@ -7956,7 +7956,7 @@ const CURATOR = {
   greeting(){
     const h = new Date().getHours();
     const pool =
-      h < 5  ? ['Up very late? The academy never closes.', 'A quiet hour. Good for learning.', 'Welcome, night owl. I approve.'] :
+      h < 5  ? ['Up very late? These doors never close.', 'A quiet hour. Good for learning.', 'Welcome, night owl. I approve.'] :
       h < 12 ? ['Good morning. Ready to learn something new?', 'An early start. Well done.', 'Morning. The daily run is waiting.'] :
       h < 18 ? ['Good afternoon. There is always another drawer to open.', 'Welcome back. Pick anything that looks interesting.', 'Afternoon. A fine time for a quick run.'] :
                ['Good evening. The candles are lit.', 'Evening. Come in and learn something before bed.', 'Welcome back. The fire is warm.'];
@@ -8399,7 +8399,7 @@ function buildCampusScene(){
     { id:'z-museum',    x:42,   y:54.5, w:16,   h:14.5, icon:'🏺', name:'The Cabinet',   sub:'Identify objects and restore them',        k:'museum',    go:'collection' },
     { id:'z-trophy',    x:58.5, y:54.5, w:14.3, h:14.5, icon:'🏆', name:'Trophy Hall',   sub:'Every plaque you have earned',       k:'trophy',    go:'honors' },
     { id:'z-rec',       x:27,   y:70,   w:14.2, h:16.5, icon:'🎲', name:'Rec Room',      sub:'Games for two or more players',      k:'rec',       go:'parlor' },
-    { id:'z-door',      x:44.4, y:70,   w:11.2, h:19,   icon:'🚪', name:'Front Door',    sub:'The school directory: every room',   k:null,        go:null },
+    { id:'z-door',      x:44.4, y:70,   w:11.2, h:19,   icon:'🚪', name:'Front Door',    sub:'The directory: every room here',   k:null,        go:null },
     { id:'z-detention', x:58.5, y:70,   w:14.3, h:16.5, icon:'🧹', name:'Detention',     sub:'Win back the ones you missed',       k:'detention', go:'detention' },
     { id:'z-bell',      x:45.5, y:4,    w:9.5,  h:20,   icon:'🐦‍⬛', name:'Bell Tower',    sub:'The raven has opinions',             k:null,        go:null, noplate:true },
     { id:'z-bus',       x:8,    y:79,   w:24,   h:15,   icon:'🚌', name:'Field Trip Bus', sub:'Step into history and choose',      k:'bus',       go:'trips' }
@@ -8476,7 +8476,7 @@ function buildCampusScene(){
     toast('🐦‍⬛ ' + RAVEN[Math.floor(Math.random() * RAVEN.length)]);
   });
 
-  // the front door opens the school directory: every room, what it does, its status
+  // the front door opens the directory: every room, what it does, its status
   function openDirectory(){
     SFX.door();
     const st = window.sceneHooks3 ? sceneHooks3.status() : {};
@@ -8683,7 +8683,7 @@ function rankCeremony(title){
   ov.className = 'ceremony';
   ov.innerHTML = `
     <div class="ceremony-inner">
-      <div class="ceremony-label">The academy bestows a new title</div>
+      <div class="ceremony-label">A new title for you</div>
       <div class="ceremony-title">${title}</div>
       <div class="ceremony-seal">❦</div>
       <div class="ceremony-hint">tap to continue</div>
@@ -9209,7 +9209,7 @@ function renderTale(){
   }
 }
 
-// the founder's charter: why this school exists
+// the founder's charter: why this place exists
 const charterBtn = document.getElementById('charter-link');
 if (charterBtn) charterBtn.addEventListener('click', () => {
   const ov = document.createElement('div');
@@ -9217,14 +9217,14 @@ if (charterBtn) charterBtn.addEventListener('click', () => {
   ov.innerHTML = `<div class="dir-card charter-card">
     <div class="dir-head">📜 The Founder’s Charter</div>
     <div class="charter-text">
-      <p>This school exists because too much of school did not.</p>
+      <p>This place exists because too much of school did not.</p>
       <p>You can graduate knowing the chief exports of countries you will never visit, and still not know how money grows, how liars argue, why your body begs for sleep, or what a day of your life is worth.</p>
       <p>Not here.</p>
       <p>So the aim here is simple: <b>make learning fun, and feed every kind of curiosity.</b></p>
       <p>People are curious about different things. One of you wants to know how money grows. One wants to know why the sky went red last night, or who really built the pyramids, or what makes a song stick in your head. Those are all real questions, and not one of them is a waste of time.</p>
       <p>So there is no syllabus here. No order you have to follow, no final exam, and nothing sitting on a shelf because a committee decided it belonged there.</p>
       <p>Ask what you want. Skip what bores you. Come back when you like.</p>
-      <p class="charter-sig">Follow whatever you are curious about.<br>That has always been the whole method.<br>· Alma, who founded this school ·</p>
+      <p class="charter-sig">Follow whatever you are curious about.<br>That has always been the whole method.<br>· Alma, who started this collection ·</p>
     </div>
     <button class="dir-close">Close the charter</button>
   </div>`;
@@ -9421,7 +9421,7 @@ function renderHome(){
       ${rankProgress().next
         ? `<div class="rank-progress-bar"><span style="width:${rankProgress().pct}%"></span></div>
            <div class="rank-progress-label">${rankProgress().toGo} correct answers until <b>${rankProgress().next.name}</b>${collectionBonusPct() ? ` · collection bonus +${collectionBonusPct()}% lumens` : ''}</div>`
-        : `<div class="rank-progress-label">You hold the highest title the academy can give.</div>`}
+        : `<div class="rank-progress-label">You hold the highest title there is here.</div>`}
     </div>`;
   $('#daily-badge').textContent = doneToday ? 'Done today ✓' : 'Ready';
   $('#daily-badge').classList.toggle('badge-done', doneToday);
@@ -9468,7 +9468,7 @@ function renderHome(){
   });
   const mp = moonPhase();
   const month = new Date().getMonth();
-  const seasonal = month === 9 ? ' 🎃 The academy enjoys October. So do the spiders.'
+  const seasonal = month === 9 ? ' 🎃 October suits this place. The spiders agree.'
     : month === 11 ? ' ❄️ Frost on the windows. The reading season.'
     : month === 2 || month === 3 ? ' 🌱 Spring. Even old schoolhouses feel it.'
     : '';
@@ -9682,7 +9682,7 @@ function openMystery(){
       <div class="mystery-title">${gift.icon} ${gift.name}</div>
       <div class="iod-hint">A gift for your collection. ${gift.story}</div>`;
     myst.onclick = null;
-    toast('A curiosity, free. The academy is in a giving mood.');
+    toast('A curiosity, free. The cabinet is in a giving mood.');
   } else if (roll < 0.6) {
     const q = QUESTIONS.filter(x => x.w)[Math.floor(Math.random() * QUESTIONS.filter(x => x.w).length)];
     myst.innerHTML = `<div class="iod-label">Inside: a single question, worth 25 lumens</div>`;
@@ -11397,12 +11397,12 @@ function finishDaily(){
   const streakBonus = (daily.focus || daily.detention) ? 0 : Math.min(S.streak - 1, 10) * 3;
   const earned = awardLumens(daily.earned + (daily.bonus || 0) + perfect + streakBonus);
   if (!daily.focus && !daily.detention) SFX.bell();
-  let verdict = 'The academy takes note.';
+  let verdict = 'Noted in the ledger.';
   if (daily.detention) verdict = score === daily.qs.length
     ? 'Detention cleared. Walk out with your head high.'
     : `You cleared ${score} of ${daily.qs.length}. The rest will see you back here soon.`;
   else if (score >= 9) verdict = 'A mind of rare reach. Top of the class.';
-  else if (score >= 7) verdict = 'Strong work. The academy notices.';
+  else if (score >= 7) verdict = 'Strong work, and it shows.';
   else if (score >= 5) verdict = 'A respectable showing.';
   else verdict = 'Every wrong answer is a lesson scheduled for later.';
   body.innerHTML = `
@@ -11804,7 +11804,7 @@ function finishLightning(){
     <div class="result-card">
       <div class="result-title">Time!</div>
       <div class="result-score">0</div>
-      <div class="result-verdict">${score >= 20 ? 'A storm of knowing. The candles flickered.' : score >= 12 ? 'Fast and sharp. The academy is impressed.' : 'Quickness comes with return visits. Again.'}</div>
+      <div class="result-verdict">${score >= 20 ? 'A storm of knowing. The candles flickered.' : score >= 12 ? 'Fast and sharp. That was a good run.' : 'Quickness comes with return visits. Again.'}</div>
       ${isBest ? '<div class="result-earn">New personal best!</div>' : `<div class="result-streak">Best: ${S.lightningBest}</div>`}
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" data-go="lightning">Again</button>
@@ -11880,8 +11880,8 @@ function finishGauntlet(){
   const earned = awardLumens(score * 2 + (gauntlet.bonus || 0));
   const clearedDeck = gauntlet.idx >= gauntlet.deck.length && gauntlet.strikes < 3;
   let verdict = 'The gauntlet claims another scholar.';
-  if (clearedDeck) verdict = 'You emptied the entire question vault without falling. The academy has nothing left to ask. Astonishing.';
-  else if (score >= 50) verdict = 'A run for the academy record books.';
+  if (clearedDeck) verdict = 'You emptied the entire question vault without falling. There is nothing left here to ask you. Astonishing.';
+  else if (score >= 50) verdict = 'A run for the record books.';
   else if (score >= 25) verdict = 'Deep into the vault before the third strike.';
   else if (score >= 10) verdict = 'A worthy run. The vault goes deeper.';
   body.innerHTML = `
@@ -12162,7 +12162,7 @@ function renderLedger(){
 function introSequence(){
   const lines = [
     'Welcome in. I am the Curator. I look after this place.',
-    'This academy teaches a little of everything: stars, money, music, the human body, and much more.',
+    'This collection covers a little of everything: stars, money, music, the human body, and much more.',
     'Here is how it works. I show you one idea. Then I ask one question about it. Answer right, and you have learned it.',
     'Right answers also earn lumens: the game’s coins. You spend them in the Cabinet, buying wrapped objects to identify.',
     'Most doors start locked. Every right answer opens more of the place. And there is a story here waiting for you, so keep an eye out.'
