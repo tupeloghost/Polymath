@@ -346,7 +346,7 @@ body.ph .menu-grid { grid-template-columns: repeat(2, 1fr); }
 .ledger-pct { font-size: 12px; color: var(--ink-soft); text-align: right; font-style: italic; }
 
 /* collection */
-#collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+#collection-grid { display: block; }
 .curio {
   font-family: inherit; cursor: pointer; text-align: center;
   background: linear-gradient(180deg, var(--card), var(--paper-deep));
@@ -1643,6 +1643,94 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   color: #a8946e; line-height: 1.3; margin-top: 3px; letter-spacing: .1px;
 }
 
+/* ---------- v65: The Curiosity Cabinet ---------- */
+.cabinet {
+  border-radius: 14px; padding: 14px 14px 10px; margin-bottom: 14px;
+  background: linear-gradient(180deg, #3a2712, #2a1b0b);
+  border: 3px solid #4a3218; box-shadow: inset 0 0 40px rgba(0,0,0,.6), 0 8px 24px rgba(0,0,0,.4);
+  transition: background .6s ease, border-color .6s ease, box-shadow .6s ease;
+}
+.cab-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.cab-tier-name { font-family: var(--display); font-size: 20px; color: #c9b58c; }
+.cab-count { font-family: var(--serif); font-size: 15px; color: #a8946e; font-variant-numeric: tabular-nums; }
+.cab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); }
+.cab-slot {
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  gap: 3px; height: 86px; padding-bottom: 5px; cursor: pointer;
+  background: none; border: none; border-bottom: 7px solid #4a3218;
+  box-shadow: 0 4px 6px -4px rgba(0,0,0,.8);
+}
+.slot-icon { font-size: 30px; line-height: 1; filter: grayscale(1) brightness(.55); transition: filter .5s ease, transform .3s ease; }
+.slot-name {
+  font-family: var(--serif); font-size: 11px; line-height: 1.15; color: #9c8a68;
+  text-align: center; max-width: 72px; overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.slot-empty { opacity: .5; }
+.slot-empty::before { content: '·'; color: #6b5638; font-size: 22px; margin-bottom: 18px; }
+.slot-empty:hover { opacity: .9; background: rgba(232,207,143,.05); }
+.slot-wrapped .slot-icon { filter: none; animation: crateNudge 3s ease-in-out infinite; }
+.slot-wrapped .slot-name { color: #d8b877; }
+@keyframes crateNudge { 0%,92%,100% { transform: rotate(0); } 95% { transform: rotate(-4deg); } 97% { transform: rotate(4deg); } }
+.slot-done .slot-icon { filter: none; }
+.slot-done .slot-name { color: #e8d9b4; }
+.slot-done:hover .slot-icon { transform: translateY(-3px) scale(1.1); }
+.cab-plaque {
+  margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(176,141,74,.3);
+  font-family: var(--serif); font-style: italic; font-size: 14.5px; color: #a8946e; text-align: center;
+}
+/* the cabinet improves as you restore */
+.cab-t1 { background: linear-gradient(180deg, #4a3116, #33200d); border-color: #6b4a22; }
+.cab-t2 { background: linear-gradient(180deg, #513619, #38230e); border-color: #8a6425; box-shadow: inset 0 0 40px rgba(0,0,0,.5), 0 0 0 1px rgba(212,171,94,.35), 0 8px 26px rgba(0,0,0,.45); }
+.cab-t2 .cab-slot { border-bottom-color: #6b4a22; }
+.cab-t3 { background: linear-gradient(180deg, #5a3c1c, #3d2610); border-color: #b08d4a; box-shadow: inset 0 0 50px rgba(255,190,90,.12), 0 0 0 1px rgba(212,171,94,.5), 0 8px 30px rgba(0,0,0,.5); }
+.cab-t3 .cab-slot { border-bottom-color: #7a5528; }
+.cab-t4 { background: linear-gradient(180deg, #63421f, #422a12); border-color: #d4ab5e; box-shadow: inset 0 0 60px rgba(255,200,110,.2), 0 0 0 2px rgba(212,171,94,.7), 0 10px 34px rgba(0,0,0,.55); }
+.cab-t4 .cab-slot { border-bottom-color: #8a6425; }
+.cab-t4 .cab-tier-name { color: #ffd98a; }
+.cab-waiting { margin-bottom: 14px; }
+
+/* identifying an object */
+.identify-card { text-align: center; }
+.identify-label { font-family: var(--serif); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: #a8946e; }
+.identify-shape { font-size: 64px; margin: 6px 0 4px; animation: crateNudge 3s ease-in-out infinite; }
+.identify-clue {
+  font-family: var(--serif); font-size: 18px; line-height: 1.5; color: #46320e;
+  font-style: italic; margin: 0 auto 14px; max-width: 46em;
+}
+.identify-q { font-family: var(--display); font-size: 21px; color: #46320e; margin-bottom: 10px; }
+.identify-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.restore-card { text-align: center; }
+.restore-flash {
+  font-family: var(--serif); font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
+  color: #8a5a14; margin-bottom: 4px;
+}
+.restored-icon { animation: restorePop .7s cubic-bezier(.2,1.6,.4,1); }
+@keyframes restorePop { from { transform: scale(.4) rotate(-12deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+.curio-era { font-family: var(--serif); font-size: 15px; color: #6b5638; margin-bottom: 8px; }
+.curio-matters {
+  font-family: var(--serif); font-size: 16.5px; line-height: 1.5; color: #46320e;
+  border-left: 3px solid #c9a24a; padding: 6px 0 6px 12px; margin: 12px 0; text-align: left;
+}
+.curio-matters b { color: #8a5a14; }
+
+/* the master ledger */
+.codex-page {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: linear-gradient(180deg, rgba(58,38,14,.5), rgba(30,18,6,.62));
+  border: 1px solid rgba(176,141,74,.4); border-left: 4px solid #c9a24a;
+  border-radius: 12px; padding: 13px 15px; margin-bottom: 10px;
+}
+.codex-icon { font-size: 34px; line-height: 1; flex: none; }
+.codex-text { min-width: 0; }
+.codex-name { font-family: var(--display); font-size: 20px; color: #f0e0bc; }
+.codex-meta { font-family: var(--serif); font-size: 14px; margin-bottom: 5px; }
+.codex-story { font-family: var(--serif); font-size: 16px; line-height: 1.5; color: #d8c9a4; }
+.codex-matters { font-family: var(--serif); font-size: 15.5px; line-height: 1.45; color: #ffd9a0; margin-top: 6px; font-style: italic; }
+.codex-empty { font-size: 60px; text-align: center; opacity: .3; margin-top: 20px; }
+body.dt #codex-body { column-count: 2; column-gap: 12px; }
+body.dt .codex-page { break-inside: avoid; }
+
 </style>
 </head>
 <body>
@@ -1745,7 +1833,7 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
         </div>
       </div>
       <div class="menu-section section-cabinet">
-        <div class="menu-head">The Cabinet</div>
+        <div class="menu-head">The Study</div>
         <div class="menu-grid">
           <button class="menu-card" data-go="workshop" title="Learn a real skill in minutes and keep it for life.">
             <span class="menu-emblem">&#128736;</span>
@@ -1782,10 +1870,15 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       <div class="menu-section section-desk">
         <div class="menu-head">Your Desk</div>
         <div class="menu-grid">
-          <button class="menu-card" data-go="collection" title="The academy museum. Spend lumens on curiosities; each has a story.">
-            <span class="menu-emblem">&#127963;</span>
-            <span class="menu-title">Museum</span>
+          <button class="menu-card" data-go="collection" title="Buy a wrapped object, identify it, and restore it to your shelves.">
+            <span class="menu-emblem">&#128452;</span>
+            <span class="menu-title">The Cabinet</span>
             <span class="menu-badge" id="collection-badge"></span>
+          </button>
+          <button class="menu-card" data-go="codex" title="Your encyclopedia. Every object you restore writes its own page.">
+            <span class="menu-emblem">&#128220;</span>
+            <span class="menu-title">Master Ledger</span>
+            <span class="menu-badge" id="codex-badge"></span>
           </button>
           <button class="menu-card" data-go="journal" title="Every idea you starred, saved in your own book.">
             <span class="menu-emblem">&#11088;</span>
@@ -1833,6 +1926,17 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
       <div class="topbar-right" id="debate-progress"></div>
     </div>
     <div id="debate-body"></div>
+  </section>
+
+  <!-- MASTER LEDGER -->
+  <section id="screen-codex" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Back</button>
+      <div class="topbar-title">Master Ledger</div>
+      <div class="topbar-right" id="codex-count"></div>
+    </div>
+    <p class="helper-text">Your own encyclopedia. Every object you identify and restore writes its page here.</p>
+    <div id="codex-body"></div>
   </section>
 
   <!-- SUBJECTS -->
@@ -2045,10 +2149,10 @@ body.dt #subjects-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   <section id="screen-collection" class="screen">
     <div class="topbar">
       <button class="btn-back" data-go="home">&larr; Back</button>
-      <div class="topbar-title">The Museum</div>
+      <div class="topbar-title">The Cabinet</div>
       <div class="topbar-right" id="collection-lumens"></div>
     </div>
-    <p class="helper-text">Buy a curiosity to add it to your shelves. Tap owned pieces to read their stories.</p>
+    <p class="helper-text">Your cabinet starts empty. Buy a wrapped crate, identify what is inside, and the restored object takes its place on your shelves.</p>
     <div id="collection-grid"></div>
   </section>
 
@@ -3431,6 +3535,264 @@ CURIOSITIES.push(
   { id:'c41', d:'practical', name:'Pocket Abacus', price:75, icon:'🧮', story:'Merchants ran empires of trade on sliding beads. A skilled abacus hand can still beat a person with a calculator on simple sums.' },
   { id:'c42', d:'practical', name:'Franklin’s Ledger', price:450, icon:'📔', story:'Benjamin Franklin tracked one virtue a week in a little book, and his errors too. He called the habit the reason for his good fortune. A journal, honestly kept, is a compass.' }
 );
+
+</script>
+<script>
+// Identification clues and ledger pages for every curiosity.
+const CURIO_ID = {
+  c1: {
+    clue: 'A tarnished disk of yellow metal, about the width of a saucer, its rim cut with tiny degree marks. A pierced pointer arm turns over engraved star names, and the back is crowded with nested circles.',
+    wrong: ['Ship’s Sextant', 'Ottoman Prayer Compass', 'Bronze Sundial Ring'],
+    era: 'Islamic world and medieval Europe, about 800 to 1500',
+    matters: 'One palm-sized instrument answered three questions at once: the hour, the date, and which direction you were facing.'
+  },
+  c2: {
+    clue: 'A lump of gray metal about the size of a fist, far heavier than it looks. Its surface is pitted with thumbprint-shaped dimples, and a cut face shows crossing bands like a woven basket.',
+    wrong: ['Smelted Iron Bloom', 'Volcanic Bomb', 'Bog Iron Nodule'],
+    era: 'Formed about 4.5 billion years ago, found worldwide',
+    matters: 'Its crossing crystal bands take millions of years to grow, so nothing made on Earth can fake it.'
+  },
+  c3: {
+    clue: 'A yellowed paper page covered in cramped brown ink. Row after row shows a small circle with three or four dots beside it, the dots shifting position on each line, with dates in the margin.',
+    wrong: ['Kepler’s Orbit Diagram', 'Tycho’s Comet Record', 'Herschel’s Nebula Notes'],
+    era: 'Padua, Italy, winter of 1610',
+    matters: 'These dots proved things could orbit something other than Earth, which broke a belief held for about 1,400 years.'
+  },
+  c4: {
+    clue: 'A stone coil the size of a bagel, wound tight and flattened. Its surface is divided into curved ribs that grow steadily wider, and the crusty rock still clings along one edge.',
+    wrong: ['Nautilus Shell', 'Spiral Gastropod Cast', 'Coiled Serpent Stone'],
+    era: 'Oceans worldwide, about 400 million to 66 million years ago',
+    matters: 'These shells changed shape so fast over time that geologists still use them to date rock layers to within a few hundred thousand years.'
+  },
+  c5: {
+    clue: 'A hollow bone shell barely bigger than a grape, so thin it glows when held to a candle. Fused to the front is a needle of bone almost as long as the rest of it.',
+    wrong: ['Wren Skull', 'Bat Cranium', 'Shrew Skull'],
+    era: 'The Americas, present day',
+    matters: 'This little head steers a flier that beats its wings about 50 times a second and remembers which flowers it already drained.'
+  },
+  c6: {
+    clue: 'A hand-drawn chart with four bird heads in a row, each profile drawn with a different depth and curve of bill. Small island names are lettered beneath, and pencil corrections show through.',
+    wrong: ['Wallace’s Butterfly Plate', 'Audubon Field Sketch', 'Owen’s Skull Comparison'],
+    era: 'Galapagos Islands and London, 1830s to 1840s',
+    matters: 'Comparing beaks island by island showed that one starting species can split into many, which is the engine of all life’s variety.'
+  },
+  c7: {
+    clue: 'A thin gray disk smaller than a dime, its edges worn soft and uneven. One face carries a man’s profile in a laurel wreath, the other a figure holding a spear, ringed by clipped block letters.',
+    wrong: ['Greek Drachma', 'Byzantine Follis', 'Celtic Stater'],
+    era: 'Roman Empire, about 200 BCE to 250 CE',
+    matters: 'It was about a day’s pay for a soldier, and it kept its value across three continents for roughly 400 years.'
+  },
+  c8: {
+    clue: 'A palm-sized pillow of dried mud, cracked at one corner. Both faces are packed with rows of small wedge-shaped pokes, pressed while the mud was soft and never smoothed over.',
+    wrong: ['Linear B Tablet', 'Indus Seal Blank', 'Wax Writing Board'],
+    era: 'Mesopotamia, about 3300 to 2000 BCE',
+    matters: 'Writing was invented to count grain and sheep, and those receipts are the oldest human words we can still read.'
+  },
+  c9: {
+    clue: 'A slab of dark polished rock with a broken top edge. Its face is divided into three horizontal bands of carved marks: pictures on top, flowing strokes in the middle, and neat Greek letters at the bottom.',
+    wrong: ['Palermo Stone', 'Behistun Panel Cast', 'Temple Stela Fragment'],
+    era: 'Egypt, carved 196 BCE, decoded in the 1820s',
+    matters: 'Because the same message appeared in a known language, scholars cracked a script that had been unreadable for about 1,400 years.'
+  },
+  c10: {
+    clue: 'A small horn vessel holding a heap of powder in a deep, almost violet blue, with flecks of gold-colored grit and white speckles mixed through it. A grinding stone sits stained beside it.',
+    wrong: ['Egyptian Blue Frit', 'Ground Azurite', 'Indigo Cake'],
+    era: 'Mined in Afghanistan, used across Europe from about 1200 to 1800',
+    matters: 'It cost more per ounce than gold, so contracts told painters exactly how much of it a picture would get.'
+  },
+  c11: {
+    clue: 'A colored paper print, wider than tall, showing a towering curl of water with clawed white foam. Tiny boats vanish in the trough, and a small snow-capped peak sits far off at center.',
+    wrong: ['Hiroshige Rain Print', 'Utamaro Beauty Print', 'Kuniyoshi Battle Print'],
+    era: 'Japan, about 1831',
+    matters: 'Thousands were printed to sell for the price of a bowl of noodles, and the cheap picture became one of the most copied images on Earth.'
+  },
+  c12: {
+    clue: 'A light-tight wooden box the size of a hatbox, black inside. One wall has a tiny hole with a lens, and the opposite wall holds a pale ground-glass panel showing whatever faces the hole, upside down.',
+    wrong: ['Magic Lantern', 'Zograscope Viewer', 'Solar Microscope'],
+    era: 'Known since ancient times, common in Europe from the 1500s',
+    matters: 'Artists traced the image inside it for centuries, and adding a light-sensitive plate to that same box created photography.'
+  },
+  c13: {
+    clue: 'A slim steel bar split into two long prongs above a stubby handle, dull with fingerprints. There are no cutting edges, and one flat has a number and a letter stamped near the base.',
+    wrong: ['Surgical Retractor', 'Pitch Pipe Frame', 'Clockmaker’s Caliper'],
+    era: 'Britain, from 1711 onward',
+    matters: 'It gave every musician one steady note to copy, so instruments a thousand miles apart could finally play in tune together.'
+  },
+  c14: {
+    clue: 'A brittle brown tube about four inches long, hollow like a napkin ring. Its outer surface carries a fine spiral groove, and a fingerprint smudge has flattened part of the track.',
+    wrong: ['Player Piano Roll Core', 'Music Box Barrel', 'Loom Pattern Drum'],
+    era: 'United States and Europe, 1880s to about 1915',
+    matters: 'For the first time a voice outlived its owner, and folk songs and languages could be captured before they disappeared.'
+  },
+  c15: {
+    clue: 'A single sheet ruled with staffs, filled at speed with brown ink notes that lean forward. Whole bars are crossed out and rewritten above, and the ink bleeds through from the other side.',
+    wrong: ['Handel Score Leaf', 'Monastery Chant Sheet', 'Mozart Sketch Page'],
+    era: 'Leipzig, Germany, about 1720 to 1750',
+    matters: 'Much of this music sat unplayed for nearly a century, then came back and reshaped what Western composers thought was possible.'
+  },
+  c16: {
+    clue: 'Nine square rods of pale ivory in a shallow tray, each about three inches long. Every face of every rod carries a column of digits split by slanting lines, and the rods slide side by side.',
+    wrong: ['Gaming Tally Sticks', 'Astrological Casting Rods', 'Surveyor’s Measuring Blocks'],
+    era: 'Scotland, 1617',
+    matters: 'Sliding two rods together turned long multiplication into simple adding, cutting hours of clerk work down to minutes.'
+  },
+  c17: {
+    clue: 'A blown glass vessel with a long neck that bends back, punches through its own side wall, and opens out to become the base. There is no seam and no way to say which surface is inside.',
+    wrong: ['Retort Flask', 'Pelican Distilling Vessel', 'Swan Neck Beaker'],
+    era: 'Germany, first described in 1882',
+    matters: 'It shows a surface with only one side, which forced mathematicians to accept shapes that cannot fit in our three dimensions.'
+  },
+  c18: {
+    clue: 'A stiff printed page, the paper foxed brown at the edges. Dense lines of text are interrupted by small diagrams of triangles and circles with letters at their corners, each followed by a short numbered claim.',
+    wrong: ['Ptolemy’s Almagest Leaf', 'Archimedes Palimpsest Page', 'Fibonacci Abacus Folio'],
+    era: 'Written in Alexandria about 300 BCE, printed from 1482',
+    matters: 'It taught the world to prove things step by step, and served as a school textbook for well over 2,000 years.'
+  },
+  c19: {
+    clue: 'A marble head and shoulders, nose chipped. The man wears a full curled beard and tight curls, and the carved eyes look slightly downward with a tired, patient set to the mouth.',
+    wrong: ['Bust of Hadrian', 'Bust of Seneca', 'Bust of Antoninus Pius'],
+    era: 'Rome, about 160 to 180 CE',
+    matters: 'The private notebook he kept while ruling an empire is still handed to soldiers, doctors, and prisoners as a guide to hard days.'
+  },
+  c20: {
+    clue: 'A small clay oil vessel with a pinched spout and a scorched black rim, the handle rubbed shiny from carrying. Soot streaks the belly, and it holds only a spoonful of oil.',
+    wrong: ['Temple Votive Lamp', 'Miner’s Grease Lamp', 'Herodian Clay Lamp'],
+    era: 'Athens, Greece, about 350 BCE',
+    matters: 'Carrying it lit at noon was a public joke with a point: it asked a whole city to prove it deserved its own good opinion.'
+  },
+  c21: {
+    clue: 'A dull gray ball about the size of a grapefruit, sawn cleanly in half. The rind is rough and plain, but the hollow inside is lined with sharp purple points all growing toward the center.',
+    wrong: ['Septarian Nodule', 'Thunder Egg', 'Flint Concretion'],
+    era: 'Volcanic rock worldwide, tens of millions of years old',
+    matters: 'The crystals inside grew about an inch every million years, so the hollow is a slow clock made of water and stone.'
+  },
+  c22: {
+    clue: 'A clear cylinder of frozen water about three inches across and a yard long, kept in a chilled sleeve. Faint bands cross it at intervals, and tiny trapped bubbles cloud the older end.',
+    wrong: ['Glacier Melt Core', 'Permafrost Soil Core', 'Seabed Sediment Core'],
+    era: 'Greenland and Antarctica, drilled since the 1960s',
+    matters: 'The trapped bubbles hold real ancient air, which is how we know today’s carbon dioxide is higher than in the last 800,000 years.'
+  },
+  c23: {
+    clue: 'A solid glass wedge about four inches long with three polished flat sides and two triangular ends. Set in a sunbeam it throws a smeared band of color onto the wall behind it.',
+    wrong: ['Lighthouse Lens Segment', 'Glass Paperweight Blank', 'Optician’s Test Wedge'],
+    era: 'England, 1660s',
+    matters: 'It proved white light is a mixture, not a pure thing being stained by glass, which is the basis of all color science.'
+  },
+  c24: {
+    clue: 'A heavy brass ball hung from a very long thin wire, swinging slowly over a circular table ringed with numbers. Small pegs stand around the rim, and some have been knocked flat.',
+    wrong: ['Seismograph Pendulum', 'Regulator Clock Bob', 'Plumb Bob Assembly'],
+    era: 'Paris, France, 1851',
+    matters: 'It let anyone watch the Earth turn under a swinging weight, the first proof of the spin you could see without a telescope.'
+  },
+  c25: {
+    clue: 'A stiff white rectangle of pasteboard about seven inches tall, bearing a single black blot. The shape is mirror-perfect left to right, with soft feathered edges where the wet ink was pressed and pulled apart.',
+    wrong: ['Thematic Perception Plate', 'Galton Composite Print', 'Lithographer’s Proof Card'],
+    era: 'Switzerland, 1921',
+    matters: 'Ten cards became one of the most used and most argued-over tests in psychology, given millions of times in clinics and courts.'
+  },
+  c26: {
+    clue: 'A slip of rag paper with a notary’s seal, listing one item, a weight in a Dutch unit, and a price with more digits than seems right. A second hand has added a date below in darker ink.',
+    wrong: ['Guild Wool Contract', 'Spice Company Share Note', 'Grain Futures Bond'],
+    era: 'Netherlands, 1636 to 1637',
+    matters: 'At the peak one bulb traded for about ten years of a craftsman’s wages, then prices fell roughly 99 percent in a few weeks.'
+  },
+  c27: {
+    clue: 'A large printed leaf in two dense columns, with a heading in ornamental type. Character names sit in small capitals at the left of each speech, and the paper is thick and slightly furry.',
+    wrong: ['Chaucer Quarto Leaf', 'Geneva Bible Page', 'Jonson Works Folio Leaf'],
+    era: 'London, 1623',
+    matters: 'Two friends gathered the plays seven years after the author died, saving 18 of them that survive in no earlier copy.'
+  },
+  c28: {
+    clue: 'A brass vessel with a long curved spout, a round belly, and a small hinged lid. The metal is rubbed bright along one side, and a wick stub still sits blackened in the spout.',
+    wrong: ['Mosque Oil Lamp', 'Persian Rosewater Ewer', 'Pilgrim’s Brass Flask'],
+    era: 'Middle East and South Asia, stories collected from about 800 to 1400',
+    matters: 'The frame story built suspense on purpose, and the trick of stopping at the exciting part still runs every serial ever made.'
+  },
+  c29: {
+    clue: 'A short metal bar hinged to a small plate, mounted low on a box wall beside a chute. The bar’s end is polished smooth by repeated pressing, and a thin wire runs from the hinge to a counter.',
+    wrong: ['Telegraph Sounder Key', 'Maze Gate Latch', 'Kymograph Trip Arm'],
+    era: 'United States, 1930s onward',
+    matters: 'Rewarding a press only sometimes made animals press hardest, which is exactly why slot machines and app alerts are hard to put down.'
+  },
+  c30: {
+    clue: 'A thick bound volume of rag paper, its pages ruled into two facing columns of figures. Every entry on the left has a matching entry on the right, and the two columns end in the same total.',
+    wrong: ['Guild Membership Roll', 'Customs House Register', 'Monastery Tithe Book'],
+    era: 'Florence, Italy, 1300s to 1400s',
+    matters: 'Recording every amount twice made theft and error show up instantly, and that trust let banks lend across whole countries.'
+  },
+  c31: {
+    clue: 'A glass bulb the size of a thumb with a silvered top, sealed around a cage of tiny metal grids and a hairpin filament. Eight stiff pins stick out of its black base.',
+    wrong: ['Carbon Arc Lamp', 'X-ray Coolidge Tube', 'Neon Indicator Bulb'],
+    era: 'United States and Europe, about 1906 to 1960',
+    matters: 'It could switch a signal on and off thousands of times a second, which is what made electronic computing possible at all.'
+  },
+  c32: {
+    clue: 'A stiff paper rectangle the size of a dollar bill with one corner cut off. Rows and columns of printed digits cover it, and dozens of small rectangular holes have been cut clean through.',
+    wrong: ['Jacquard Loom Card', 'Player Organ Sheet', 'Census Tally Slip'],
+    era: 'United States, 1890s to 1970s',
+    matters: 'It let people hand instructions to a machine without rewiring it, and one box of them held a whole working program.'
+  },
+  c33: {
+    clue: 'A flat white stick about six inches long with a center strip that shifts along its length, all faces printed with uneven number scales. A clear cursor with a hairline rides on top, and the edges are scuffed.',
+    wrong: ['Draftsman’s Scale Rule', 'Navigator’s Course Plotter', 'Sector Compass Rule'],
+    era: 'United States, carried on Apollo missions in 1969',
+    matters: 'Engineers designed rockets and checked flight numbers on these sticks, which need no power and cannot crash.'
+  },
+  c34: {
+    clue: 'A silver pendant about an inch tall, shaped like a short-handled tool with a broad head. The handle end is looped for a cord, and the flat faces are chased with fine knotwork.',
+    wrong: ['Reliquary Cross Pendant', 'Anglo-Saxon Anvil Charm', 'Slavic Axe Amulet'],
+    era: 'Scandinavia, about 800 to 1100 CE',
+    matters: 'Some workshops made these and Christian crosses from the same molds, proof that belief changed slowly and by trade, not overnight.'
+  },
+  c35: {
+    clue: 'A limestone panel carved with a crouching beast that has a woman’s face and folded wings. Beneath it runs a line of Greek letters ending in a curved mark, and the lower edge is snapped off.',
+    wrong: ['Delphi Oracle Stela', 'Harpy Tomb Relief', 'Chimera Votive Slab'],
+    era: 'Greece, story told from about 700 BCE',
+    matters: 'The answer is a person aging from crawling to a cane, a puzzle that taught listeners to read a metaphor instead of a fact.'
+  },
+  c36: {
+    clue: 'A fruit-shaped sphere of solid gold that fits the palm, its stem and single leaf worked in fine detail. Two words in Greek are scratched around the middle, worn nearly smooth.',
+    wrong: ['Hesperides Votive Fruit', 'Byzantine Orb of State', 'Etruscan Gold Pomegranate'],
+    era: 'Greek myth, told from about 700 BCE onward',
+    matters: 'A prize with no named winner set three goddesses against each other, the oldest story about how vague rules start real fights.'
+  },
+  c37: {
+    clue: 'A bound book open to a figure standing with the chest laid open. Layered paper cutouts are hinged along the body so each one lifts to show a different shape drawn beneath it.',
+    wrong: ['Herbal Woodcut Volume', 'Alchemical Emblem Book', 'Astrological Volvelle Book'],
+    era: 'Europe, 1500s to 1600s',
+    matters: 'It let students see the body in layers when real dissections were rare, and it spread accurate anatomy far faster than corpses ever could.'
+  },
+  c38: {
+    clue: 'A turned wooden cylinder about nine inches long, hollow down the middle, made in two pieces that screw apart. One end flares into a shallow funnel, and the wood is darkened where hands gripped it.',
+    wrong: ['Ear Trumpet', 'Apothecary Pill Tube', 'Surgeon’s Bone Trephine'],
+    era: 'Paris, France, 1816',
+    matters: 'Listening through a tube let doctors hear disease inside a living chest, and it began diagnosing patients before they died.'
+  },
+  c39: {
+    clue: 'A small round metal cap on a slim jointed arm, its face rimmed with nickel and its center a worn glass disk with a single letter beneath. The arm ends in a hinge and a broken link.',
+    wrong: ['Telegraph Sounder Button', 'Cash Register Key', 'Adding Machine Digit Cap'],
+    era: 'United States, 1870s onward',
+    matters: 'Keyboards put writing at everyone’s fingertips, opened office work to women in the 1880s, and set the letter layout your phone still uses.'
+  },
+  c40: {
+    clue: 'A squat pot of thick glass with a narrow mouth and a wide flat base so it cannot tip. The inside is stained a permanent black-brown, and a crust of dried sediment ridges the bottom.',
+    wrong: ['Apothecary Unguent Jar', 'Sand Shaker Pot', 'Gilder’s Size Pot'],
+    era: 'London, early 1600s',
+    matters: 'Printers dipped from wells like this to set plays that put roughly 1,700 new words into everyday English.'
+  },
+  c41: {
+    clue: 'A shallow wooden frame the size of a paperback, strung with parallel wires. Small pierced beads slide along each wire, split unevenly by a crossbar, and the beads are worn glossy on one side.',
+    wrong: ['Counting Board Tray', 'Weaver’s Heddle Frame', 'Prayer Bead Rack'],
+    era: 'China, Japan, and the Middle East, in use for about 2,000 years',
+    matters: 'Trained users add faster than most people can key numbers in, and learning it still measurably strengthens children’s mental math.'
+  },
+  c42: {
+    clue: 'A pocket-sized notebook of ruled paper, each spread drawn into a grid of seven columns and thirteen rows. Small ink marks dot the boxes, heavier in some rows, and the covers are soft with handling.',
+    wrong: ['Merchant’s Day Book', 'Almanac Weather Diary', 'Surveyor’s Field Notebook'],
+    era: 'Philadelphia, 1730s onward',
+    matters: 'Tracking one habit a week and marking every slip is the same method behind modern habit apps, invented about 290 years earlier.'
+  }
+};
 
 </script>
 <script>
@@ -7159,7 +7521,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v64 · Sep 7, 2026";
+window.GAME_VERSION = "v65 · Sep 7, 2026";
 
 </script>
 <script>
@@ -7261,9 +7623,9 @@ const ACHIEVEMENTS = [
   { id:'a12', icon:'👑', name:'Gauntlet Legend',    desc:'Score 50 in the Gauntlet', test:s => s.gauntletBest >= 50 },
   { id:'a13', icon:'⚡', name:'Quicksilver',        desc:'Score 10 in a Lightning Round', test:s => (s.lightningBest||0) >= 10 },
   { id:'a14', icon:'🌩️', name:'Storm of Knowing',   desc:'Score 20 in a Lightning Round', test:s => (s.lightningBest||0) >= 20 },
-  { id:'a15', icon:'🖼️', name:'First Curiosity',    desc:'Buy a collection piece', test:s => Object.keys(s.owned).length >= 1 },
-  { id:'a16', icon:'🏺', name:'Serious Collector',  desc:'Own 10 curiosities', test:s => Object.keys(s.owned).length >= 10 },
-  { id:'a17', icon:'🏰', name:'The Whole Museum',   desc:'Own every curiosity', test:s => Object.keys(s.owned).length >= CURIOSITIES.length },
+  { id:'a15', icon:'🖼️', name:'First Curiosity',    desc:'Restore your first object', test:s => Object.keys(s.restored||{}).length >= 1 },
+  { id:'a16', icon:'🏺', name:'Serious Collector',  desc:'Restore 10 objects', test:s => Object.keys(s.restored||{}).length >= 10 },
+  { id:'a17', icon:'🏰', name:'The Whole Cabinet',  desc:'Restore every object', test:s => Object.keys(s.restored||{}).length >= CURIOSITIES.length },
   { id:'a18', icon:'⛓️', name:'First Chain',        desc:'Complete a study chain', test:s => Object.keys(s.chainsDone||{}).length >= 1 },
   { id:'a19', icon:'🔗', name:'Chain Master',       desc:'Complete every study chain', test:s => Object.keys(s.chainsDone||{}).length >= CHAINS.length },
   { id:'a20', icon:'💯', name:'Century',            desc:'100 correct answers', test:s => s.totalRight >= 100 },
@@ -7792,7 +8154,7 @@ function buildCampusScene(){
     { id:'z-class',     x:42,   y:38.5, w:16,   h:15,   icon:'🏫', name:'Classroom',     sub:'Today’s ten-question run',           k:'class',     go:'daily' },
     { id:'z-office',    x:58.5, y:38.5, w:14.3, h:15,   icon:'🦉', name:'Your Office',   sub:'Your room, your things, the owl',    k:'office',    go:'office' },
     { id:'z-workshop',  x:27,   y:54.5, w:14.2, h:14.5, icon:'🛠️', name:'Workshop',      sub:'Practice real-life skills',          k:'workshop',  go:'workshop' },
-    { id:'z-museum',    x:42,   y:54.5, w:16,   h:14.5, icon:'🏺', name:'Museum',        sub:'Spend lumens on curiosities',        k:'museum',    go:'collection' },
+    { id:'z-museum',    x:42,   y:54.5, w:16,   h:14.5, icon:'🏺', name:'The Cabinet',   sub:'Identify objects and restore them',        k:'museum',    go:'collection' },
     { id:'z-trophy',    x:58.5, y:54.5, w:14.3, h:14.5, icon:'🏆', name:'Trophy Hall',   sub:'Every plaque you have earned',       k:'trophy',    go:'honors' },
     { id:'z-rec',       x:27,   y:70,   w:14.2, h:16.5, icon:'🎲', name:'Rec Room',      sub:'Games for two or more players',      k:'rec',       go:'parlor' },
     { id:'z-door',      x:44.4, y:70,   w:11.2, h:19,   icon:'🚪', name:'Front Door',    sub:'The school directory: every room',   k:null,        go:null },
@@ -8126,7 +8488,8 @@ function freshSave(){
     bridgesDone: {},        // bridgeId -> true
     domainStats: {},        // domain -> {right, wrong}
     misses: {},             // question key -> {ts} of last miss, cleared when re-answered right
-    owned: {},              // curiosity id -> true
+    owned: {},              // curiosity id -> true (crate acquired)
+    restored: {},           // curiosity id -> true (identified and restored)
     gauntletBest: 0,
     lightningBest: 0,
     chainsDone: {},         // chain id -> true
@@ -8389,7 +8752,7 @@ function rankProgress(){
 }
 
 // every owned curiosity adds +2% to all lumen earnings
-function collectionBonusPct(){ return Object.keys(S.owned).length * 2; }
+function collectionBonusPct(){ return restoredCount() * 2; }
 function awardLumens(base){
   const total = Math.round(base * (1 + collectionBonusPct() / 100));
   S.lumens += total;
@@ -8459,6 +8822,7 @@ function go(name){
   if (name === 'debate') startDebate();
   if (name === 'reality') startReality();
   if (name === 'subjects') renderSubjects();
+  if (name === 'codex') renderCodex();
   if (name === 'detention') startDetention();
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
@@ -8716,7 +9080,9 @@ function renderHome(){
   $('#cabinet-badge').textContent = `${Object.keys(S.nodesDone).length} of ${NODES.length} learned`;
   $('#bridges-badge').textContent = `${Object.keys(S.bridgesDone).length} of ${BRIDGES.length} crossed`;
   $('#gauntlet-badge').textContent = S.gauntletBest ? `best: ${S.gauntletBest}` : 'untried';
-  $('#collection-badge').textContent = `${Object.keys(S.owned).length} of ${CURIOSITIES.length} pieces`;
+  $('#collection-badge').textContent = `${restoredCount()} of ${CURIOSITIES.length} restored`;
+  const cx = $('#codex-badge');
+  if (cx) cx.textContent = `${restoredCount()} pages written`;
   $('#chains-badge').textContent = `${Object.keys(S.chainsDone).length} of ${CHAINS.length} forged`;
   $('#lightning-badge').textContent = S.lightningBest ? `best: ${S.lightningBest}` : 'untried';
   $('#honors-badge').textContent = `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} plaques`;
@@ -11187,57 +11553,172 @@ function finishGauntlet(){
 }
 
 // ---------- COLLECTION ----------
+// ---------- THE CURIOSITY CABINET ----------
+// Objects arrive wrapped and grimy. Identify one and it is restored to your
+// shelves, and writes its own page in your Master Ledger.
+const CAB_TIERS = [
+  { at: 0,  cls:'cab-t0', name:'An empty cabinet',     note:'Bare shelves, waiting. Every object is still out there somewhere.' },
+  { at: 5,  cls:'cab-t1', name:'The first finds',      note:'The walnut has a shine again, and it is no longer empty.' },
+  { at: 15, cls:'cab-t2', name:'Brass and glass',      note:'Brass fittings, a glass front, and proper labels under each piece.' },
+  { at: 30, cls:'cab-t3', name:'Lit for visitors',     note:'Warm lamps inside. People stop and look now.' },
+  { at: 42, cls:'cab-t4', name:'A true collection',    note:'Every object found, identified, and understood. This is a life’s work.' }
+];
+function restoredCount(){ return Object.keys(S.restored || {}).length; }
+function cabinetTier(){
+  const n = restoredCount();
+  let t = CAB_TIERS[0];
+  CAB_TIERS.forEach(x => { if (n >= x.at) t = x; });
+  return t;
+}
 function renderCollection(){
   const grid = $('#collection-grid');
+  const tier = cabinetTier();
+  const n = restoredCount();
+  $('#collection-lumens').textContent = `${S.lumens} \u2726`;
+  const waiting = CURIOSITIES.filter(c => S.owned[c.id] && !(S.restored || {})[c.id]);
+  const next = CAB_TIERS.find(x => x.at > n);
   grid.innerHTML = '';
-  $('#collection-lumens').textContent = `${S.lumens} ✦ · bonus +${collectionBonusPct()}%`;
-  // your museum: owned pieces on display shelves
-  const ownedItems = CURIOSITIES.filter(c => S.owned[c.id]);
-  if (ownedItems.length) {
-    const museum = el(`<div class="museum">
-      <div class="shelf-label" style="color:var(--brass-bright)">Your Museum</div>
-      <div class="museum-shelf"></div>
-    </div>`);
-    const shelfBox = museum.querySelector('.museum-shelf');
-    ownedItems.forEach(item => {
-      const piece = el(`<button class="museum-piece" title="${item.name}">${item.icon}</button>`);
-      piece.addEventListener('click', () => showCurio(item));
-      shelfBox.appendChild(piece);
-    });
-    grid.appendChild(museum);
-  }
+  grid.appendChild(el(`<div class="cabinet ${tier.cls}">
+    <div class="cab-head">
+      <span class="cab-tier-name">${tier.name}</span>
+      <span class="cab-count">${n} of ${CURIOSITIES.length} restored</span>
+    </div>
+    <div class="cab-grid"></div>
+    <div class="cab-plaque">${tier.note}${next ? ` Restore ${next.at - n} more and the cabinet itself improves.` : ''}</div>
+  </div>`));
+  const cab = grid.querySelector('.cab-grid');
   CURIOSITIES.forEach(item => {
-    const dom = DOMAINS[item.d];
-    const owned = !!S.owned[item.id];
-    const afford = S.lumens >= item.price;
-    const card = el(`<button class="curio ${owned ? 'curio-owned' : afford ? '' : 'curio-poor'}">
-      <span class="curio-icon">${owned ? item.icon : '❔'}</span>
-      <span class="curio-name">${owned ? item.name : item.name}</span>
-      <span class="curio-domain" style="color:${dom.color}">${dom.emblem} ${dom.name}</span>
-      <span class="curio-price">${owned ? '✓ owned' : item.price + ' lumens'}</span>
+    const acquired = !!S.owned[item.id];
+    const done = !!(S.restored || {})[item.id];
+    const slot = el(`<button class="cab-slot ${done ? 'slot-done' : acquired ? 'slot-wrapped' : 'slot-empty'}">
+      <span class="slot-icon">${done ? item.icon : acquired ? '\uD83D\uDCE6' : ''}</span>
+      <span class="slot-name">${done ? item.name : acquired ? 'Unidentified' : ''}</span>
     </button>`);
-    card.addEventListener('click', () => {
-      if (owned) { showCurio(item); return; }
-      if (!afford) { toast(`You need ${item.price - S.lumens} more lumens for this piece.`); return; }
+    slot.addEventListener('click', () => {
+      if (done) { showCurio(item); return; }
+      if (acquired) { startIdentify(item); return; }
+      if (S.lumens < item.price) { toast(`This crate costs ${item.price} lumens. You need ${item.price - S.lumens} more.`); return; }
       S.lumens -= item.price;
       S.owned[item.id] = true;
       save();
-      showCurio(item, true);
+      SFX.reward();
+      toast('\uD83D\uDCE6 A wrapped object arrives. Identify it to restore it.');
+      renderCollection();
     });
-    grid.appendChild(card);
+    cab.appendChild(slot);
   });
+  if (waiting.length) {
+    const box = el(`<div class="cab-waiting"><div class="today-head">Waiting to be identified</div></div>`);
+    waiting.forEach(item => {
+      const row = el(`<button class="today-row">
+        <span class="row-icon">\uD83D\uDCE6</span>
+        <span class="row-body"><span class="row-main">An unidentified object</span>
+        <span class="row-sub">From the ${DOMAINS[item.d].name} crate. Identify it to restore it.</span></span>
+        <span class="row-go">\u203A</span></button>`);
+      row.addEventListener('click', () => startIdentify(item));
+      box.appendChild(row);
+    });
+    grid.insertBefore(box, grid.firstChild.nextSibling);
+  }
+  const buyable = CURIOSITIES.filter(c => !S.owned[c.id]);
+  if (buyable.length) {
+    const hint = el(`<p class="helper-text">Tap a dusty gap to buy that crate with lumens. Tap a wrapped crate to identify what is inside.</p>`);
+    grid.appendChild(hint);
+  }
 }
-function showCurio(item, justBought){
+// identify an object from its clue: the heart of the cabinet
+function startIdentify(item){
   const grid = $('#collection-grid');
-  $('#collection-lumens').textContent = `${S.lumens} ✦ · bonus +${collectionBonusPct()}%`;
+  const info = (typeof CURIO_ID !== 'undefined' && CURIO_ID[item.id]) || null;
+  if (!info) { finishRestore(item); return; }
+  const opts = shuffle([{ text: item.name, right: true }].concat(info.wrong.map(w => ({ text: w, right: false }))));
+  grid.innerHTML = '';
+  const card = el(`<div class="lesson-card identify-card">
+    <div class="identify-label">Unidentified object</div>
+    <div class="identify-shape">\uD83D\uDCE6</div>
+    <p class="identify-clue">${info.clue}</p>
+    <div class="identify-q">What is it?</div>
+    <div class="identify-opts"></div>
+    <button class="btn-secondary" data-go="collection">Put it back for now</button>
+  </div>`);
+  const box = card.querySelector('.identify-opts');
+  opts.forEach(o => {
+    const btn = el(`<button class="answer-btn">${o.text}</button>`);
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('faded')) return;
+      if (o.right) {
+        btn.classList.add('correct');
+        SFX.correct();
+        setTimeout(() => finishRestore(item, info), 550);
+      } else {
+        btn.classList.add('faded');
+        btn.disabled = true;
+        SFX.wrong();
+        toast('Not this one. Look again at the clue.');
+      }
+    });
+    box.appendChild(btn);
+  });
+  grid.appendChild(card);
+}
+function finishRestore(item, info){
+  S.restored = S.restored || {};
+  S.restored[item.id] = true;
+  save();
+  checkAchievements();
+  SFX.fanfare();
+  confetti(45);
+  const grid = $('#collection-grid');
+  grid.innerHTML = '';
+  grid.appendChild(el(`<div class="lesson-card curio-story restore-card">
+    <div class="restore-flash">Restored</div>
+    <div class="curio-story-icon restored-icon">${item.icon}</div>
+    <h2 class="lesson-title">${item.name}</h2>
+    ${info ? `<div class="curio-era">${info.era}</div>` : ''}
+    <p class="lesson-text">${item.story}</p>
+    ${info ? `<div class="curio-matters"><b>What it changed:</b> ${info.matters}</div>` : ''}
+    <div class="result-earn">Added to your shelves, and to your Master Ledger.</div>
+    <button class="btn-primary" data-go="collection">Back to the cabinet</button>
+    <button class="btn-secondary" data-go="codex">Open the Ledger</button>
+  </div>`));
+}
+function showCurio(item){
+  const grid = $('#collection-grid');
+  const info = (typeof CURIO_ID !== 'undefined' && CURIO_ID[item.id]) || null;
   grid.innerHTML = '';
   grid.appendChild(el(`<div class="lesson-card curio-story">
-    <div class="curio-story-icon">${item.icon}</div>
+    <div class="curio-story-icon restored-icon">${item.icon}</div>
     <h2 class="lesson-title">${item.name}</h2>
-    ${justBought ? '<div class="result-earn">Added to your collection.</div>' : ''}
+    ${info ? `<div class="curio-era">${info.era}</div>` : ''}
     <p class="lesson-text">${item.story}</p>
-    <button class="btn-primary" data-go="collection">Back to the room</button>
+    ${info ? `<div class="curio-matters"><b>What it changed:</b> ${info.matters}</div>` : ''}
+    <button class="btn-primary" data-go="collection">Back to the cabinet</button>
   </div>`));
+}
+// ---------- THE MASTER LEDGER ----------
+function renderCodex(){
+  const body = $('#codex-body');
+  const done = CURIOSITIES.filter(c => (S.restored || {})[c.id]);
+  $('#codex-count').textContent = `${done.length} of ${CURIOSITIES.length} pages`;
+  body.innerHTML = '';
+  if (!done.length) {
+    body.appendChild(el(`<p class="helper-text">Your Ledger is empty. Restore an object in the Cabinet and its page writes itself here.</p>`));
+    body.appendChild(el(`<div class="codex-empty">\uD83D\uDCD6</div>`));
+    return;
+  }
+  done.forEach(item => {
+    const dom = DOMAINS[item.d];
+    const info = (typeof CURIO_ID !== 'undefined' && CURIO_ID[item.id]) || null;
+    body.appendChild(el(`<div class="codex-page">
+      <div class="codex-icon">${item.icon}</div>
+      <div class="codex-text">
+        <div class="codex-name">${item.name}</div>
+        <div class="codex-meta" style="color:${dom.color}">${dom.emblem} ${dom.name}${info ? ` \u00B7 ${info.era}` : ''}</div>
+        <div class="codex-story">${item.story}</div>
+        ${info ? `<div class="codex-matters">${info.matters}</div>` : ''}
+      </div>
+    </div>`));
+  });
 }
 
 // ---------- LEDGER ----------
