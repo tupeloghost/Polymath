@@ -3793,14 +3793,21 @@ function genPartyQuestion(){
 }
 // build a deck mixing written questions with generated ones, about half and half
 function partyDeck(pool){
-  // pool arrives never-seen-first (orderFresh); keep that order so fresh
-  // questions come up before repeats. _w marks written questions for seen-tracking.
+  // pool arrives never-seen-first (orderFresh); written questions are consumed in
+  // that order, but generated ones are woven in at RANDOM positions so no player
+  // gets locked into one kind by turn order. _w marks written for seen-tracking.
   const out = [];
-  pool.forEach(q => {
-    q._w = 1;
-    out.push(q);
-    out.push(genPartyQuestion());
-  });
+  let wi = 0;
+  const total = pool.length * 2;
+  for (let i = 0; i < total; i++){
+    if (wi < pool.length && (Math.random() < 0.5 || out.length >= total - (pool.length - wi))) {
+      const q = pool[wi++];
+      q._w = 1;
+      out.push(q);
+    } else {
+      out.push(genPartyQuestion());
+    }
+  }
   return out;
 }
 </script>
@@ -7152,7 +7159,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v62 · Sep 2, 2026";
+window.GAME_VERSION = "v63 · Sep 6, 2026";
 
 </script>
 <script>
@@ -9916,6 +9923,9 @@ function flipMatch(i){
     match.moves++;
     match.lock = true;
     const [a, b] = match.flipped.map(x => match.cards[x]);
+    // give people time to actually read both cards: longer text, longer look
+    const longest = Math.max(a.text.length, b.text.length);
+    const readMs = a.pair === b.pair ? 350 : Math.min(4000, 1500 + longest * 45);
     setTimeout(() => {
       if (a.pair === b.pair) {
         a.done = b.done = true;
@@ -9931,7 +9941,7 @@ function flipMatch(i){
       match.lock = false;
       if (match.found === 8) { finishMatch(); return; }
       renderMatch();
-    }, a.pair === b.pair ? 350 : 950);
+    }, readMs);
   }
 }
 function finishMatch(){
@@ -10029,7 +10039,8 @@ function startDuelGame(names, kid, opts){
     scores: [0, 0],
     streaks: [0, 0],
     turn: 0, asked: 0, total: opts.total || 10,
-    deck: partyDeck(orderFresh('mq', playPool(kid).filter(q => q.t !== 2), qKey)),
+    // written questions only, dealt never-seen-first: both players draw from the same pool
+    deck: orderFresh('mq', playPool(kid).filter(q => q.t !== 2), qKey),
     sudden: false,
     onWin: opts.onWin || null
   };
@@ -10058,7 +10069,7 @@ function renderDuelQuestion(){
   } else {
     q = duel.deck[duel.asked % duel.deck.length];
   }
-  if (q._w) markSeen('mq', [qKey(q)]);
+  markSeen('mq', [qKey(q)]);
   const qNum = Math.floor(duel.asked / 2) + 1;
   const isFinal = !duel.sudden && qNum === duel.total / 2;
   let points = isFinal ? 2 : 1;
@@ -10772,7 +10783,7 @@ function openNode(node){
     <p class="lesson-text">${node.lesson}</p>
     ${node.try ? `<div class="try-this"><b>Try this today:</b> ${node.try}</div>` : ''}
     ${done ? '<div class="lesson-kept">✓ Already yours</div>' : ''}
-    <button class="btn-primary" id="node-quiz-btn">${done ? 'Answer again for fun' : 'I read it. Quiz me.'}</button>
+    <button class="btn-primary" id="node-quiz-btn">${done ? 'Quiz me again' : 'I read it. Quiz me.'}</button>
     ${done ? '<button class="btn-secondary" id="node-teach-btn">🗣️ Teach it back</button>' : ''}
   </div>`);
   lessonCard.querySelector('.lesson-title').appendChild(starButton(node.title, node.lesson, node.d));
