@@ -1784,6 +1784,41 @@ body.dt .codex-page { break-inside: avoid; }
 .tale-row:hover { border-color: rgba(212,171,94,.9); background: linear-gradient(180deg, rgba(78,52,20,.6), rgba(40,25,9,.7)); }
 .tale-face { font-size: 30px; line-height: 1; flex: none; }
 
+/* ---------- v71: what to do next in the story ---------- */
+.story-nextup {
+  display: none; max-width: 30em; margin: 0 auto 16px; padding: 12px 16px;
+  background: rgba(201,162,74,.1); border: 1px dashed rgba(212,171,94,.55); border-radius: 12px;
+}
+.story-nextup.on { display: block; }
+.nextup-label {
+  font-family: var(--serif); font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+  color: #b08d4a; margin-bottom: 3px;
+}
+.nextup-text { font-family: var(--serif); font-size: 18px; color: #f0e4c8; margin-bottom: 8px; }
+.nextup-bar {
+  height: 8px; border-radius: 5px; background: rgba(0,0,0,.45);
+  border: 1px solid rgba(176,141,74,.4); overflow: hidden;
+}
+.nextup-bar span { display: block; height: 100%; background: linear-gradient(90deg, #8a6425, #ffd98a); }
+.nextup-count {
+  font-family: var(--serif); font-size: 13.5px; color: #c9b58c; margin-top: 5px;
+  font-variant-numeric: tabular-nums;
+}
+.story-skip {
+  display: none; background: none; border: none; cursor: pointer;
+  font-family: var(--serif); font-size: 15px; color: #a8946e; text-decoration: underline;
+  text-underline-offset: 3px; padding: 4px;
+}
+.story-skip.on { display: block; }
+.story-skip:hover { color: #f0e0bc; }
+.tale-next {
+  background: linear-gradient(180deg, rgba(58,38,14,.55), rgba(30,18,6,.68));
+  border: 1px dashed rgba(212,171,94,.55); border-radius: 12px;
+  padding: 14px 16px; margin-bottom: 10px;
+}
+.tale-next .btn-primary { margin-top: 12px; width: 100%; }
+.tale-ready { border-style: solid; border-color: rgba(255,205,110,.75); box-shadow: 0 0 18px rgba(255,190,90,.2); }
+
 </style>
 </head>
 <body>
@@ -3934,6 +3969,7 @@ const STORY = [
     id: 's2', title: 'The Owl Explains',
     speaker: 'The Curator', face: '🦉',
     when: (S) => S.totalRight >= 5,
+    need: { text: 'Answer 5 questions right', go: 'daily', goText: 'Start today’s run', at: 5, count: (S) => S.totalRight },
     lines: [
       'The owl watches you from the top of the empty cabinet, and finally speaks.',
       '"Her name was Alma. She made this place, she filled that cabinet with forty-two objects, and then one night she wrapped every one of them up and sent them away."',
@@ -3945,6 +3981,7 @@ const STORY = [
     id: 's3', title: 'Her Handwriting',
     speaker: 'The Curator', face: '🦉',
     when: (S) => Object.keys(S.restored || {}).length >= 1,
+    need: { text: 'Identify your first object', go: 'collection', goText: 'Open the Cabinet', at: 1, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'The first object sits on the shelf, cleaned and named, and there is a slip of paper that came out of the wrapping.',
       'The owl reads over your shoulder without asking.',
@@ -3956,6 +3993,7 @@ const STORY = [
     id: 's4', title: 'The Raven Has a Version',
     speaker: 'The Raven', face: '🐦‍⬛',
     when: (S) => Object.keys(S.restored || {}).length >= 4,
+    need: { text: 'Restore 4 objects', go: 'collection', goText: 'Open the Cabinet', at: 4, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'The raven drops onto the windowsill, uninvited, the way he does everything.',
       '"Caw. The owl is telling you the sweet version. Ask him who came to the door that night."',
@@ -3967,6 +4005,7 @@ const STORY = [
     id: 's5', title: 'What the Notes Are Doing',
     speaker: 'The Curator', face: '🦉',
     when: (S) => Object.keys(S.restored || {}).length >= 9,
+    need: { text: 'Restore 9 objects', go: 'collection', goText: 'Open the Cabinet', at: 9, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'You lay the notes side by side on the desk. They are not a diary. They are an argument.',
       '"She wrote one for every object," the owl says. "Not what it is. What it proves."',
@@ -3978,6 +4017,7 @@ const STORY = [
     id: 's6', title: 'The Inspector Returns',
     speaker: 'The Examiner', face: '🎩',
     when: (S) => Object.keys(S.restored || {}).length >= 16,
+    need: { text: 'Restore 16 objects', go: 'collection', goText: 'Open the Cabinet', at: 16, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'A man in a good coat is standing in the hall, holding a clipboard he does not need.',
       '"I am told the collection is being put back together. I inspected this place the first time."',
@@ -3990,6 +4030,7 @@ const STORY = [
     id: 's7', title: 'What She Was Actually Collecting',
     speaker: 'The Curator', face: '🦉',
     when: (S) => Object.keys(S.restored || {}).length >= 26,
+    need: { text: 'Restore 26 objects', go: 'collection', goText: 'Open the Cabinet', at: 26, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'More than half the shelves are full. The owl is quiet for a long time before he says it.',
       '"She was not collecting objects. Any rich fool can collect objects."',
@@ -4002,6 +4043,7 @@ const STORY = [
     id: 's8', title: 'The Drawer That Will Not Open',
     speaker: 'The Curator', face: '🦉',
     when: (S) => Object.keys(S.restored || {}).length >= 36,
+    need: { text: 'Restore 36 objects', go: 'collection', goText: 'Open the Cabinet', at: 36, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'There is a drawer at the base of the cabinet that has never opened for you. Tonight you notice why.',
       'There is no keyhole anywhere on it. The drawer is held shut by the weight of the shelves above, so it can only open once they are full.',
@@ -4013,6 +4055,7 @@ const STORY = [
     id: 's9', title: 'Alma’s Last Note',
     speaker: 'Alma', face: '🗝️',
     when: (S) => Object.keys(S.restored || {}).length >= 42,
+    need: { text: 'Restore all 42 objects', go: 'collection', goText: 'Open the Cabinet', at: 42, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'The last object goes onto the shelf. Something under the cabinet gives, and the drawer slides open on its own.',
       'Inside is one page, written the night she sent everything away.',
@@ -4026,6 +4069,7 @@ const STORY = [
     id: 's10', title: 'The Doors Open Again',
     speaker: 'The Curator', face: '🦉',
     when: (S) => Object.keys(S.restored || {}).length >= 42 && (S.storyDone || {}).s9,
+    need: { text: 'Read Alma’s last note', go: 'collection', goText: 'Open the Cabinet', at: 42, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
       'In the morning the owl is on the gatepost, looking down the road, which is a thing he never does.',
       '"There is a lamp on in the classroom and I did not light it. Someone came up the drive at dawn and left a question on the step."',
@@ -7763,7 +7807,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v70 · Sep 7, 2026";
+window.GAME_VERSION = "v71 · Sep 7, 2026";
 
 </script>
 <script>
@@ -9136,18 +9180,48 @@ function playStory(ch, replay){
     <div class="story-face">${ch.face}</div>
     <div class="story-speaker">${ch.speaker}</div>
     <div class="story-line" id="story-line"></div>
-    <div class="story-foot"><span class="story-dots"></span><button class="btn-primary story-next" id="story-next">Continue</button></div>
+    <div class="story-nextup" id="story-nextup"></div>
+    <div class="story-foot"><span class="story-dots"></span><button class="btn-primary story-next" id="story-next">Continue</button><button class="story-skip" id="story-later"></button></div>
   </div>`;
   document.body.appendChild(ov);
   requestAnimationFrame(() => ov.classList.add('story-in'));
   const lineEl = ov.querySelector('#story-line');
   const dots = ov.querySelector('.story-dots');
   const btn = ov.querySelector('#story-next');
+  const nextUp = ov.querySelector('#story-nextup');
+  const later = ov.querySelector('#story-later');
+  // the chapter that comes after this one tells the player what to do next
+  const after = STORY[STORY.indexOf(ch) + 1];
+  const need = after && after.need ? after.need : null;
+  let goWhere = null;
   let typing = null;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function show(){
     dots.innerHTML = ch.lines.map((_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('');
-    btn.textContent = i === ch.lines.length - 1 ? 'Close the page' : 'Continue';
+    const last = i === ch.lines.length - 1;
+    if (last && need) {
+      const have = Math.min(need.count(S), need.at);
+      nextUp.innerHTML = `<div class="nextup-label">To reach the next chapter</div>
+        <div class="nextup-text">${need.text}</div>
+        <div class="nextup-bar"><span style="width:${Math.round(have / need.at * 100)}%"></span></div>
+        <div class="nextup-count">${have} of ${need.at} so far</div>`;
+      nextUp.classList.add('on');
+      goWhere = need.go;
+      btn.textContent = need.goText + ' →';
+      later.textContent = 'Not right now';
+      later.classList.add('on');
+    } else if (last) {
+      nextUp.innerHTML = '';
+      nextUp.classList.remove('on');
+      goWhere = null;
+      btn.textContent = 'Close the page';
+      later.classList.remove('on');
+    } else {
+      nextUp.innerHTML = '';
+      nextUp.classList.remove('on');
+      later.classList.remove('on');
+      btn.textContent = 'Continue';
+    }
     const text = ch.lines[i];
     if (typing) { clearInterval(typing); typing = null; }
     if (reduce) { lineEl.textContent = text; return; }
@@ -9162,18 +9236,24 @@ function playStory(ch, replay){
   function advance(){
     if (typing) { clearInterval(typing); typing = null; lineEl.textContent = ch.lines[i]; return; }
     if (i < ch.lines.length - 1) { i++; SFX.page(); show(); return; }
-    close();
+    close(goWhere);
   }
-  function close(){
+  function close(dest){
     if (!replay) {
       S.storyDone = S.storyDone || {};
       S.storyDone[ch.id] = true;
       save();
     }
     ov.classList.remove('story-in');
-    setTimeout(() => { ov.remove(); storyBusy = false; if (!replay) { renderHome(); checkStory(); } }, 350);
+    setTimeout(() => {
+      ov.remove();
+      storyBusy = false;
+      if (dest) { go(dest); return; }
+      if (!replay) { renderHome(); checkStory(); }
+    }, 350);
   }
   btn.addEventListener('click', (e) => { e.stopPropagation(); advance(); });
+  later.addEventListener('click', (e) => { e.stopPropagation(); if (typing) { clearInterval(typing); typing = null; } close(); });
   ov.addEventListener('click', advance);
   show();
   SFX.chime();
@@ -9201,11 +9281,28 @@ function renderTale(){
   });
   const total = STORY.length;
   if (readable.length < total) {
-    body.appendChild(el(`<div class="tale-locked">
-      <span class="tale-face">🕯️</span>
-      <span class="row-body"><span class="row-main">${total - readable.length} chapters still unwritten</span>
-      <span class="row-sub">${nextCh ? 'The next one is ready for you.' : 'Keep restoring objects and they will come.'}</span></span>
-    </div>`));
+    const upcoming = STORY.find(c => !done[c.id]);
+    if (nextCh) {
+      const ready = el(`<div class="tale-next tale-ready">
+        <div class="nextup-label">The next chapter is waiting</div>
+        <div class="nextup-text">Go to the campus and it will find you.</div>
+        <button class="btn-primary" id="tale-play">Read it now</button>
+      </div>`);
+      body.appendChild(ready);
+      ready.querySelector('#tale-play').addEventListener('click', () => { renderTale(); playStory(upcoming); });
+    } else if (upcoming && upcoming.need) {
+      const n = upcoming.need;
+      const have = Math.min(n.count(S), n.at);
+      const card = el(`<div class="tale-next">
+        <div class="nextup-label">To reach the next chapter</div>
+        <div class="nextup-text">${n.text}</div>
+        <div class="nextup-bar"><span style="width:${Math.round(have / n.at * 100)}%"></span></div>
+        <div class="nextup-count">${have} of ${n.at} so far</div>
+        <button class="btn-primary" data-go="${n.go}">${n.goText}</button>
+      </div>`);
+      body.appendChild(card);
+    }
+    body.appendChild(el(`<p class="helper-text">${total - readable.length} of ${total} chapters are still unwritten.</p>`));
   }
 }
 
