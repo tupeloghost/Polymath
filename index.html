@@ -7807,7 +7807,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v71 · Sep 7, 2026";
+window.GAME_VERSION = "v72 · Sep 10, 2026";
 
 </script>
 <script>
@@ -8948,24 +8948,35 @@ function qKey(q){
 // this device remembers every card it has shown, per pool; games deal unseen
 // cards first, and a pool only recycles once every card in it has been played
 const SEEN_KEY = 'polymath_seen_v1';
+// belt and braces: the ledger lives in localStorage, but this sitting also keeps its own
+// copy in memory, so a cleared or unwritable ledger can never repeat a card back to back
+const sessionSeen = {};
 function seenLoad(){ try { return JSON.parse(localStorage.getItem(SEEN_KEY)) || {}; } catch(e){ return {}; } }
 function seenSave(st){ try { localStorage.setItem(SEEN_KEY, JSON.stringify(st)); } catch(e){} }
+function seenSet(name){
+  const st = seenLoad();
+  const set = new Set(st[name] || []);
+  (sessionSeen[name] || []).forEach(k => set.add(k));
+  return set;
+}
 function markSeen(name, keys){
   const st = seenLoad();
   const set = new Set(st[name] || []);
   keys.forEach(k => set.add(k));
   st[name] = [...set];
   seenSave(st);
+  const mem = sessionSeen[name] || (sessionSeen[name] = []);
+  keys.forEach(k => { if (mem.indexOf(k) < 0) mem.push(k); });
 }
 function drawFresh(name, pool, n, keyFn){
   const st = seenLoad();
-  const seen = new Set(st[name] || []);
+  const seen = seenSet(name);
   const fresh = shuffle(pool.filter(x => !seen.has(keyFn(x))));
   let picked;
   if (fresh.length >= n) picked = fresh.slice(0, n);
   else {
     picked = fresh.concat(shuffle(pool.filter(x => seen.has(keyFn(x))))).slice(0, n);
-    st[name] = []; // full cycle complete: everything is fresh again
+    st[name] = []; sessionSeen[name] = []; // full cycle complete: everything is fresh again
   }
   const set = new Set(st[name] || []);
   picked.forEach(x => set.add(keyFn(x)));
@@ -8977,9 +8988,9 @@ function drawFresh(name, pool, n, keyFn){
 // pool never-seen-first and mark cards only as they are actually shown
 function orderFresh(name, pool, keyFn){
   const st = seenLoad();
-  const seen = new Set(st[name] || []);
+  const seen = seenSet(name);
   const fresh = shuffle(pool.filter(x => !seen.has(keyFn(x))));
-  if (!fresh.length) { st[name] = []; seenSave(st); return shuffle(pool.slice()); }
+  if (!fresh.length) { st[name] = []; sessionSeen[name] = []; seenSave(st); return shuffle(pool.slice()); }
   return fresh.concat(shuffle(pool.filter(x => seen.has(keyFn(x)))));
 }
 
@@ -10881,7 +10892,7 @@ function renderDuelQuestion(){
   if (duel.sudden) {
     // sudden death sharpens: each extra round draws harder questions
     duel.suddenRound = duel.suddenRound || 1;
-    const hardDeck = duel.hardDeck || (duel.hardDeck = shuffle(QUESTIONS.filter(x => x.t === 2)));
+    const hardDeck = duel.hardDeck || (duel.hardDeck = orderFresh('mq', QUESTIONS.filter(x => x.t === 2), qKey));
     q = duel.suddenRound >= 2 ? hardDeck[duel.asked % hardDeck.length] : duel.deck[duel.asked % duel.deck.length];
   } else {
     q = duel.deck[duel.asked % duel.deck.length];
