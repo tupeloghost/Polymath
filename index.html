@@ -1880,7 +1880,7 @@ body.dt .codex-page { break-inside: avoid; }
       <div class="menu-section section-table">
         <div class="menu-head">The Game Table</div>
         <div class="menu-grid">
-          <button class="menu-card" data-go="daily" title="Ten questions from every wing. Keeps your streak alive.">
+          <button class="menu-card" data-go="daily" title="Ten questions drawn from every subject. Keeps your streak alive.">
             <span class="menu-emblem">&#9788;</span>
             <span class="menu-title">Daily Run</span>
             <span class="menu-badge" id="daily-badge"></span>
@@ -2072,7 +2072,7 @@ body.dt .codex-page { break-inside: avoid; }
       <div class="topbar-title">Your Office</div>
       <div class="topbar-right"></div>
     </div>
-    <p class="helper-text">Your private study. Click around: most things respond.</p>
+    <p class="helper-text">Your private study. Tap anything in the room: almost everything does something.</p>
     <div id="office-room"></div>
   </section>
 
@@ -2155,7 +2155,7 @@ body.dt .codex-page { break-inside: avoid; }
       <div class="topbar-title">The Workshop</div>
       <div class="topbar-right" id="workshop-count"></div>
     </div>
-    <p class="helper-text">Each of these is a real ability. Ten minutes in, you can do something you could not do this morning.</p>
+    <p class="helper-text">Each of these is a real skill. Ten minutes of practice and you can do something you could not do this morning.</p>
     <div id="workshop-list"></div>
   </section>
 
@@ -7807,7 +7807,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v72 · Sep 10, 2026";
+window.GAME_VERSION = "v73 · Sep 11, 2026";
 
 </script>
 <script>
@@ -7917,8 +7917,8 @@ const ACHIEVEMENTS = [
   { id:'a20', icon:'💯', name:'Century',            desc:'100 correct answers', test:s => s.totalRight >= 100 },
   { id:'a21', icon:'📚', name:'Five Hundred Truths',desc:'500 correct answers', test:s => s.totalRight >= 500 },
   { id:'a22', icon:'🏆', name:'The Polymath’s Seal',desc:'Reach the rank of Polymath', test:s => s.totalRight >= 400 },
-  { id:'a23', icon:'📜', name:'First Diploma',      desc:'Pass a wing exam', test:s => Object.keys(s.exams||{}).length >= 1 },
-  { id:'a24', icon:'🎓', name:'Master of All Wings',desc:'Earn every wing’s diploma', test:s => Object.keys(s.exams||{}).length >= Object.keys(DOMAINS).length },
+  { id:'a23', icon:'📜', name:'First Diploma',      desc:'Pass a subject exam', test:s => Object.keys(s.exams||{}).length >= 1 },
+  { id:'a24', icon:'🎓', name:'Master of Every Subject',desc:'Earn every subject’s diploma', test:s => Object.keys(s.exams||{}).length >= Object.keys(DOMAINS).length },
   { id:'a25', icon:'🥾', name:'Into the Field',     desc:'Complete a weekly field quest', test:s => Object.keys(s.questsDone||{}).length >= 1 },
   { id:'a26', icon:'🗣️', name:'The Teacher',        desc:'Teach an idea back in your own words', test:s => (s.journal||[]).some(e => e.mine) },
   { id:'a27', icon:'🕯️', name:'Quiet Day Keeper',   desc:'Save your streak with a token', test:s => !!s.tokenUsed },
@@ -9277,7 +9277,7 @@ function renderTale(){
   $('#tale-count').textContent = `${readable.length} of ${STORY.length} chapters`;
   body.innerHTML = '';
   if (!readable.length) {
-    body.appendChild(el(`<p class="helper-text">Your story has not begun yet. Go to the campus and it will find you.</p>`));
+    body.appendChild(el(`<p class="helper-text">Your story has not begun yet. Answer a few questions and the first chapter will come to you.</p>`));
     return;
   }
   readable.forEach((ch, n) => {
@@ -9678,7 +9678,7 @@ function renderHome(){
     exm.style.display = '';
     exm.innerHTML = `<div class="iod-label">A visitor waits by the door</div>
       <div class="mystery-title">🎩 The Examiner</div>
-      <div class="iod-hint">Twenty questions, every wing, once a month. Pass 16 and earn this month's medal.</div>`;
+      <div class="iod-hint">Twenty questions from every subject, once a month. Get 16 right and earn this month’s medal.</div>`;
     exm.onclick = () => startExaminer(mKey);
   } else { exm.style.display = 'none'; exm.onclick = null; }
 
@@ -10021,7 +10021,7 @@ function renderExpedition(){
       <h2 class="lesson-title">The Path Forks</h2>
       <p class="lesson-text">The steady road asks an ordinary question. The dark road asks a hard one, and pays double.</p>
       <button class="btn-primary" id="fork-safe">Steady road: ${DOMAINS[d1].emblem} ${DOMAINS[d1].name} (+6 loot)</button>
-      <button class="btn-secondary" id="fork-risky">Dark road: ${DOMAINS[d2].emblem} ${DOMAINS[d2].name}, advanced (+14 loot)</button>
+      <button class="btn-secondary" id="fork-risky">Dark road: ${DOMAINS[d2].emblem} Advanced ${DOMAINS[d2].name} (+14 loot)</button>
     </div>`));
     const walk = (d, adv, reward) => {
       const q = pickQ(d, adv);
@@ -10119,7 +10119,7 @@ function endExpedition(survived){
 function renderParlor(){
   const body = $('#parlor-body');
   body.innerHTML = `
-    <p class="helper-text">Games for two or more people sharing one device. No solo progress needed, and none is touched.</p>
+    <p class="helper-text">Games for two or more people sharing one device. Nothing here changes your own progress.</p>
     <div class="bridge-list">
       <button class="bridge-item" id="parlor-duel">
         <span class="bridge-domains">⚔ Head to head</span>
@@ -10318,7 +10318,7 @@ function renderTeachTest(){
 let trip = null;
 function renderTrips(){
   const body = $('#trips-body');
-  body.innerHTML = '<p class="helper-text">Step into a moment of history. Your choices decide how it goes. Wisdom ✨ earns lumens.</p>';
+  body.innerHTML = '<p class="helper-text">Step into a moment in history. Your choices decide how it goes, and choosing well earns lumens.</p>';
   const list = el(`<div class="bridge-list"></div>`);
   TRIPS.forEach(t => {
     const best = (S.tripsDone || {})[t.id];
@@ -11103,7 +11103,7 @@ function renderWheel(){
   const seg = 360 / n;
   const colors = keys.map((k, i) => `${DOMAINS[k].color} ${i * seg}deg ${(i + 1) * seg}deg`).join(', ');
   body.innerHTML = `
-    <p class="helper-text">Spin. Fate picks your wing, then you run ten of its questions.</p>
+    <p class="helper-text">Spin the wheel and it picks a subject for you. Then you answer ten questions from it.</p>
     <div class="wheel-wrap">
       <div class="wheel-pointer">▼</div>
       <div class="wheel" id="the-wheel" style="background: conic-gradient(${colors})">
@@ -11356,12 +11356,12 @@ function startDetention(){
   toast(`🪑 ${qs.length} missed question${qs.length === 1 ? '' : 's'} await. Answer right to walk free.`);
   renderDailyQuestion();
 }
-// the subjects hub: every wing as a big card, tap to learn just that
+// the subjects hub: every subject as a big card, tap to learn just that
 function renderSubjects(){
   const grid = $('#subjects-grid');
   grid.innerHTML = '';
   const dks = Object.keys(DOMAINS);
-  $('#subjects-count').textContent = dks.length + ' wings';
+  $('#subjects-count').textContent = dks.length + ' subjects';
   dks.forEach(dk => {
     const dom = DOMAINS[dk];
     const st = S.domainStats[dk] || { right: 0, wrong: 0 };
@@ -11526,7 +11526,7 @@ function finishDaily(){
       ${daily.detention
         ? `<button class="btn-primary" data-go="home">Back to campus</button>`
         : daily.focus
-        ? `<button class="btn-primary" id="focus-again">Run this wing again</button>
+        ? `<button class="btn-primary" id="focus-again">Ten more from this subject</button>
            <button class="btn-secondary" data-go="cabinet">Back to campus</button>`
         : `<input class="duel-name" id="ch-name" maxlength="14" placeholder="Your name" value="${(() => { try { return (localStorage.getItem('polymath_name') || '').replace(/"/g,''); } catch(e){ return ''; } })()}">
            <button class="btn-secondary" id="ch-send">📨 Challenge someone to these questions</button>
@@ -11568,7 +11568,7 @@ function renderCabinet(){
       <div class="shelf-label" style="color:${dom.color}">${dom.emblem} ${dom.name}<span class="shelf-stars">${starStr(dk)}</span>${hasDiploma ? ' <span class="diploma-seal" title="Diploma earned">🏵️</span>' : ''}<span class="spines">${spines}</span></div>
       <div class="shelf-actions">
         <button class="shelf-btn" data-focus="${dk}">✏️ Quiz me: 10 questions</button>
-        ${examReady ? `<button class="shelf-btn shelf-btn-exam" data-exam="${dk}">📜 Take the wing exam</button>` : ''}
+        ${examReady ? `<button class="shelf-btn shelf-btn-exam" data-exam="${dk}">📜 Take the subject exam</button>` : ''}
         ${!examReady && !hasDiploma ? `<span class="shelf-hint">3★ unlocks the exam</span>` : ''}
       </div>
       <div class="shelf-drawers"></div>
@@ -11680,7 +11680,7 @@ function finishExam(){
         <div class="result-title">${passed ? 'The Examiner Bows' : 'The Examiner Tips His Hat'}</div>
         <div class="result-score">${passed ? '🎖️' : exam.right + ' / 20'}</div>
         <div class="result-verdict">${passed
-          ? `"${exam.right} of twenty, across every wing. It is rare that I bow. This month's medal is yours."`
+          ? `"${exam.right} of twenty, across every subject. It is rare that I bow. This month's medal is yours."`
           : '"Sixteen of twenty earns the medal. I return every month. Study broadly; I ask about everything."'}</div>
         ${earned ? `<div class="result-earn">+${earned} lumens</div>` : ''}
         <button class="btn-primary" data-go="home">Back to campus</button>
@@ -11702,8 +11702,8 @@ function finishExam(){
       <div class="result-title">${passed ? 'Diploma Earned' : 'Not This Time'}</div>
       <div class="result-score">${passed ? '🏵️' : exam.right + ' / 12'}</div>
       <div class="result-verdict">${passed
-        ? `The ${DOMAINS[exam.d].name} wing bears your seal now. It stays on the shelf forever.`
-        : 'You need 10 of 12. A few more daily runs in this wing and the seal is yours.'}</div>
+        ? `Your ${DOMAINS[exam.d].name} diploma is sealed. It stays on the shelf forever.`
+        : 'You need 10 of 12. A few more runs in this subject and the seal is yours.'}</div>
       ${earned ? `<div class="result-earn">+${earned} lumens</div>` : ''}
       <button class="btn-primary" data-go="cabinet">Back to campus</button>
     </div>`;
