@@ -1819,6 +1819,25 @@ body.dt .codex-page { break-inside: avoid; }
 .tale-next .btn-primary { margin-top: 12px; width: 100%; }
 .tale-ready { border-style: solid; border-color: rgba(255,205,110,.75); box-shadow: 0 0 18px rgba(255,190,90,.2); }
 
+/* ---------- v74: the Expedition as a push-your-luck road ---------- */
+.exp-choice { text-align: center; }
+.exp-pack { margin-bottom: 10px; }
+.exp-pack-num {
+  font-family: var(--display); font-size: 46px; line-height: 1; color: #8a5a14;
+  font-variant-numeric: tabular-nums;
+}
+.exp-pack-label {
+  font-family: var(--serif); font-size: 13px; letter-spacing: .14em;
+  text-transform: uppercase; color: #6b5638;
+}
+.exp-warn {
+  font-family: var(--serif); font-style: italic; font-size: 16px; line-height: 1.5;
+  color: #7a3a1e; background: rgba(138,58,46,.09);
+  border-left: 3px solid rgba(138,58,46,.45); border-radius: 8px;
+  padding: 9px 13px; margin: 12px auto 16px; max-width: 40em; text-align: left;
+}
+.exp-choice .btn-primary, .exp-choice .btn-secondary { width: 100%; margin-top: 8px; }
+
 </style>
 </head>
 <body>
@@ -1885,7 +1904,7 @@ body.dt .codex-page { break-inside: avoid; }
             <span class="menu-title">Daily Run</span>
             <span class="menu-badge" id="daily-badge"></span>
           </button>
-          <button class="menu-card" data-go="expedition" title="Three hearts, forked paths, treasure, and a Guardian.">
+          <button class="menu-card" data-go="expedition" title="Walk as far down the road as you dare. Turn back to keep your loot, or lose it all.">
             <span class="menu-emblem">&#128506;</span>
             <span class="menu-title">Expedition</span>
             <span class="menu-badge" id="expedition-badge"></span>
@@ -7807,7 +7826,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v73 · Sep 11, 2026";
+window.GAME_VERSION = "v74 · Sep 11, 2026";
 
 </script>
 <script>
@@ -9965,21 +9984,51 @@ function pickQ(domain, advanced){
   markSeen('mq', [qKey(q)]);
   return q;
 }
+// The Expedition is a push-your-luck journey: the further you walk, the more each
+// stop pays and the harder it asks. Turn back and the loot is yours. Lose your
+// hearts and you walk home with nothing.
+function expReward(depth){ return 6 + depth * 3; }
+function expIsDeep(depth){ return depth >= 6; }
+function expBuildStop(depth, kid){
+  const roll = Math.random();
+  if (depth > 0 && depth % 4 === 3) return { type:'treasure' };
+  if (depth > 0 && depth % 7 === 5) return { type:'heart' };
+  if (roll < 0.18 && depth > 1) return { type:'fork' };
+  const d = kid ? KID_DOMAINS[Math.floor(Math.random() * KID_DOMAINS.length)] : randDomain();
+  return { type:'q', d };
+}
 function startExpedition(coopNames, kid){
-  const route = [
-    { type:'q' }, { type:'q' }, { type:'fork' }, { type:'treasure' },
-    { type:'q' }, { type:'q' }, { type:'heart' }, { type:'fork' },
-    { type:'q' }, { type:'treasure' }, { type:'q' }, { type:'boss', left:3 }
-  ];
-  route.forEach(s => { if (s.type === 'q') s.d = randDomain(); });
-  exp = { route, i: 0, hearts: 3, loot: 0, coop: coopNames || null, turn: 0, kid: !!kid };
-  if (exp.kid) exp.route.forEach(s => { if (s.type === 'q') s.d = KID_DOMAINS[Math.floor(Math.random() * KID_DOMAINS.length)]; });
+  exp = { route: [], i: 0, hearts: 3, loot: 0, banked: 0, coop: coopNames || null, turn: 0, kid: !!kid, choosing: false };
+  exp.route.push(expBuildStop(0, exp.kid));
   if (exp.coop) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     $('#screen-expedition').classList.add('active');
     window.scrollTo(0,0);
   }
   renderExpedition();
+}
+function renderExpChoice(){
+  const body = $('#expedition-body');
+  const nextPay = expReward(exp.i);
+  const deepNext = expIsDeep(exp.i);
+  const far = exp.i;
+  body.innerHTML = '';
+  expTurnBanner(body);
+  body.appendChild(el(`<div class="lesson-card exp-choice">
+    <div class="exp-pack">
+      <div class="exp-pack-num">${exp.loot}</div>
+      <div class="exp-pack-label">loot in your pack</div>
+    </div>
+    <p class="lesson-text">You are ${far} stop${far === 1 ? '' : 's'} down the road with ${'♥'.repeat(Math.max(0, exp.hearts))} left.
+      The next stop pays <b>${nextPay} loot</b>${deepNext ? ' and asks a hard question' : ''}.</p>
+    <p class="exp-warn">${exp.loot > 0
+      ? `Turn back now and those ${exp.loot} loot are yours for certain. Lose your last heart out there and the pack goes with it.`
+      : 'Your pack is empty, so there is nothing to lose yet. One right answer changes that.'}</p>
+    <button class="btn-primary" id="exp-on">Press on for ${nextPay} loot</button>
+    <button class="btn-secondary" id="exp-back">${exp.loot > 0 ? `Turn back and keep ${exp.loot}` : 'Head home empty-handed'}</button>
+  </div>`));
+  $('#exp-on').addEventListener('click', () => { exp.choosing = false; SFX.page(); renderExpedition(); });
+  $('#exp-back').addEventListener('click', () => { exp.banked = exp.loot; endExpedition(true); });
 }
 function expTurnBanner(body){
   if (!exp.coop) return;
@@ -9998,19 +10047,25 @@ function renderExpedition(){
   const body = $('#expedition-body');
   body.innerHTML = '';
   if (exp.hearts <= 0) { endExpedition(false); return; }
+  if (exp.choosing) { renderExpChoice(); return; }
+  while (exp.route.length <= exp.i) exp.route.push(expBuildStop(exp.route.length, exp.kid));
   if (exp.i >= exp.route.length) { endExpedition(true); return; }
   const stop = exp.route[exp.i];
 
   if (stop.type === 'q') {
-    const q = pickQ(stop.d, false);
+    const deep = expIsDeep(exp.i);
+    const q = pickQ(stop.d, deep);
+    const pay = expReward(exp.i);
     expTurnBanner(body);
     body.appendChild(questionCard({
       domain: q.d, q: q.q, a: q.a, c: q.c, why: q.why, wow: !!q.w, more: q.more, noRecord: !!exp.coop,
+      tag: deep ? 'deep road' : '',
       onDone(right){
-        if (right) { exp.loot += 6; toast('+6 loot'); }
+        if (right) { exp.loot += pay; toast('+' + pay + ' loot in your pack'); }
         else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
         exp.i++;
         expPassTurn();
+        exp.choosing = exp.hearts > 0;
         renderExpedition();
       }
     }));
@@ -10035,6 +10090,7 @@ function renderExpedition(){
           else { exp.hearts--; SFX.wrong(); toast('A heart cracks.'); }
           exp.i++;
           expPassTurn();
+          exp.choosing = exp.hearts > 0;
           renderExpedition();
         }
       }));
@@ -10050,7 +10106,7 @@ function renderExpedition(){
       <p class="lesson-text">You find ${found} loot tucked away by an earlier traveler.</p>
       <button class="btn-primary" id="exp-next">Walk on</button>
     </div>`));
-    $('#exp-next').addEventListener('click', () => { exp.i++; renderExpedition(); });
+    $('#exp-next').addEventListener('click', () => { exp.i++; exp.choosing = exp.hearts > 0; renderExpedition(); });
   } else if (stop.type === 'heart') {
     const healed = exp.hearts < 3;
     if (healed) exp.hearts++;
@@ -10061,7 +10117,7 @@ function renderExpedition(){
       <button class="btn-primary" id="exp-next">Walk on</button>
     </div>`));
     if (!healed) exp.loot += 10;
-    $('#exp-next').addEventListener('click', () => { exp.i++; renderExpedition(); });
+    $('#exp-next').addEventListener('click', () => { exp.i++; exp.choosing = exp.hearts > 0; renderExpedition(); });
   } else if (stop.type === 'boss') {
     if (stop.left === 3) {
       body.appendChild(el(`<div class="lesson-card" style="text-align:center">
@@ -10084,6 +10140,7 @@ function renderExpedition(){
         stop.left = Math.ceil(stop.left) - 1;
         if (stop.left <= 0) exp.i++;
         expPassTurn();
+        exp.choosing = exp.hearts > 0;
         renderExpedition();
       }
     }));
@@ -10091,7 +10148,7 @@ function renderExpedition(){
 }
 function endExpedition(survived){
   const body = $('#expedition-body');
-  const keep = survived ? exp.loot + 25 : Math.floor(exp.loot / 2);
+  const keep = survived ? exp.loot : 0;
   const isBest = !exp.coop && keep > S.expeditionBest;
   if (isBest) S.expeditionBest = keep;
   const earned = awardLumens(keep);
@@ -10099,11 +10156,11 @@ function endExpedition(survived){
   const names = exp.coop ? (exp.coop.length === 2 ? `${exp.coop[0]} and ${exp.coop[1]}` : exp.coop.slice(0, -1).join(', ') + ', and ' + exp.coop[exp.coop.length - 1]) : 'You';
   body.innerHTML = `
     <div class="result-card">
-      <div class="result-title">${survived ? 'The Road Home' : 'Carried Back on a Cart'}</div>
+      <div class="result-title">${survived ? 'Home With the Loot' : 'Home With Nothing'}</div>
       <div class="result-score">${survived ? '🏕️' : '💔'}</div>
       <div class="result-verdict">${survived
-        ? `${names} walked the whole road, faced the Guardian, and came home heavier with loot and lighter with knowing.`
-        : `The hearts gave out on the road. Half the loot made it home with ${exp.coop ? 'you both' : 'you'}. The road will be there tomorrow.`}</div>
+        ? `${names} turned back at stop ${exp.i} and carried ${keep} loot home. Knowing when to stop is most of this game.`
+        : `The last heart gave out ${exp.i} stop${exp.i === 1 ? '' : 's'} down the road, and the pack was lost with it. Next time, turn back sooner.`}</div>
       ${isBest ? '<div class="result-earn">New best expedition!</div>' : ''}
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" id="exp-again">Set out again</button>
