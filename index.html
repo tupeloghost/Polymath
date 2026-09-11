@@ -1838,6 +1838,32 @@ body.dt .codex-page { break-inside: avoid; }
 }
 .exp-choice .btn-primary, .exp-choice .btn-secondary { width: 100%; margin-top: 8px; }
 
+/* loot you can spend on the road */
+.exp-spend {
+  margin-top: 16px; padding-top: 12px;
+  border-top: 1px dashed rgba(138,90,20,.35);
+}
+.exp-spend-head {
+  font-family: var(--serif); font-size: 12px; letter-spacing: .14em;
+  text-transform: uppercase; color: #6b5638; margin-bottom: 8px;
+}
+.exp-buy {
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  width: 100%; margin-bottom: 7px; padding: 10px 13px; cursor: pointer;
+  font-family: var(--serif); font-size: 16px; color: #46320e;
+  background: rgba(201,162,74,.14); border: 1px solid rgba(138,90,20,.4); border-radius: 10px;
+}
+.exp-buy:hover:not(:disabled) { background: rgba(201,162,74,.26); border-color: rgba(138,90,20,.7); }
+.exp-buy:disabled { opacity: .4; cursor: default; }
+.exp-cost {
+  font-variant-numeric: tabular-nums; font-size: 14.5px; color: #8a5a14; white-space: nowrap;
+}
+.exp-scouted {
+  font-family: var(--serif); font-size: 16.5px; color: #46320e;
+  background: rgba(122,150,90,.16); border: 1px solid rgba(90,120,60,.4);
+  border-radius: 10px; padding: 9px 13px; margin-bottom: 12px;
+}
+
 </style>
 </head>
 <body>
@@ -7826,7 +7852,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v74 · Sep 11, 2026";
+window.GAME_VERSION = "v75 · Sep 11, 2026";
 
 </script>
 <script>
@@ -10007,11 +10033,22 @@ function startExpedition(coopNames, kid){
   }
   renderExpedition();
 }
+const MEND_COST = 25, SCOUT_COST = 8;
+function expStopName(stop){
+  if (stop.type === 'treasure') return 'a cache of loot, no question asked';
+  if (stop.type === 'heart') return 'a spring where you can rest';
+  if (stop.type === 'fork') return 'a fork in the road, your choice of two';
+  return 'a ' + DOMAINS[stop.d || 'astronomy'].name + ' question';
+}
 function renderExpChoice(){
   const body = $('#expedition-body');
   const nextPay = expReward(exp.i);
   const deepNext = expIsDeep(exp.i);
   const far = exp.i;
+  while (exp.route.length <= exp.i) exp.route.push(expBuildStop(exp.route.length, exp.kid));
+  const scoutLine = exp.scouted
+    ? `<div class="exp-scouted">\uD83D\uDD26 Ahead of you: ${expStopName(exp.route[exp.i])}.</div>`
+    : '';
   body.innerHTML = '';
   expTurnBanner(body);
   body.appendChild(el(`<div class="lesson-card exp-choice">
@@ -10022,13 +10059,32 @@ function renderExpChoice(){
     <p class="lesson-text">You are ${far} stop${far === 1 ? '' : 's'} down the road with ${'♥'.repeat(Math.max(0, exp.hearts))} left.
       The next stop pays <b>${nextPay} loot</b>${deepNext ? ' and asks a hard question' : ''}.</p>
     <p class="exp-warn">${exp.loot > 0
-      ? `Turn back now and those ${exp.loot} loot are yours for certain. Lose your last heart out there and the pack goes with it.`
+      ? `Turn back now and those ${exp.loot} loot become ${exp.loot} lumens, yours for certain. Lose your last heart out there and the pack goes with it.`
       : 'Your pack is empty, so there is nothing to lose yet. One right answer changes that.'}</p>
+    ${scoutLine}
     <button class="btn-primary" id="exp-on">Press on for ${nextPay} loot</button>
     <button class="btn-secondary" id="exp-back">${exp.loot > 0 ? `Turn back and keep ${exp.loot}` : 'Head home empty-handed'}</button>
+    <div class="exp-spend">
+      <div class="exp-spend-head">Spend from your pack</div>
+      <button class="exp-buy" id="exp-mend" ${exp.hearts >= 3 || exp.loot < MEND_COST ? 'disabled' : ''}>
+        <span>\u2665 Mend a heart</span><span class="exp-cost">${MEND_COST} loot</span></button>
+      <button class="exp-buy" id="exp-scout" ${exp.scouted || exp.loot < SCOUT_COST ? 'disabled' : ''}>
+        <span>\uD83D\uDD26 Scout the next stop</span><span class="exp-cost">${SCOUT_COST} loot</span></button>
+    </div>
   </div>`));
-  $('#exp-on').addEventListener('click', () => { exp.choosing = false; SFX.page(); renderExpedition(); });
+  $('#exp-on').addEventListener('click', () => { exp.choosing = false; exp.scouted = false; SFX.page(); renderExpedition(); });
   $('#exp-back').addEventListener('click', () => { exp.banked = exp.loot; endExpedition(true); });
+  const mend = $('#exp-mend');
+  if (mend && !mend.disabled) mend.addEventListener('click', () => {
+    exp.loot -= MEND_COST; exp.hearts++; SFX.reward();
+    toast('\u2665 A heart mends. ' + MEND_COST + ' loot spent.');
+    renderExpedition();
+  });
+  const scout = $('#exp-scout');
+  if (scout && !scout.disabled) scout.addEventListener('click', () => {
+    exp.loot -= SCOUT_COST; exp.scouted = true; SFX.page();
+    renderExpedition();
+  });
 }
 function expTurnBanner(body){
   if (!exp.coop) return;
@@ -10042,7 +10098,7 @@ function expIcon(stop, idx){
   return `<span class="map-stop ${cur ? 'map-cur' : ''} ${done ? 'map-done' : ''}">${icon}</span>`;
 }
 function renderExpedition(){
-  $('#expedition-status').textContent = `${'♥'.repeat(exp.hearts)}${'·'.repeat(3 - exp.hearts)}  ✦${exp.loot}`;
+  $('#expedition-status').textContent = `${'♥'.repeat(exp.hearts)}${'·'.repeat(3 - exp.hearts)}  \uD83C\uDF92 ${exp.loot} loot`;
   $('#expedition-map').innerHTML = exp.route.map((s, i) => expIcon(s, i)).join('<span class="map-path">—</span>');
   const body = $('#expedition-body');
   body.innerHTML = '';
@@ -10159,7 +10215,7 @@ function endExpedition(survived){
       <div class="result-title">${survived ? 'Home With the Loot' : 'Home With Nothing'}</div>
       <div class="result-score">${survived ? '🏕️' : '💔'}</div>
       <div class="result-verdict">${survived
-        ? `${names} turned back at stop ${exp.i} and carried ${keep} loot home. Knowing when to stop is most of this game.`
+        ? `${names} turned back at stop ${exp.i} and carried ${keep} loot home. Loot becomes lumens once you are through the door. Knowing when to stop is most of this game.`
         : `The last heart gave out ${exp.i} stop${exp.i === 1 ? '' : 's'} down the road, and the pack was lost with it. Next time, turn back sooner.`}</div>
       ${isBest ? '<div class="result-earn">New best expedition!</div>' : ''}
       <div class="result-earn">+${earned} lumens</div>
