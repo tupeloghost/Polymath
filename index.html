@@ -4034,14 +4034,14 @@ const CURIO_ID = {
 <script>
 // Alma's notes, one tucked inside each wrapped object.
 const CURIO_NOTE = {
-  c1: 'No. 1. Sailors who could not read a single word used this to find their way home in the dark. Knowing things and going to school are not the same thing.',
-  c2: 'No. 2. This iron is older than every mountain on Earth. It was floating in space before our planet finished forming. The rocks in a schoolyard have long histories too, and nobody made them for a test.',
+  c1: 'No. 1. Sailors who could not read a single word used this to find their way home in the dark. Some of the sharpest people alive learned everything by hand and by sky.',
+  c2: 'No. 2. This iron is older than every mountain on Earth. It was floating in space before our planet finished forming. Pick up any rock and you are holding a long story.',
   c3: 'No. 3. He did not invent anything clever. He looked at the same sky everyone else could see, four nights in a row, and wrote down what moved. Careful watching is the whole trick.',
   c4: 'No. 4. Nobody designed this spiral. The animal grew by one simple rule at every size, which is why a seashell and a staircase can share a shape. Math was here long before people were.',
   c5: 'No. 5. Fifty wingbeats a second, and it remembers every flower it has already visited. Small does not mean simple. People forget that about birds, and they forget it about children.',
   c6: 'No. 6. He could have written pages of argument. Instead he drew the beaks side by side, and you can see the difference in one second. A good drawing is science and art at the same time.',
   c7: 'No. 7. The empire carved grand words into marble, but this little coin paid a soldier and bought bread. Ordinary money tells us more about how people really lived than any monument does.',
-  c8: 'No. 8. The first writing was not a poem. It was an accountant counting sacks of barley. Ordinary work invented writing, and school almost never mentions it.',
+  c8: 'No. 8. The first writing anyone made was an accountant counting sacks of barley. Ordinary work invented the alphabet, which I find wonderful.',
   c9: 'No. 9. It is a boring government notice, written out in three languages. That boring notice is the only reason we can read ancient Egyptian today. Dull work saves things.',
   c10: 'No. 10. Boys ground this blue by hand for famous painters who got all the credit. The stone traveled about 4,000 miles from Afghanistan first. Somebody carried it that whole way, and nobody wrote down their name.',
   c11: 'No. 11. This print cost about as much as a bowl of noodles. It was made by the thousand for people with no money, and it became the most famous picture in the world.',
@@ -4059,7 +4059,7 @@ const CURIO_NOTE = {
   c23: 'No. 23. Everyone remembers that a prism splits white light into a rainbow. Newton also pushed the rainbow back together into white light, and that second half is the real proof. Taking things apart is the easy part.',
   c24: 'No. 24. It keeps swinging the same way while the floor turns underneath it. In one afternoon you can watch the Earth spin with your own eyes, and nobody has to give you permission.',
   c25: 'No. 25. There is nothing in the ink. Whatever you see there, you brought with you. That is a useful thing to know before you decide you are certain about anything.',
-  c26: 'No. 26. One flower bulb sold for the price of a house on a canal, and weeks later it was worth almost nothing. People are not calm about money, and no school of mine will pretend they are.',
+  c26: 'No. 26. One flower bulb sold for the price of a house on a canal, and weeks later it was worth almost nothing. People get swept up about money, and it is worth knowing how that feels.',
   c27: 'No. 27. Two actors collected Shakespeare’s plays after he died, and about 18 of them existed nowhere else. Half his work survives because two working men bothered to save it.',
   c28: 'No. 28. She stayed alive by stopping every story in the middle, 1,001 nights in a row. Never underrate a person who knows how to hold a room.',
   c29: 'No. 29. Press the lever, get a treat sometimes but not every time, and press forever. That pattern runs slot machines and most of the apps on a phone. Learn it and you can see it working on you.',
@@ -4074,13 +4074,13 @@ const CURIO_NOTE = {
   c38: 'No. 38. A doctor in 1816 was too shy to press his ear on a patient’s chest, so he rolled paper into a tube and listened through that. Feeling awkward invented one of the best tools in medicine.',
   c39: 'No. 39. One letter worn smooth by somebody who was paid by the page. Typists were called unskilled workers. They were fast and exact, and whole offices ran on them.',
   c40: 'No. 40. The printers, not the poet, picked the spellings as they set the type. About 1,000 words you use every day were locked into shape by working men at a press.',
-  c41: 'No. 41. Merchants who never sat in a classroom ran huge trade routes on these beads. A practiced hand still beats a calculator at everyday sums. Skill and schooling are not the same thing.',
+  c41: 'No. 41. Merchants ran enormous trade routes on these beads. A practiced hand still beats a calculator at everyday sums, which is a lovely thing to watch.',
   c42: 'No. 42. Franklin tracked one habit a week in a little book, and he wrote down the days he failed too. That is my whole method. Keep an honest record and it will tell you the truth.'
 };
 
 </script>
 <script>
-// The Last Curator: one story told across the whole game.
+// The Lamp: one story told across the whole castle.
 // Each chapter waits for its moment, arrives once, and is kept in The Tale So Far.
 // when(S) decides when a chapter is ready. Chapters always arrive in order.
 const STORY = [
@@ -4089,124 +4089,123 @@ const STORY = [
     speaker: 'A letter, unsigned', face: '📜',
     when: () => true,
     lines: [
-      'The envelope was waiting under your door, and it has your name on it in careful old handwriting.',
-      '"You do not know me. I am leaving you a cabinet, an owl, and a collection that is not where it should be. All three are older than they look, and all three have been badly treated."',
-      '"The cabinet is empty. That was my doing, and I am sorry. Fill it and you will understand why I had to take it apart."',
-      '"There is no money in this. There is only everything I knew. Start with one question, and do not let anyone tell you which questions are worth asking."',
+      'The envelope was under your door this morning. Your name is on it in careful old handwriting.',
+      '"You have been noticed. You ask more questions than is strictly normal, and somebody here keeps a list."',
+      '"There is a castle, and a lamp, and forty-two objects that belong in it. The objects are scattered across the world at present. That part was my doing."',
+      '"Come and find them. Work out what each one is. When the shelves are full, a drawer will open that has been shut for a very long time."',
       'It is signed with a single letter: A.'
     ]
   },
   {
-    id: 's2', title: 'The Owl Explains',
-    speaker: 'The Curator', face: '🦉',
+    id: 's2', title: 'Wick, Delighted',
+    speaker: 'Wick', face: '🪔',
     when: (S) => S.totalRight >= 5,
-    need: { text: 'Answer 5 questions right', go: 'daily', goText: 'Start today’s run', at: 5, count: (S) => S.totalRight },
+    need: { text: 'Answer 5 questions right', go: 'daily', goText: 'Tonight’s challenge', at: 5, count: (S) => S.totalRight },
     lines: [
-      'The owl watches you from the top of the empty cabinet, and finally speaks.',
-      '"Her name was Alma. She made this place, she filled that cabinet with forty-two objects, and then one night she wrapped every one of them up and sent them away."',
-      '"People assumed she had lost her mind. I was here. She was the sharpest person in the building."',
-      '"Buy back what you can. Work out what each object is. And read what she tucked inside the wrappings, because she did not do any of this by accident."'
+      'A man is sitting on the empty shelves, swinging his boots, holding a lamp that is far older than he looks.',
+      '"Wick. I carry the lamp, I know the way around, and I have been to most of the centuries you are about to read about."',
+      '"Her name was Alma. She kept this castle before you, filled that cabinet with forty-two objects, and then one night she wrapped every one of them up and sent them out into the world."',
+      '"Everyone assumed she had lost her mind. I was here. She was laughing."'
     ]
   },
   {
     id: 's3', title: 'Her Handwriting',
-    speaker: 'The Curator', face: '🦉',
+    speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 1,
-    need: { text: 'Identify your first object', go: 'collection', goText: 'Open the Cabinet', at: 1, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Identify your first object', go: 'collection', goText: 'Open the Vault', at: 1, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'The first object sits on the shelf, cleaned and named, and there is a slip of paper that came out of the wrapping.',
-      'The owl reads over your shoulder without asking.',
-      '"That is her hand, all right. She numbered them. Forty-two notes, and you have got one."',
-      '"She did not care about owning nice things. She cared about what each one proved."'
+      'The first object is on the shelf, cleaned and named. A slip of paper came out of the wrapping with it.',
+      'Wick reads over your shoulder without asking.',
+      '"That is her hand. She numbered them. Forty-two notes, and you have one."',
+      '"She never cared about owning beautiful things. She cared about what each one proved."'
     ]
   },
   {
-    id: 's4', title: 'The Raven Has a Version',
+    id: 's4', title: 'The Raven Has a Theory',
     speaker: 'The Raven', face: '🐦‍⬛',
     when: (S) => Object.keys(S.restored || {}).length >= 4,
-    need: { text: 'Restore 4 objects', go: 'collection', goText: 'Open the Cabinet', at: 4, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Bring back 4 objects', go: 'collection', goText: 'Open the Vault', at: 4, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'The raven drops onto the windowsill, uninvited, the way he does everything.',
-      '"Caw. The owl is telling you the sweet version. Ask him who came to the door that night."',
-      '"They did not just shut this place down. They came for the collection. Said it was disorderly. Said children should be taught useful things in a useful order."',
-      '"She emptied the cabinet before they could empty it for her. That is not madness. That is a woman winning."'
+      'The raven lands on the windowsill, uninvited, the way he does everything.',
+      '"Caw. Wick is telling it sweetly. Ask him what she said the night she packed the last crate."',
+      '"She said a thing that is handed to you is a decoration. She said a thing you work out is yours forever."',
+      '"Then she posted her entire life across five continents, and went to bed very pleased with herself."'
     ]
   },
   {
     id: 's5', title: 'What the Notes Are Doing',
-    speaker: 'The Curator', face: '🦉',
+    speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 9,
-    need: { text: 'Restore 9 objects', go: 'collection', goText: 'Open the Cabinet', at: 9, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Bring back 9 objects', go: 'collection', goText: 'Open the Vault', at: 9, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'You lay the notes side by side on the desk. They are not a diary. They are an argument.',
-      '"She wrote one for every object," the owl says. "Not what it is. What it proves."',
-      '"A clay tablet proves that the first writing was a receipt for barley, not a poem. A pigment proves that people crossed continents for a color."',
-      '"Put together, they say something the inspectors could not stand to hear. Keep going. You are about a fifth of the way to reading it."'
+      'You lay the notes side by side on the desk. They are not a diary. They are a map of everything she loved.',
+      '"One note for every object," Wick says. "Never what it is. Always what it proves."',
+      '"A clay tablet proves the first writing was a receipt for barley. A pinch of blue pigment proves somebody walked four thousand miles for a color."',
+      '"Keep going. You are about a fifth of the way to reading the whole argument."'
     ]
   },
   {
-    id: 's6', title: 'The Inspector Returns',
-    speaker: 'The Examiner', face: '🎩',
+    id: 's6', title: 'Somebody Else Is Looking',
+    speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 16,
-    need: { text: 'Restore 16 objects', go: 'collection', goText: 'Open the Cabinet', at: 16, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Bring back 16 objects', go: 'collection', goText: 'Open the Vault', at: 16, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'A man in a good coat is standing in the hall, holding a clipboard he does not need.',
-      '"I am told the collection is being put back together. I inspected this place the first time."',
-      '"You should know that nothing here was ever on any syllabus. No exams, no order, no proper sequence of learning. Just a woman handing children objects and asking what they noticed."',
-      'He looks at your shelves a little too long before he leaves.',
-      '"She used to say the same thing to me every visit. I have never quite got it out of my head."'
+      'Wick comes in holding an auction catalogue, which he puts down very carefully.',
+      '"Two of the objects on your list sold last month. Somebody is buying them back, same as you."',
+      'He is grinning, which is not the reaction you expected.',
+      '"Good. That means the letters went out to more than one door. Alma always did play a long game."'
     ]
   },
   {
-    id: 's7', title: 'What She Was Actually Collecting',
-    speaker: 'The Curator', face: '🦉',
+    id: 's7', title: 'Why She Scattered Them',
+    speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 26,
-    need: { text: 'Restore 26 objects', go: 'collection', goText: 'Open the Cabinet', at: 26, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Bring back 26 objects', go: 'collection', goText: 'Open the Vault', at: 26, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'More than half the shelves are full. The owl is quiet for a long time before he says it.',
-      '"She was not collecting objects. Any rich fool can collect objects."',
-      '"Every single thing in that cabinet was made by an ordinary person who was told the subject was not theirs. A clerk. A weaver. A boy grinding paint in someone else’s workshop."',
-      '"She was collecting proof. Proof that useful things and beautiful things were never really separate, and that nobody is born bad at a subject."',
-      '"That is why they wanted it broken up. It is a hard thing to argue with a shelf."'
+      'More than half the shelves are full. Wick is quiet for a while before he says it.',
+      '"She was never collecting objects. Anyone with money can collect objects."',
+      '"Every single thing in that cabinet was made by somebody ordinary. A clerk. A weaver. A boy grinding paint in a workshop that belonged to a famous man."',
+      '"She was collecting proof that the useful and the beautiful were always the same thing, and that anybody can walk into any subject and belong there."',
+      '"She scattered them because you are learning more chasing them than you ever would dusting them."'
     ]
   },
   {
-    id: 's8', title: 'The Drawer That Will Not Open',
-    speaker: 'The Curator', face: '🦉',
+    id: 's8', title: 'The Drawer With No Keyhole',
+    speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 36,
-    need: { text: 'Restore 36 objects', go: 'collection', goText: 'Open the Cabinet', at: 36, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Bring back 36 objects', go: 'collection', goText: 'Open the Vault', at: 36, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'There is a drawer at the base of the cabinet that has never opened for you. Tonight you notice why.',
-      'There is no keyhole anywhere on it. The drawer is held shut by the weight of the shelves above, so it can only open once they are full.',
-      '"She built it to open only when the collection was complete," the owl says. "Not one object sooner. She was not a patient woman, but she was a stubborn one."',
-      '"Six to go. Whatever she left down there, she left it for whoever finished what she started."'
+      'There is a drawer at the base of the cabinet that has never opened for you. Tonight you see why.',
+      'It has no keyhole anywhere on it. The weight of the full shelves above is what releases the catch.',
+      '"She built it to open when the collection was complete," Wick says. "Not one object sooner. She was a stubborn woman and a very good carpenter."',
+      '"Six to go. Whatever is down there, she left it for whoever finished what she started."'
     ]
   },
   {
     id: 's9', title: 'Alma’s Last Note',
     speaker: 'Alma', face: '🗝️',
     when: (S) => Object.keys(S.restored || {}).length >= 42,
-    need: { text: 'Restore all 42 objects', go: 'collection', goText: 'Open the Cabinet', at: 42, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Bring back all 42 objects', go: 'collection', goText: 'Open the Vault', at: 42, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'The last object goes onto the shelf. Something under the cabinet gives, and the drawer slides open on its own.',
+      'The last object goes onto the shelf. Something underneath gives way, and the drawer slides open on its own.',
       'Inside is one page, written the night she sent everything away.',
-      '"If you are reading this, the cabinet is whole, which means you have identified all forty-two, which means you know what I know."',
-      '"They told me I was teaching children useless things. I think it is the other way around. A school that never mentions money, or sleep, or how a liar builds a sentence, is the one teaching useless things."',
-      '"I did not scatter the collection to hide it. I scattered it because a thing you are handed is a decoration, and a thing you work out is yours forever."',
-      '"It is yours forever now. Open the doors. Someone out there is being told that their favorite question is a waste of time."'
+      '"If you are reading this, the shelves are full, which means you found all forty-two, which means you know what I know."',
+      '"I could have left you a full cabinet and a list. You would have dusted it and forgotten it by spring."',
+      '"So I gave you the chase instead. Everything you now know, you know because you went and got it. That is yours for good."',
+      '"Light the lamp. Somebody out there is asking their first real question tonight."'
     ]
   },
   {
-    id: 's10', title: 'The Doors Open Again',
-    speaker: 'The Curator', face: '🦉',
+    id: 's10', title: 'The Lamp Is Yours',
+    speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 42 && (S.storyDone || {}).s9,
-    need: { text: 'Read Alma’s last note', go: 'collection', goText: 'Open the Cabinet', at: 42, count: (S) => Object.keys(S.restored || {}).length },
+    need: { text: 'Read Alma’s last note', go: 'collection', goText: 'Open the Vault', at: 42, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'In the morning the owl is on the gatepost, looking down the road, which is a thing he never does.',
-      '"There is a lamp on in the classroom and I did not light it. Someone came up the drive at dawn and left a question on the step."',
-      'He turns to you, and for once there is no lecture in it.',
-      '"Congratulations. You are the Curator. The cabinet is full, the ledger is written, and the doors are open."',
-      '"You know how this works now. You take the strange object, you sit with it, you work out what it is, and then you tell somebody."'
+      'In the morning Wick is on the gatepost, looking down the road, which is a thing he never does.',
+      '"There is a lamp lit in the hall and I did not light it. Somebody came up the drive at dawn and left a question on the step."',
+      'He turns around, and for once there is no lecture in it.',
+      '"Congratulations. The shelves are full, the ledger is written, and the castle is yours to keep."',
+      '"You know how this works now. You find the strange object, you sit with it until it makes sense, and then you tell somebody."'
     ]
   }
 ];
@@ -4226,7 +4225,7 @@ const DOORS = {
     a: ['1776', '1576', '1966', '1066'],
     c: 0,
     why: 'M is 1,000. D is 500. CC is 200. LXX is 70. VI is 6. Add them: 1,776.',
-    fragment: 'We are older than the schools.'
+    fragment: 'We have been lighting lamps here for a very long time.'
   },
   'Match': {
     intro: 'The second door has four things nailed to it, and no lock at all.',
@@ -4236,7 +4235,7 @@ const DOORS = {
     a: ['A clay tablet listing barley', 'A merchant’s coin', 'A ship’s cargo record', 'A painted sunset'],
     c: 3,
     why: 'The other three are records of ordinary business, which is how writing, money and shipping all began. The sunset is the only one made to be looked at.',
-    fragment: 'We keep what the schools throw away.'
+    fragment: 'We keep the things everyone else walked past.'
   },
   'Candle': {
     intro: 'This one taps. A small brass arm on the door strikes the wood, over and over, patiently.',
@@ -4246,7 +4245,7 @@ const DOORS = {
     a: ['SOS', 'OSO', 'EMT', 'IOI'],
     c: 0,
     why: 'Three dots is S, three dashes is O, three dots is S again. The oldest electric cry for help, and the door has been calling it for a century.',
-    fragment: 'Every one of us was told our question did not matter.'
+    fragment: 'Every one of us arrived by following a question.'
   },
   'Lamp': {
     intro: 'Four tiles, badly scuffed, set into the floor in front of the door. Wick nudges one with his boot.',
@@ -4292,20 +4291,20 @@ const DOORS = {
         'Nobody has ever counted either'],
     c: 0,
     why: 'There are thousands of stars for every grain of sand on every beach and desert on Earth. People almost always guess this one backwards.',
-    fragment: 'Anyone may knock. Almost nobody thinks to.'
+    fragment: 'Anyone may knock. The door has always been unlocked.'
   },
   'Lighthouse': {
     intro: 'The last door is at the top of the castle, and it has no puzzle carved on it at all. Only a question, in Wick’s handwriting.',
     wick: '"You picked up seven fragments on the way up here. By now you know what we are. Say it plainly and the door just opens."',
     kind: 'The last door',
     prompt: 'So what is this society, really?',
-    a: ['People who kept the questions schools threw away',
+    a: ['People who follow their questions and pass the lamp on',
         'A club for people who are already clever',
         'A secret government of scholars',
         'Collectors of rare and valuable objects'],
     c: 0,
-    why: 'That is all it ever was. Not a secret worth killing for. Just a long line of people who refused to let a good question be called useless.',
-    fragment: 'And now the lamp is yours to carry. Light someone else’s.'
+    why: 'That is all it ever was. A long line of people who followed a good question, and left the lamp lit for whoever came next.',
+    fragment: 'The lamp is yours now. Light someone else’s.'
   }
 };
 
@@ -8063,7 +8062,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v86 · Sep 19, 2026";
+window.GAME_VERSION = "v87 · Sep 19, 2026";
 
 </script>
 <script>
@@ -9757,11 +9756,11 @@ if (charterBtn) charterBtn.addEventListener('click', () => {
   ov.innerHTML = `<div class="dir-card charter-card">
     <div class="dir-head">📜 The Founder’s Charter</div>
     <div class="charter-text">
-      <p>School taught you the chief exports of countries you will never visit.</p>
-      <p>It skipped how money grows, how liars argue, why your body begs for sleep, and what a day of your life is worth.</p>
-      <p>We start there.</p>
+      <p>Some questions stay with you.</p>
+      <p>Why the sky went red last night. How money grows while you sleep. Who really built the pyramids. What makes a song stick in your head. How a liar builds a sentence.</p>
+      <p>This place is built for those.</p>
       <p>The aim is simple: <b>make learning fun, and feed every kind of curiosity.</b></p>
-      <p>People are curious about different things. One of you wants to know how money grows. One wants to know why the sky went red last night, or who really built the pyramids, or what makes a song stick in your head. Those are all real questions, and not one of them is a waste of time.</p>
+      <p>People are curious about different things, and every one of those is worth following. Yours is the one that matters here.</p>
       <p>Everything here is optional, in any order, with a way out at every step. Every room stays open.</p>
       <p>Ask what you want. Skip what bores you. Come back when you like.</p>
       <p class="charter-sig">Follow whatever you are curious about.<br>That has always been the whole method.<br>· Alma, who started this collection ·</p>
