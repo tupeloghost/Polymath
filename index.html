@@ -7887,7 +7887,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v77 · Sep 19, 2026";
+window.GAME_VERSION = "v78 · Sep 19, 2026";
 
 </script>
 <script>
@@ -9906,7 +9906,7 @@ function renderWorkshop(){
     const item = el(`<button class="bridge-item skill-card ${learned ? 'bridge-done' : ''}">
       <span class="skill-head"><span class="skill-icon">${sk.icon}</span><span class="bridge-title">${sk.title}</span></span>
       ${sum ? `<span class="skill-sum">${sum}</span>` : ''}
-      <span class="bridge-state">${learned ? '✓ You can do this · practice anytime' : 'Takes about ten minutes'}</span>
+      <span class="bridge-state">${learned ? '✓ You can do this · practice anytime' : '10 min'}</span>
     </button>`);
     item.addEventListener('click', () => openSkill(sk));
     list.appendChild(item);
