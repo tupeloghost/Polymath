@@ -1864,6 +1864,19 @@ body.dt .codex-page { break-inside: avoid; }
   border-radius: 10px; padding: 9px 13px; margin-bottom: 12px;
 }
 
+/* ---------- v77: workshop cards say what the skill does ---------- */
+.skill-card { display: flex; flex-direction: column; gap: 4px; }
+.skill-head { display: flex; align-items: baseline; gap: 8px; }
+.skill-icon { font-size: 20px; line-height: 1; flex: none; }
+.skill-sum {
+  font-family: var(--serif); font-size: 15.5px; line-height: 1.45;
+  color: #5a4726; display: block;
+}
+.bridge-done .skill-sum { color: #4a5a3a; }
+#workshop-list { display: grid; gap: 12px; align-items: stretch; }
+body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
+#workshop-list .bridge-item { width: 100%; }
+
 </style>
 </head>
 <body>
@@ -7847,7 +7860,34 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v76 · Sep 19, 2026";
+// One plain line per skill: what you will actually be able to do.
+const SKILL_SUM = {
+  roman:    'Read IV, XL, MCMXC and any other Roman numeral on sight.',
+  eleven:   'Multiply any two-digit number by 11 instantly, in your head.',
+  binary:   'Count from 1 to 31 using the fingers of one hand.',
+  percent:  'Do awkward percentages in your head by flipping them around.',
+  nato:     'Spell names and codes out loud so nobody mishears you.',
+  moon:     'Look up and tell whether the moon is growing or shrinking.',
+  music:    'Read the notes on a treble staff and name each one.',
+  north:    'Find true north on a clear night with no phone or compass.',
+  morse:    'Tap and recognize SOS and the most common Morse letters.',
+  rule72:   'Work out how many years it takes money to double.',
+  pegs:     'Memorize any ten-item list, in order, and recall it later.',
+  fermi:    'Estimate any huge number by breaking it into small ones.',
+  contour:  'Read the contour lines on a map and see the hills.',
+  chess:    'Name any square on a chessboard the way players do.',
+  apr:      'Work out what a credit card balance truly costs per year.',
+  labels:   'Catch the five tricks food packages use to mislead you.',
+  clouds:   'Name six cloud types and read tomorrow’s weather in them.',
+  paycheck: 'Understand every line on your paystub and where it goes.',
+  scams:    'Recognize the shape every scam shares, before it works.',
+  twenty:   'Use twenty focused hours to get decent at almost anything.',
+  ear:      'Hear which of two notes is higher, and keep sharpening it.'
+};
+
+</script>
+<script>
+window.GAME_VERSION = "v77 · Sep 19, 2026";
 
 </script>
 <script>
@@ -9862,10 +9902,11 @@ function renderWorkshop(){
   $('#workshop-count').textContent = `${Object.keys(S.skills).length} / ${SKILLS.length}`;
   SKILLS.forEach(sk => {
     const learned = !!S.skills[sk.id];
-    const item = el(`<button class="bridge-item ${learned ? 'bridge-done' : ''}">
-      <span class="bridge-domains">${sk.icon} ${learned ? 'A skill you own' : 'A skill you could own in minutes'}</span>
-      <span class="bridge-title">${sk.title}</span>
-      <span class="bridge-state">${learned ? '✓ learned · practice anytime' : 'learn it now'}</span>
+    const sum = (typeof SKILL_SUM !== 'undefined' && SKILL_SUM[sk.id]) || '';
+    const item = el(`<button class="bridge-item skill-card ${learned ? 'bridge-done' : ''}">
+      <span class="skill-head"><span class="skill-icon">${sk.icon}</span><span class="bridge-title">${sk.title}</span></span>
+      ${sum ? `<span class="skill-sum">${sum}</span>` : ''}
+      <span class="bridge-state">${learned ? '✓ You can do this · practice anytime' : 'Takes about ten minutes'}</span>
     </button>`);
     item.addEventListener('click', () => openSkill(sk));
     list.appendChild(item);
