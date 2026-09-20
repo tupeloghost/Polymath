@@ -1967,10 +1967,10 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
             <span class="menu-emblem">&#127919;</span>
             <span class="menu-title">The Wheel</span>
           </button>
-          <button class="menu-card" data-go="parlor" title="5 games for 2 or more players on one device.">
+          <button class="menu-card" data-go="parlor" title="4 games for 2 or more players on one device.">
             <span class="menu-emblem">&#127917;</span>
             <span class="menu-title">Play Together</span>
-            <span class="menu-badge">5 games</span>
+            <span class="menu-badge">4 games</span>
           </button>
         </div>
       </div>
@@ -7887,7 +7887,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v81 · Sep 19, 2026";
+window.GAME_VERSION = "v82 · Sep 19, 2026";
 
 </script>
 <script>
@@ -10327,11 +10327,6 @@ function renderParlor(){
         <span class="bridge-title">Last Scholar Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
       </button>
-      <button class="bridge-item" id="parlor-showdown">
-        <span class="bridge-domains">🌡 2 to 6 players</span>
-        <span class="bridge-title">Number Showdown</span>
-        <span class="bridge-state">Everyone secretly guesses a real-life number on a slider. Closest to the truth takes the round.</span>
-      </button>
       <button class="bridge-item" id="parlor-myth">
         <span class="bridge-domains">🔍 2 to 6 players</span>
         <span class="bridge-title">Myth Hunt</span>
@@ -10345,7 +10340,6 @@ function renderParlor(){
     </div>`;
   $('#parlor-duel').addEventListener('click', () => go('duel'));
   $('#parlor-party').addEventListener('click', () => parlorNames(8, 'Start the circle', (names, kid) => startParty(names, kid), 2));
-  $('#parlor-showdown').addEventListener('click', () => parlorNames(6, 'Start the showdown', (names) => startShowdown(names)));
   $('#parlor-myth').addEventListener('click', () => parlorNames(6, 'Start the hunt', (names) => startMythHunt(names)));
   $('#parlor-match').addEventListener('click', () => {
     const body = $('#parlor-body');
