@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Curiosity Cabinet</title>
+<title>Curiosity Castle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -1887,8 +1887,8 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <section id="screen-home" class="screen active">
     <header class="masthead">
       <div class="masthead-rule"></div>
-      <h1>The Curiosity Cabinet</h1>
-      <p class="tagline">A collection for curious minds.</p>
+      <h1>Curiosity Castle</h1>
+      <p class="tagline">You were not enrolled. You were recruited.</p>
       <button id="charter-link" title="Why this place exists">📜 Our Charter</button>
       <div class="masthead-rule"></div>
     </header>
@@ -1900,16 +1900,16 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
       <button class="btn-primary" id="hero-next"></button>
       <div id="hero-doors">
         <button class="hero-door" data-go="subjects"><span class="hero-emoji">📚</span><span>Subjects</span></button>
-        <button class="hero-door" data-go="parlor"><span class="hero-emoji">🎲</span><span>Play together</span></button>
+        <button class="hero-door" data-go="parlor"><span class="hero-emoji">🎲</span><span>Games Table</span></button>
         <button class="hero-door" data-go="tale"><span class="hero-emoji">📖</span><span>The story</span></button>
         <button class="hero-door" id="hero-all"><span class="hero-emoji">🗝️</span><span>All rooms</span></button>
       </div>
     </div>
 
     <div id="curator-card">
-      <span class="curator-face">🦉</span>
+      <span class="curator-face">🪔</span>
       <div class="curator-speech">
-        <div class="curator-name">The Curator</div>
+        <div class="curator-name">Wick</div>
         <div class="curator-line" id="curator-line"></div>
         <div class="curator-moon" id="curator-moon"></div>
       </div>
@@ -1923,24 +1923,24 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
     <div id="day-row">
     <div id="schedule-card"></div>
     <div id="today-panel">
-      <div class="today-head">Today at the Cabinet</div>
+      <div class="today-head">Today at the Castle</div>
       <div id="idea-of-day" class="today-row"></div>
       <div id="field-quest" class="today-row"></div>
       <div id="book-echo" class="today-row"></div>
     </div>
     </div>
 
-    <button class="reveal-toggle" id="campus-toggle">🏫 Visit the campus</button>
+    <button class="reveal-toggle" id="campus-toggle">🏰 See the castle</button>
     <div id="office-scene" class="tucked"></div>
 
     <button class="reveal-toggle" id="menu-toggle">🚪 See every room laid out</button>
     <nav class="home-menu tucked">
       <div class="menu-section section-table">
-        <div class="menu-head">The Game Table</div>
+        <div class="menu-head">Challenges</div>
         <div class="menu-grid">
           <button class="menu-card" data-go="daily" title="10 questions from every subject. Keeps your streak.">
             <span class="menu-emblem">&#9788;</span>
-            <span class="menu-title">Daily Run</span>
+            <span class="menu-title">Daily Challenge</span>
             <span class="menu-badge" id="daily-badge"></span>
           </button>
           <button class="menu-card" data-go="gauntlet" title="Endless questions. 3 wrong and it ends.">
@@ -1958,9 +1958,9 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
             <span class="menu-title">Reality Check</span>
             <span class="menu-badge" id="reality-badge"></span>
           </button>
-          <button class="menu-card" data-go="trips" title="Step into history and make the choices.">
+          <button class="menu-card" data-go="trips" title="Step into a century. Your choices decide how it goes.">
             <span class="menu-emblem">&#128652;</span>
-            <span class="menu-title">Field Trips</span>
+            <span class="menu-title">Journeys</span>
             <span class="menu-badge" id="trips-badge"></span>
           </button>
           <button class="menu-card" data-go="wheel" title="The wheel picks your subject. 10 questions.">
@@ -1969,17 +1969,17 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
           </button>
           <button class="menu-card" data-go="parlor" title="4 games for 2 or more players on one device.">
             <span class="menu-emblem">&#127917;</span>
-            <span class="menu-title">Play Together</span>
+            <span class="menu-title">The Games Table</span>
             <span class="menu-badge">4 games</span>
           </button>
         </div>
       </div>
       <div class="menu-section section-cabinet">
-        <div class="menu-head">The Study</div>
+        <div class="menu-head">Learn Something</div>
         <div class="menu-grid">
-          <button class="menu-card" data-go="workshop" title="Real skills, about 10 minutes each.">
+          <button class="menu-card" data-go="workshop" title="A real skill you keep. 10 minutes each.">
             <span class="menu-emblem">&#128736;</span>
-            <span class="menu-title">Workshop</span>
+            <span class="menu-title">10-Minute Skills</span>
             <span class="menu-badge" id="workshop-badge"></span>
           </button>
           <button class="menu-card" data-go="subjects" title="Pick a subject and learn just that.">
@@ -2010,11 +2010,11 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
         </div>
       </div>
       <div class="menu-section section-desk">
-        <div class="menu-head">Your Desk</div>
+        <div class="menu-head">Your Standing</div>
         <div class="menu-grid">
-          <button class="menu-card" data-go="collection" title="Buy a crate, name what is inside, fill your shelves.">
+          <button class="menu-card" data-go="collection" title="Recover an object, name it, and it joins the Vault.">
             <span class="menu-emblem">&#128452;</span>
-            <span class="menu-title">The Cabinet</span>
+            <span class="menu-title">The Vault</span>
             <span class="menu-badge" id="collection-badge"></span>
           </button>
           <button class="menu-card" data-go="tale" title="Alma and her cabinet, chapter by chapter.">
@@ -2050,8 +2050,8 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <!-- FIELD TRIPS -->
   <section id="screen-trips" class="screen">
     <div class="topbar">
-      <button class="btn-back" data-go="home">&larr; Campus</button>
-      <div class="topbar-title">Field Trips</div>
+      <button class="btn-back" data-go="home">&larr; Castle</button>
+      <div class="topbar-title">Journeys</div>
       <div class="topbar-right"></div>
     </div>
     <div id="trips-body"></div>
@@ -2068,7 +2068,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <!-- DEBATE CLUB -->
   <section id="screen-debate" class="screen">
     <div class="topbar">
-      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <button class="btn-back" data-go="home">&larr; Castle</button>
       <div class="topbar-title">Debate Club</div>
       <div class="topbar-right" id="debate-progress"></div>
     </div>
@@ -2111,7 +2111,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <!-- REALITY CHECK -->
   <section id="screen-reality" class="screen">
     <div class="topbar">
-      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <button class="btn-back" data-go="home">&larr; Castle</button>
       <div class="topbar-title">Reality Check</div>
       <div class="topbar-right" id="reality-progress"></div>
     </div>
@@ -2121,7 +2121,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <!-- YOUR OFFICE (room) -->
   <section id="screen-office" class="screen">
     <div class="topbar">
-      <button class="btn-back" data-go="home">&larr; Campus</button>
+      <button class="btn-back" data-go="home">&larr; Castle</button>
       <div class="topbar-title">Your Office</div>
       <div class="topbar-right"></div>
     </div>
@@ -2143,7 +2143,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <section id="screen-cabinet" class="screen">
     <div class="topbar">
       <button class="btn-back" data-go="home">&larr; Back</button>
-      <div class="topbar-title">The Cabinet</div>
+      <div class="topbar-title">The Vault</div>
       <div class="topbar-right" id="cabinet-count"></div>
     </div>
     <p class="helper-text">Open a drawer, read the idea, answer one question.</p>
@@ -2205,7 +2205,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <section id="screen-workshop" class="screen">
     <div class="topbar">
       <button class="btn-back" data-go="home">&larr; Back</button>
-      <div class="topbar-title">The Workshop</div>
+      <div class="topbar-title">10-Minute Skills</div>
       <div class="topbar-right" id="workshop-count"></div>
     </div>
     <p class="helper-text">Real skills. About 10 minutes each, and then they are yours.</p>
@@ -2237,7 +2237,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <section id="screen-parlor" class="screen">
     <div class="topbar">
       <button class="btn-back" data-go="home">&larr; Back</button>
-      <div class="topbar-title">The Rec Hall</div>
+      <div class="topbar-title">The Games Table</div>
       <div class="topbar-right"></div>
     </div>
     <div id="parlor-body"></div>
@@ -2307,7 +2307,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
   <section id="screen-collection" class="screen">
     <div class="topbar">
       <button class="btn-back" data-go="home">&larr; Back</button>
-      <div class="topbar-title">The Cabinet</div>
+      <div class="topbar-title">The Vault</div>
       <div class="topbar-right" id="collection-lumens"></div>
     </div>
     <p class="helper-text">Buy a wrapped crate. Name what is inside and it joins your shelves.</p>
@@ -7887,7 +7887,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v82 · Sep 19, 2026";
+window.GAME_VERSION = "v83 · Sep 19, 2026";
 
 </script>
 <script>
@@ -8113,39 +8113,54 @@ function moonPhase(){
   return { icon:'🌘', name:'Waning Crescent', tip:'A thin sliver before dawn. New moon, and dark skies, are coming.' };
 }
 
+// Wick: a time traveller who has been everywhere and is still delighted.
+// He never says "now you will learn". He says "come look at this."
 const CURATOR = {
   afterRun(score, total){
     const pct = total ? score / total : 0;
     const pool = pct === 1
-      ? ['A perfect run. Not one mistake.', 'Ten for ten. Excellent work.', 'Flawless. I will note it in the ledger.']
+      ? ['Not one wrong. I have met scholars who could not do that.',
+         'Perfect. I was there for some of those, and you still got them right.',
+         'Flawless. Do not let it go to your head. Actually, do.']
       : pct >= 0.7
-      ? ['Good run. The ones you missed will come back so you can win them.', 'Solid work. Missed questions return in a few days for another try.', 'Well done. A few misses only means a few return visits.']
-      : ['A tough run. The missed questions will come back so you can learn them properly.', 'Everyone has rough days. I will quiz you on those again soon.', 'No harm done. Wrong answers are just questions you have not won yet.'];
+      ? ['Good run. The ones that slipped will come back around.',
+         'Most of them, then. The rest will find you again later.',
+         'Solid. Missing a few is how the useful ones stick.']
+      : ['A rough one. Good. Those are the ones you will remember.',
+         'They got you this time. They will be back, and you will be ready.',
+         'Nobody gets these first try. I certainly did not, and I was there.'];
     return pool[Math.floor(Math.random() * pool.length)];
   },
   greeting(){
     const h = new Date().getHours();
     const pool =
-      h < 5  ? ['Up very late? These doors never close.', 'A quiet hour. Good for learning.', 'Welcome, night owl. I approve.'] :
-      h < 12 ? ['Good morning. Ready to learn something new?', 'An early start. Well done.', 'Morning. The daily run is waiting.'] :
-      h < 18 ? ['Good afternoon. There is always another drawer to open.', 'Welcome back. Pick anything that looks interesting.', 'Afternoon. A fine time for a quick run.'] :
-               ['Good evening. The candles are lit.', 'Evening. Come in and learn something before bed.', 'Welcome back. The fire is warm.'];
+      h < 5  ? ['Awake at this hour? So were most of the interesting ones.',
+                'The quiet hours. My favourite century was mostly this.',
+                'Still up. Good. Nothing worth knowing keeps office hours.'] :
+      h < 12 ? ['Morning. I have already been to 1490 and back.',
+                'You are up early. Come look at something.',
+                'Morning. The lamp is lit and the castle is yours.'] :
+      h < 18 ? ['Afternoon. I found something you will like.',
+                'Come in. I have been saving one for you.',
+                'Afternoon. Pick a door, any door.'] :
+               ['Evening. Best time of day, in every century I have tried.',
+                'The lamps are on. Sit down, this one is good.',
+                'Evening. Stay a while. You will want to hear this.'];
     return pool[Math.floor(Math.random() * pool.length)];
   },
   observation(s, stats){
     const lines = [];
-    if (s.streak >= 7) lines.push(`You have played ${s.streak} days in a row. That is real discipline.`);
-    else if (s.streak >= 3) lines.push(`${s.streak} days in a row. Keep the streak alive.`);
-    if (stats.weakest) lines.push(`A tip: your weakest subject right now is ${stats.weakest}. The daily run will help you practice it.`);
-    if (stats.toGo && stats.toGo <= 15) lines.push(`You are only ${stats.toGo} right answers away from the title of ${stats.nextName}.`);
-    if (s.gauntletBest >= 25) lines.push(`Your best Gauntlet run is ${s.gauntletBest}. Impressive.`);
-    if (Object.keys(s.journal || {}).length >= 10) lines.push('Your Commonplace Book is growing nicely. Keep starring what you love.');
+    if (s.streak >= 7) lines.push(`${s.streak} days running. That is how the old members did it too.`);
+    else if (s.streak >= 3) lines.push(`${s.streak} days in a row. The lamp stays lit.`);
+    if (stats.weakest) lines.push(`Your thinnest subject just now is ${stats.weakest}. That is where the good surprises are hiding.`);
+    if (stats.toGo && stats.toGo <= 15) lines.push(`${stats.toGo} more right answers and you rise to ${stats.nextName}.`);
+    if (s.gauntletBest >= 25) lines.push(`Your best Gauntlet run is ${s.gauntletBest}. I have seen worse from people with titles.`);
     lines.push(
-      'Everything in here was once unknown to everyone.',
-      'One drawer a day adds up faster than you would think.',
-      'Somewhere in here is a fact you will repeat for years.',
-      'Take your time. Learning is not a race.',
-      'Try a subject you usually skip. Those surprise people the most.'
+      'Everything in this castle was once a thing nobody knew.',
+      'One object a day and the Vault fills faster than you would think.',
+      'Somewhere in here is a fact you will still be repeating in twenty years.',
+      'The people who made these things were told the subject was not theirs.',
+      'I have been to most of these centuries. The ordinary parts were the best parts.'
     );
     return lines[Math.floor(Math.random() * lines.length)];
   }
@@ -8395,7 +8410,7 @@ function buildOfficeRoom(){
     <path d="M472 288 h58 l-6 8 h-46 z" fill="url(#mahoganyV)"/>
     <rect x="478" y="204" width="44" height="7" rx="3" fill="url(#brass)"/>
     <text x="500" y="200" font-size="42" text-anchor="middle">🦉</text>
-    <text class="scene-label" x="500" y="320" text-anchor="middle">The Curator</text>
+    <text class="scene-label" x="500" y="320" text-anchor="middle">Wick</text>
   </g>
 
   <!-- the desk -->
@@ -8556,7 +8571,7 @@ function buildOfficeRoom(){
 }
 
 
-// The campus: a painted academy with living, clickable rooms.
+// The castle: a painted keep with living, clickable rooms.
 function buildCampusScene(){
   const holder = document.getElementById('office-scene');
   if (!holder || typeof CAMPUS_ART === 'undefined') return;
@@ -8570,13 +8585,13 @@ function buildCampusScene(){
     { id:'z-trophy',    x:58.5, y:54.5, w:14.3, h:14.5, icon:'🏆', name:'Trophy Hall',   sub:'Every plaque you have earned',       k:'trophy',    go:'honors' },
     { id:'z-rec',       x:27,   y:70,   w:14.2, h:16.5, icon:'🎲', name:'Rec Room',      sub:'Games for two or more players',      k:'rec',       go:'parlor' },
     { id:'z-door',      x:44.4, y:70,   w:11.2, h:19,   icon:'🚪', name:'Front Door',    sub:'The directory: every room here',   k:null,        go:null },
-    { id:'z-detention', x:58.5, y:70,   w:14.3, h:16.5, icon:'🧹', name:'Detention',     sub:'Win back the ones you missed',       k:'detention', go:'detention' },
+    { id:'z-detention', x:58.5, y:70,   w:14.3, h:16.5, icon:'🧹', name:'The Second Look', sub:'Win back the ones you missed',       k:'detention', go:'detention' },
     { id:'z-bell',      x:45.5, y:4,    w:9.5,  h:20,   icon:'🐦‍⬛', name:'Bell Tower',    sub:'The raven has opinions',             k:null,        go:null, noplate:true },
     { id:'z-bus',       x:8,    y:79,   w:24,   h:15,   icon:'🚌', name:'Field Trip Bus', sub:'Step into history and choose',      k:'bus',       go:'trips' }
   ];
   holder.innerHTML = `
     <div id="campus-wrap">
-      <img id="campus-img" src="${CAMPUS_ART}" alt="The academy at night. Click a room to enter.">
+      <img id="campus-img" src="${CAMPUS_ART}" alt="The castle at night. Click a room to enter.">
       <div id="campus-moon" class="hot-zone" style="left:83%;top:6%;width:10%;height:17%">
         <span id="campus-moon-icon">${mp.icon}</span>
         <span class="zone-label">Tonight’s sky</span>
@@ -8636,7 +8651,7 @@ function buildCampusScene(){
     'Caw. Back again? The Dean will be thrilled. The Dean is me. I am a raven.',
     'Caw. I have seen your report card. There is room for improvement. There always is.',
     'Caw. The owl gets an office and I get a bell tower. Anyway, go learn something.',
-    'Caw. Detention is downstairs. I am not saying you belong there. I am implying it.',
+    'Caw. The Second Look is downstairs. I am not saying you belong there. I am implying it.',
     'Caw. Fun fact: a group of ravens is called a conspiracy. We earned that.'
   ];
   document.getElementById('z-bell').addEventListener('click', () => {
@@ -8653,7 +8668,7 @@ function buildCampusScene(){
     const ov = document.createElement('div');
     ov.className = 'dir-overlay';
     ov.innerHTML = `<div class="dir-card">
-      <div class="dir-head">🗝️ Every Room in the Cabinet</div>
+      <div class="dir-head">🗝️ Every Room in the Castle</div>
       <div class="dir-sub">Every room, and what waits inside. Tap one to go.</div>
       ${zones.filter(z => z.go).map(z => `
         <div class="dir-row" data-zid="${z.id}">
@@ -8816,7 +8831,7 @@ function makeFactCard(text, domainKey, title){
   g.font = '30px Georgia';
   g.fillText('❦', W/2, H - 190);
   g.font = 'small-caps 34px Georgia';
-  g.fillText('The Curiosity Cabinet', W/2, H - 130);
+  g.fillText('Curiosity Castle', W/2, H - 130);
 
   const a = document.createElement('a');
   a.download = 'polymath-card.png';
@@ -9147,16 +9162,17 @@ function missSuccess(key){
   save();
   return 'climbing';
 }
+// The Degrees of Light. You rise by seeing further, not by passing a grade.
 const RANKS = [
-  { at: 0,   name: 'New Student' },
-  { at: 10,  name: 'Freshman' },
-  { at: 30,  name: 'Sophomore' },
-  { at: 80,  name: 'Junior' },
-  { at: 150, name: 'Senior' },
-  { at: 250, name: 'Graduate' },
-  { at: 400, name: 'Professor' },
-  { at: 650, name: 'Dean' },
-  { at: 1000, name: 'The Polymath' }
+  { at: 0,    name: 'Unlit' },
+  { at: 10,   name: 'Spark' },
+  { at: 30,   name: 'Match' },
+  { at: 80,   name: 'Candle' },
+  { at: 150,  name: 'Lamp' },
+  { at: 250,  name: 'Lantern' },
+  { at: 400,  name: 'Signal Fire' },
+  { at: 650,  name: 'Beacon' },
+  { at: 1000, name: 'Lighthouse' }
 ];
 function rankIndex(){
   let i = 0;
@@ -9475,7 +9491,7 @@ window.sceneHooks3 = {
     const held = Object.keys(S.misses).length;
     return {
       library:   Object.keys(S.nodesDone).length + '/' + NODES.length,
-      class:     S.lastDaily === td ? 'done ✓' : 'class is on',
+      class:     S.lastDaily === td ? 'done ✓' : 'open tonight',
       office:    S.lumens + ' ✦',
       workshop:  Object.keys(S.skills).length + '/' + SKILLS.length,
       museum:    Object.keys(S.owned).length + '/' + CURIOSITIES.length,
@@ -9723,16 +9739,16 @@ function renderHome(){
       <span class="row-body"><span class="row-main">${label}</span><span class="row-sub">${sub}</span></span>
       <span class="row-go">›</span>
     </div>`;
-  sched.innerHTML = `<div class="today-head">Today’s Class Schedule</div>
-    ${row(p1, 'daily', 'Period 1 · Daily Run', p1 ? 'Done. Nice work.' : 'Ten questions from all subjects.')}
-    ${row(p2, 'cabinet', 'Period 2 · One Drawer', p2 ? 'Done. One more idea is yours.' : 'Read one small idea, answer one question.')}
-    ${row(p3, 'workshop', 'Period 3 · Skill Practice', p3 ? 'Done. Sharper than yesterday.' : 'Practice any real-life skill for a few minutes.')}`;
+  sched.innerHTML = `<div class="today-head">Tonight’s Work</div>
+    ${row(p1, 'daily', 'The Daily Challenge', p1 ? 'Done.' : '10 questions, every subject.')}
+    ${row(p2, 'cabinet', 'One Idea', p2 ? 'Done.' : 'Read one small idea, answer one question.')}
+    ${row(p3, 'workshop', 'One Skill', p3 ? 'Done.' : 'Practice a real skill for 10 minutes.')}`;
   if (p1 && p2 && p3 && S.attendanceDay !== td) {
     S.attendanceDay = td;
     S.attendanceCount = (S.attendanceCount || 0) + 1;
     const got = awardLumens(20);
     confetti(50);
-    toast(`🔔 Perfect attendance! All three periods done. +${got} lumens. (${S.attendanceCount} day${S.attendanceCount === 1 ? '' : 's'} total)`);
+    toast(`🪔 All three done tonight. +${got} lumens. (${S.attendanceCount} night${S.attendanceCount === 1 ? '' : 's'} total)`);
   }
 
   if (window.updateCampusStatus) window.updateCampusStatus();
@@ -9742,10 +9758,10 @@ function renderHome(){
   const hero = $('#hero-next');
   if (hero) {
     let label, dest;
-    if (!p1) { label = '☀️ Start today’s class · 10 questions'; dest = 'daily'; }
-    else if (!p2) { label = '🗄️ Next up: open one drawer'; dest = 'cabinet'; }
-    else if (!p3) { label = '🛠️ Last one today: practice a skill'; dest = 'workshop'; }
-    else { label = '✅ All done today. Play anything you like'; dest = null; }
+    if (!p1) { label = '🪔 Tonight’s challenge · 10 questions'; dest = 'daily'; }
+    else if (!p2) { label = '📜 Next: one idea'; dest = 'cabinet'; }
+    else if (!p3) { label = '🛠️ Last: one 10-minute skill'; dest = 'workshop'; }
+    else { label = '✅ Tonight’s work is done. Wander anywhere'; dest = null; }
     hero.textContent = label;
     hero.onclick = () => { if (dest) go(dest); else if (window.openDirectory) openDirectory(); };
   }
@@ -10073,7 +10089,7 @@ function finishSkill(){
       <div class="result-verdict"><b>You can now ${sk.title.toLowerCase()}.</b> This morning you could not. It is yours for life now, and it sharpens every time you use it in the wild.</div>
       ${first ? `<div class="result-earn">+${earned} lumens</div>` : ''}
       <button class="btn-primary" data-go="workshop">Learn another skill</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   $('#skill-progress').textContent = '';
 }
@@ -10303,7 +10319,7 @@ function endExpedition(survived){
       ${isBest ? '<div class="result-earn">New best expedition!</div>' : ''}
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" id="exp-again">Set out again</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   const coopNames = exp.coop;
   $('#exp-again').addEventListener('click', () => startExpedition(coopNames || undefined));
@@ -10324,12 +10340,12 @@ function renderParlor(){
       </button>
       <button class="bridge-item" id="parlor-party">
         <span class="bridge-domains">🎉 2 players or a whole room</span>
-        <span class="bridge-title">Last Scholar Standing</span>
+        <span class="bridge-title">Last One Standing</span>
         <span class="bridge-state">Pass the device around the circle. Two wrong answers and you are out. Last one in wins.</span>
       </button>
       <button class="bridge-item" id="parlor-myth">
         <span class="bridge-domains">🔍 2 to 6 players</span>
-        <span class="bridge-title">Myth Hunt</span>
+        <span class="bridge-title">Fact or Fiction</span>
         <span class="bridge-state">True, or a myth everyone repeats? Find out which famous "facts" you have been fooled by.</span>
       </button>
       <button class="bridge-item" id="parlor-match">
@@ -10383,7 +10399,7 @@ function playPool(kid){
   return kid ? QUESTIONS.filter(q => q.t !== 2 && KID_DOMAINS.includes(q.d)) : QUESTIONS;
 }
 
-// Last Scholar Standing: 3-6 players, two strikes and you are out
+// Last One Standing: 3-6 players, two strikes and you are out
 let party = null;
 function startParty(names, kid){
   party = { players: names.map(n => ({ name: n, strikes: 0, out: false })), turn: 0, kid, deck: partyDeck(orderFresh('mq', playPool(kid), qKey)), idx: 0 };
@@ -10399,7 +10415,7 @@ function renderParty(){
     const earned = awardLumens(15);
     body.innerHTML = `
       <div class="result-card">
-        <div class="result-title">Last Scholar Standing</div>
+        <div class="result-title">Last One Standing</div>
         <div class="result-score">👑</div>
         <div class="result-verdict"><b>${alive[0].name}</b> outlasted everyone. The circle bows.</div>
         <div class="result-earn">+${earned} lumens for hosting the game</div>
@@ -10577,7 +10593,7 @@ function finishTrip(){
         : 'A rough trip, and a true one: most travelers learned the hard way too. Ride again.'}</div>
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" data-go="trips">Another trip</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   $('#trip-progress').textContent = '';
 }
@@ -10650,7 +10666,7 @@ function startReality(){
       <div class="qcard-why">${grade}${earned ? ` You earned ${earned} lumens.` : ''}</div>
       <div class="duel-again">
         <button class="btn-primary" data-go="reality">New numbers</button>
-        <button class="btn-secondary" data-go="home">Back to campus</button>
+        <button class="btn-secondary" data-go="home">Back to the castle</button>
       </div>
     </div>`));
     if (newBest) confetti(40);
@@ -10730,7 +10746,7 @@ function finishDebate(){
       ${isBest && score > 0 ? '<div class="result-earn">New personal best!</div>' : ''}
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" id="debate-again">Another round</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   $('#debate-again').addEventListener('click', () => {
     debate = { qs: shuffle(DEBATES).slice(0, 8), idx: 0, right: 0 };
@@ -10833,7 +10849,7 @@ function startShowdown(names){
   playRound();
 }
 
-// Myth Hunt: true, or a myth everyone repeats?
+// Fact or Fiction: true, or a story everyone repeats?
 function startMythHunt(names){
   const rounds = Math.min(16, names.length * 4);
   const deck = drawFresh('myths', MYTHS, rounds, x => x.t);
@@ -10879,7 +10895,7 @@ function startMythHunt(names){
     confetti(70);
     body.innerHTML = `
       <div class="result-card">
-        <div class="result-title">Myth Hunt</div>
+        <div class="result-title">Fact or Fiction</div>
         <div class="result-score">🔍</div>
         <div class="result-verdict"><b>${champs.map(c => c.name).join(' and ')}</b> ${champs.length > 1 ? 'are' : 'is'} the hardest to fool: ${top} of ${Math.ceil(deck.length / players.length)} right.</div>
         ${chips()}
@@ -10978,7 +10994,7 @@ const FORFEITS = [
   'Answer your next question in a whisper.',
   'Address the winner as "Your Brilliance" until the next game ends.',
   'Give a 10-second victory speech... for the winner.',
-  'Do your best owl impression. The Curator is watching.',
+  'Do your best impression of Wick telling a story. He is watching.',
   'Answer your next question in a dramatic movie-trailer voice.',
   'The winner picks a word. Work it into your next three sentences.',
   'Bow to the winner. A real one. From the waist.',
@@ -11264,7 +11280,7 @@ function finishDuel(){
       <div class="result-earn">+${earned} lumens for hosting the game</div>
       ${rivalry ? `<div class="rivalry-line">${rivalry}</div>` : ''}
       <button class="btn-primary" id="duel-rematch">Rematch: ${duel.names[1 - w]} wants revenge</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   const rc = body.querySelector('.result-card');
   rc.insertBefore(forfeitButton(duel.names[1 - w]), $('#duel-rematch'));
@@ -11492,7 +11508,7 @@ function shareChallenge(name, score, keys){
   const link = buildChallengeLink(name, score, keys);
   try { localStorage.setItem('polymath_name', name); } catch(e){}
   if (navigator.share) {
-    navigator.share({ title: 'The Curiosity Cabinet', text: `${name} scored ${score}/${keys.length} and challenges you to the same questions.`, url: link }).catch(() => {});
+    navigator.share({ title: 'Curiosity Castle', text: `${name} scored ${score}/${keys.length} and challenges you to the same questions.`, url: link }).catch(() => {});
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(link).then(() => toast('Challenge link copied. Send it to someone.')).catch(() => toast('Could not copy. Long-press the link to copy it.'));
   }
@@ -11520,7 +11536,7 @@ function startDetention(){
   QUESTIONS.forEach(q => { map[qKey(q)] = q; });
   const due = Object.keys(S.misses).map(k => map[k]).filter(Boolean);
   if (!due.length) {
-    toast('🪑 Detention is empty. No missed questions are waiting. Keep it that way. Or don’t.');
+    toast('Nothing to revisit. Every question you missed has been won back.');
     go('home');
     return;
   }
@@ -11530,7 +11546,7 @@ function startDetention(){
   document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('active'));
   $('#screen-daily').classList.add('active');
   window.scrollTo(0,0);
-  $('#daily-topbar').textContent = 'Detention';
+  $('#daily-topbar').textContent = 'The Second Look';
   toast(`🪑 ${qs.length} missed question${qs.length === 1 ? '' : 's'} await. Answer right to walk free.`);
   renderDailyQuestion();
 }
@@ -11651,7 +11667,7 @@ function finishDaily(){
         <div class="result-earn">+${earned} lumens</div>
         <input class="duel-name" id="ch-name" maxlength="14" placeholder="Your name for the reply" value="${myName.replace(/"/g,'')}">
         <button class="btn-primary" id="ch-back">📨 Send your score back as a challenge</button>
-        <button class="btn-secondary" data-go="home">Back to campus</button>
+        <button class="btn-secondary" data-go="home">Back to the castle</button>
       </div>`;
     countUp(body.querySelector('.result-score'), score, ` : ${ch.score}`);
     $('#ch-back').addEventListener('click', () => {
@@ -11685,7 +11701,7 @@ function finishDaily(){
   if (!daily.focus && !daily.detention) SFX.bell();
   let verdict = 'Noted in the ledger.';
   if (daily.detention) verdict = score === daily.qs.length
-    ? 'Detention cleared. Walk out with your head high.'
+    ? 'Won back. Those questions are yours now.'
     : `You cleared ${score} of ${daily.qs.length}. The rest will see you back here soon.`;
   else if (score >= 9) verdict = 'A mind of rare reach. Top of the class.';
   else if (score >= 7) verdict = 'Strong work, and it shows.';
@@ -11693,7 +11709,7 @@ function finishDaily(){
   else verdict = 'Every wrong answer is a lesson scheduled for later.';
   body.innerHTML = `
     <div class="result-card">
-      <div class="result-title">${daily.detention ? 'Detention Served' : 'Run Complete'}</div>
+      <div class="result-title">${daily.detention ? 'Won Back' : 'Run Complete'}</div>
       <div class="result-score">0 / ${daily.qs.length}</div>
       <div class="result-verdict">${verdict}</div>
       <div class="curator-result">🦉 “${CURATOR.afterRun(score, daily.qs.length)}”</div>
@@ -11702,14 +11718,14 @@ function finishDaily(){
       ${tokenNote ? `<div class="result-streak">${tokenNote}</div>` : ''}
       ${rankProgress().next ? `<div class="result-streak">${rankProgress().toGo} correct answers until <b>${rankProgress().next.name}</b></div>` : ''}
       ${daily.detention
-        ? `<button class="btn-primary" data-go="home">Back to campus</button>`
+        ? `<button class="btn-primary" data-go="home">Back to the castle</button>`
         : daily.focus
         ? `<button class="btn-primary" id="focus-again">Ten more from this subject</button>
-           <button class="btn-secondary" data-go="cabinet">Back to campus</button>`
+           <button class="btn-secondary" data-go="cabinet">Back to the castle</button>`
         : `<input class="duel-name" id="ch-name" maxlength="14" placeholder="Your name" value="${(() => { try { return (localStorage.getItem('polymath_name') || '').replace(/"/g,''); } catch(e){ return ''; } })()}">
            <button class="btn-secondary" id="ch-send">📨 Challenge someone to these questions</button>
            <button class="btn-primary" data-go="daily">Run again</button>
-           <button class="btn-secondary" data-go="home">Back to campus</button>`}
+           <button class="btn-secondary" data-go="home">Back to the castle</button>`}
     </div>`;
   if (!daily.focus && !daily.detention) {
     const keys = daily.qs.map(q => qKey(q));
@@ -11861,7 +11877,7 @@ function finishExam(){
           ? `"${exam.right} of twenty, across every subject. It is rare that I bow. This month's medal is yours."`
           : '"Sixteen of twenty earns the medal. I return every month. Study broadly; I ask about everything."'}</div>
         ${earned ? `<div class="result-earn">+${earned} lumens</div>` : ''}
-        <button class="btn-primary" data-go="home">Back to campus</button>
+        <button class="btn-primary" data-go="home">Back to the castle</button>
       </div>`;
     $('#exam-progress').textContent = '';
     return;
@@ -11883,7 +11899,7 @@ function finishExam(){
         ? `Your ${DOMAINS[exam.d].name} diploma is sealed. It stays on the shelf forever.`
         : 'You need 10 of 12. A few more runs in this subject and the seal is yours.'}</div>
       ${earned ? `<div class="result-earn">+${earned} lumens</div>` : ''}
-      <button class="btn-primary" data-go="cabinet">Back to campus</button>
+      <button class="btn-primary" data-go="cabinet">Back to the castle</button>
     </div>`;
   $('#exam-progress').textContent = '';
 }
@@ -12016,7 +12032,7 @@ function finishChain(){
       ${first ? `<div class="result-earn">+${earned} lumens</div>` : ''}
       <button class="btn-primary" data-go="chains">Another chain</button>
       <button class="btn-secondary" id="chain-teach-btn">🗣️ Teach it back</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   $('#chain-teach-btn').addEventListener('click', () =>
     teachBack(body, ch.title, ch.steps[ch.steps.length - 1].lesson, ch.d, () => go('chains')));
@@ -12094,7 +12110,7 @@ function finishLightning(){
       ${isBest ? '<div class="result-earn">New personal best!</div>' : `<div class="result-streak">Best: ${S.lightningBest}</div>`}
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" data-go="lightning">Again</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   const lta = takeAwayCard(lightning.deck.slice(0, lightning.idx));
   if (lta) body.querySelector('.result-card').insertBefore(lta, body.querySelector('.btn-primary'));
@@ -12179,7 +12195,7 @@ function finishGauntlet(){
       ${isBest ? '<div class="result-earn">New personal best!</div>' : `<div class="result-streak">Best: ${S.gauntletBest}</div>`}
       <div class="result-earn">+${earned} lumens</div>
       <button class="btn-primary" data-go="gauntlet">Run it again</button>
-      <button class="btn-secondary" data-go="home">Back to campus</button>
+      <button class="btn-secondary" data-go="home">Back to the castle</button>
     </div>`;
   const gta = takeAwayCard(gauntlet.deck.slice(0, gauntlet.idx));
   if (gta) body.querySelector('.result-card').insertBefore(gta, body.querySelector('.btn-primary'));
