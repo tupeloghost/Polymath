@@ -1930,11 +1930,6 @@ body.dt .codex-page { break-inside: avoid; }
             <span class="menu-title">Daily Run</span>
             <span class="menu-badge" id="daily-badge"></span>
           </button>
-          <button class="menu-card" data-go="expedition" title="Walk as far down the road as you dare. Turn back to keep your loot, or lose it all.">
-            <span class="menu-emblem">&#128506;</span>
-            <span class="menu-title">Expedition</span>
-            <span class="menu-badge" id="expedition-badge"></span>
-          </button>
           <button class="menu-card" data-go="gauntlet" title="Endless questions. Three strikes and it ends.">
             <span class="menu-emblem">&#128293;</span>
             <span class="menu-title">Gauntlet</span>
@@ -1959,7 +1954,7 @@ body.dt .codex-page { break-inside: avoid; }
             <span class="menu-emblem">&#127919;</span>
             <span class="menu-title">The Wheel</span>
           </button>
-          <button class="menu-card" data-go="parlor" title="Duels, team adventures, and a party circle. Best with 2, room for more.">
+          <button class="menu-card" data-go="parlor" title="Duels, number showdowns, myth hunts, and a party circle. Best with 2, room for more.">
             <span class="menu-emblem">&#127917;</span>
             <span class="menu-title">Play Together</span>
             <span class="menu-badge">for 2 or more</span>
@@ -7852,7 +7847,7 @@ SKILLS.push(
 
 </script>
 <script>
-window.GAME_VERSION = "v75 · Sep 11, 2026";
+window.GAME_VERSION = "v76 · Sep 19, 2026";
 
 </script>
 <script>
@@ -9118,7 +9113,7 @@ const ROOMS = [
   { go:'workshop', at:10, name:'The Workshop' }, { go:'bridges', at:10, name:'Bridges' },
   { go:'chains', at:20, name:'Study Chains' }, { go:'collection', at:20, name:'The Collection Room' }, { go:'journal', at:20, name:'Your Commonplace Book' },
   { go:'gauntlet', at:35, name:'The Gauntlet' }, { go:'lightning', at:35, name:'The Lightning Round' }, { go:'wheel', at:35, name:'The Wheel' },
-  { go:'expedition', at:50, name:'The Expedition' }, { go:'honors', at:50, name:'The Hall of Honors' }
+  { go:'honors', at:50, name:'The Hall of Honors' }
 ];
 // the Parlor (two players) is never locked: guests can always play
 function roomUnlocked(goName){
@@ -9590,7 +9585,8 @@ function renderHome(){
   $('#lightning-badge').textContent = S.lightningBest ? `best: ${S.lightningBest}` : 'untried';
   $('#honors-badge').textContent = `${Object.keys(S.achievements).length} of ${ACHIEVEMENTS.length} plaques`;
   $('#journal-badge').textContent = S.journal.length ? `${S.journal.length} saved` : 'empty';
-  $('#expedition-badge').textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
+  const expB = $('#expedition-badge');
+  if (expB) expB.textContent = S.expeditionBest ? `best loot: ${S.expeditionBest}` : 'untried';
   $('#trips-badge').textContent = `${Object.keys(S.tripsDone || {}).length} of ${TRIPS.length} taken`;
   $('#debate-badge').textContent = S.debateBest ? `best: ${S.debateBest}/8` : 'untried';
   $('#reality-badge').textContent = S.realityBest ? `best: ${S.realityBest}/24` : 'untried';
@@ -10239,11 +10235,6 @@ function renderParlor(){
         <span class="bridge-title">The Duel</span>
         <span class="bridge-state">Ten questions, five each. Winner takes the crown.</span>
       </button>
-      <button class="bridge-item" id="parlor-coop">
-        <span class="bridge-domains">🗺 2 to 4, side by side</span>
-        <span class="bridge-title">Expedition Together</span>
-        <span class="bridge-state">Walk the trail as a team. Shared hearts, shared loot, take turns answering.</span>
-      </button>
       <button class="bridge-item" id="parlor-party">
         <span class="bridge-domains">🎉 2 players or a whole room</span>
         <span class="bridge-title">Last Scholar Standing</span>
@@ -10264,16 +10255,9 @@ function renderParlor(){
         <span class="bridge-title">Memory Match</span>
         <span class="bridge-state">Flip cards to pair each idea with its meaning.</span>
       </button>
-      <button class="bridge-item" id="parlor-teach">
-        <span class="bridge-domains">🕯 Face to face</span>
-        <span class="bridge-title">Teach &amp; Test</span>
-        <span class="bridge-state">One reads a lesson out loud. The other answers its question. Then swap.</span>
-      </button>
     </div>`;
   $('#parlor-duel').addEventListener('click', () => go('duel'));
-  $('#parlor-coop').addEventListener('click', () => parlorNames(4, 'Set out together', (names, kid) => startExpedition(names, kid), 2));
   $('#parlor-party').addEventListener('click', () => parlorNames(8, 'Start the circle', (names, kid) => startParty(names, kid), 2));
-  $('#parlor-teach').addEventListener('click', () => parlorNames(2, 'Light the candle', (names) => startTeachTest(names)));
   $('#parlor-showdown').addEventListener('click', () => parlorNames(6, 'Start the showdown', (names) => startShowdown(names)));
   $('#parlor-myth').addEventListener('click', () => parlorNames(6, 'Start the hunt', (names) => startMythHunt(names)));
   $('#parlor-match').addEventListener('click', () => {
