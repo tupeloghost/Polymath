@@ -1877,6 +1877,51 @@ body.dt .codex-page { break-inside: avoid; }
 body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
 #workshop-list .bridge-item { width: 100%; }
 
+/* ---------- v84: the sealed doors ---------- */
+.door-card { text-align: center; }
+.door-kind {
+  font-family: var(--serif); font-size: 12.5px; letter-spacing: .2em;
+  text-transform: uppercase; color: #8a5a14; margin-bottom: 8px;
+}
+.door-intro {
+  font-family: var(--serif); font-size: 17.5px; line-height: 1.55; color: #46320e;
+  max-width: 40em; margin: 0 auto 14px;
+}
+.door-wick {
+  display: flex; align-items: flex-start; gap: 11px; text-align: left;
+  font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.5;
+  color: #5a4726; background: rgba(201,162,74,.14);
+  border-left: 3px solid #c9a24a; border-radius: 10px;
+  padding: 11px 14px; margin: 0 auto 16px; max-width: 40em;
+}
+.door-lamp { font-size: 22px; line-height: 1; flex: none; }
+.door-prompt {
+  font-family: var(--display); font-size: 21px; line-height: 1.4; color: #46320e;
+  margin: 0 auto 10px; max-width: 34em;
+}
+.door-display {
+  font-family: var(--display); font-size: clamp(28px, 7vw, 46px); letter-spacing: .12em;
+  color: #8a5a14; margin: 6px 0 16px;
+}
+.door-opts { display: flex; flex-direction: column; gap: 9px; margin-bottom: 12px; }
+.door-hint {
+  font-family: var(--serif); font-style: italic; font-size: 16px;
+  color: #6b5638; min-height: 1.4em; margin-bottom: 10px;
+}
+.door-won .door-degree {
+  font-family: var(--display); font-size: clamp(34px, 9vw, 54px); color: #8a5a14; margin: 4px 0 12px;
+}
+.door-fragment {
+  font-family: var(--serif); font-size: 19px; line-height: 1.5; color: #46320e;
+  background: rgba(201,162,74,.18); border: 1px dashed rgba(138,90,20,.5);
+  border-radius: 12px; padding: 14px 16px; margin: 14px auto; max-width: 36em;
+}
+.door-frag-label {
+  font-size: 12px; letter-spacing: .16em; text-transform: uppercase;
+  color: #8a5a14; margin-bottom: 6px;
+}
+#door-card { cursor: pointer; }
+
 </style>
 </head>
 <body>
@@ -1918,6 +1963,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
     <div class="home-stats" id="home-stats"></div>
 
     <div id="popquiz-card"></div>
+    <div id="door-card"></div>
     <div id="mystery-card"></div>
     <div id="examiner-card"></div>
     <div id="day-row">
@@ -2073,6 +2119,16 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
       <div class="topbar-right" id="debate-progress"></div>
     </div>
     <div id="debate-body"></div>
+  </section>
+
+  <!-- A SEALED DOOR -->
+  <section id="screen-door" class="screen">
+    <div class="topbar">
+      <button class="btn-back" data-go="home">&larr; Castle</button>
+      <div class="topbar-title" id="door-topbar">The Door</div>
+      <div class="topbar-right"></div>
+    </div>
+    <div id="door-body"></div>
   </section>
 
   <!-- THE TALE SO FAR -->
@@ -4132,6 +4188,104 @@ const STORY = [
     ]
   }
 ];
+
+</script>
+<script>
+// The Sealed Doors. One stands at the top of every Degree of Light.
+// Each asks something only a member would work out, and each gives back a
+// fragment of what the society actually is. Read end to end, they confess.
+const DOORS = {
+  'Spark': {
+    intro: 'A door you have walked past a dozen times is not a wall tonight. Wick is leaning on it, delighted.',
+    wick: '"They carved the year above the lintel, in the old numbers. Read it and it opens. I would tell you, but then it would be my door."',
+    kind: 'The carving',
+    prompt: 'The stone above the door reads:',
+    display: 'MDCCLXXVI',
+    a: ['1776', '1576', '1966', '1066'],
+    c: 0,
+    why: 'M is 1,000. D is 500. CC is 200. LXX is 70. VI is 6. Add them: 1,776.',
+    fragment: 'We are older than the schools.'
+  },
+  'Match': {
+    intro: 'The second door has four things nailed to it, and no lock at all.',
+    wick: '"Three of these belong together and one is a stranger. Take down the stranger and the door has nothing left to hold."',
+    kind: 'The odd one out',
+    prompt: 'Which one does not belong with the others?',
+    a: ['A clay tablet listing barley', 'A merchant’s coin', 'A ship’s cargo record', 'A painted sunset'],
+    c: 3,
+    why: 'The other three are records of ordinary business, which is how writing, money and shipping all began. The sunset is the only one made to be looked at.',
+    fragment: 'We keep what the schools throw away.'
+  },
+  'Candle': {
+    intro: 'This one taps. A small brass arm on the door strikes the wood, over and over, patiently.',
+    wick: '"It has been tapping the same word since before your grandmother. Dots are short, dashes are long. You have met this alphabet before."',
+    kind: 'The tapping door',
+    prompt: 'The door taps out three letters:  · · ·    − − −    · · ·',
+    a: ['SOS', 'OSO', 'EMT', 'IOI'],
+    c: 0,
+    why: 'Three dots is S, three dashes is O, three dots is S again. The oldest electric cry for help, and the door has been calling it for a century.',
+    fragment: 'Every one of us was told our question did not matter.'
+  },
+  'Lamp': {
+    intro: 'Four tiles, badly scuffed, set into the floor in front of the door. Wick nudges one with his boot.',
+    wick: '"Stand on them oldest to newest and the door will believe you. Stand wrong and it will simply wait. It is very good at waiting."',
+    kind: 'The four tiles',
+    prompt: 'Put these in the order they happened, oldest first:',
+    a: ['Writing, the pyramids, the printing press, the Moon landing',
+        'The pyramids, writing, the printing press, the Moon landing',
+        'Writing, the printing press, the pyramids, the Moon landing',
+        'The pyramids, the printing press, writing, the Moon landing'],
+    c: 0,
+    why: 'Writing came first, around 3200 BCE. The Great Pyramid followed about 700 years later, the press in the 1400s, the Moon in 1969.',
+    fragment: 'We meet where the lamps are lit, and we keep no register.'
+  },
+  'Lantern': {
+    intro: 'No handle. Only a slot the size of a hand, and a line of writing worn almost smooth.',
+    wick: '"It wants an object, and it has described the one it wants. You have handled it. Think about what it cost to get here."',
+    kind: 'The riddle of the object',
+    prompt: '"I crossed about 4,000 miles by mule and ship so that a painter could afford one blue robe. Ground fine, I was worth more than gold. What am I?"',
+    a: ['Lapis lazuli', 'A Roman coin', 'A wax cylinder', 'A tuning fork'],
+    c: 0,
+    why: 'Lapis lazuli was mined in Afghanistan and carried across the world. Renaissance painters saved it for heaven itself, and somebody walked it every mile.',
+    fragment: 'We do not teach. We show you a thing, and then we wait.'
+  },
+  'Signal Fire': {
+    intro: 'A voice on the other side of this one, reading letters aloud and waiting.',
+    wick: '"Pilots and sailors spell like this so a bad radio cannot lose a letter. It is spelling one word at you. Listen properly."',
+    kind: 'The spoken door',
+    prompt: 'The voice says:  Foxtrot · India · Romeo · Echo',
+    a: ['FIRE', 'FIRM', 'FAIR', 'FIVE'],
+    c: 0,
+    why: 'Foxtrot is F, India is I, Romeo is R, Echo is E. The alphabet exists so that F is never mistaken for S over a crackling radio.',
+    fragment: 'There is no headmaster here. There never was.'
+  },
+  'Beacon': {
+    intro: 'A set of brass scales, and the door will not move until they balance.',
+    wick: '"No trick in this one. Just the sort of question people guess badly, and members do not. Weigh it in your head first."',
+    kind: 'The scales',
+    prompt: 'Which is the bigger number?',
+    a: ['The stars you can see in the universe, against every grain of sand on Earth: the stars win',
+        'Every grain of sand on Earth, against the stars: the sand wins',
+        'They are about equal',
+        'Nobody has ever estimated either'],
+    c: 0,
+    why: 'There are thousands of stars for every grain of sand on every beach and desert on Earth. People almost always guess this one backwards.',
+    fragment: 'Anyone may knock. Almost nobody thinks to.'
+  },
+  'Lighthouse': {
+    intro: 'The last door is at the top of the castle, and it has no puzzle carved on it at all. Only a question, in Wick’s handwriting.',
+    wick: '"You have collected seven fragments on the way up. You have probably worked out what we are. Say it plainly and the last door is a formality."',
+    kind: 'The last door',
+    prompt: 'What is this society, actually?',
+    a: ['People who kept the questions that schools decided were not worth asking',
+        'A club for people who are already clever',
+        'A secret government of scholars',
+        'A society for collecting rare and valuable objects'],
+    c: 0,
+    why: 'That is all it ever was. Not a secret worth killing for. Just a long line of people who refused to let a good question be called useless.',
+    fragment: 'And now the lamp is yours to carry. Light someone else’s.'
+  }
+};
 
 </script>
 <script>
@@ -7887,7 +8041,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v83 · Sep 19, 2026";
+window.GAME_VERSION = "v84 · Sep 19, 2026";
 
 </script>
 <script>
@@ -8918,6 +9072,7 @@ function freshSave(){
     owned: {},              // curiosity id -> true (crate acquired)
     restored: {},           // curiosity id -> true (identified and restored)
     storyDone: {},          // story chapter id -> true
+    doors: {},              // Degree name -> true once its sealed door is solved
     gauntletBest: 0,
     lightningBest: 0,
     chainsDone: {},         // chain id -> true
@@ -8973,6 +9128,7 @@ function recordAnswer(domain, right){
   const rankBefore = rankIndex();
   if (right) { S.domainStats[domain].right++; S.totalRight++; }
   if (right && rankIndex() > rankBefore) setTimeout(() => rankCeremony(rankTitle()), 700);
+  else if (right && pendingDoor()) setTimeout(() => { if (!document.querySelector('.door-overlay, .ceremony, .story-overlay')) announceDoor(); }, 900);
   else { S.domainStats[domain].wrong++; S.totalWrong++; }
   if (!S.recent[domain]) S.recent[domain] = [];
   S.recent[domain].push(right ? 1 : 0);
@@ -9176,10 +9332,37 @@ const RANKS = [
 ];
 function rankIndex(){
   let i = 0;
-  RANKS.forEach((r, idx) => { if (S.totalRight >= r.at) i = idx; });
+  RANKS.forEach((r, idx) => {
+    if (idx === 0) { i = 0; return; }
+    if (S.totalRight >= r.at && (!(typeof DOORS !== 'undefined' && DOORS[r.name]) || doorOpen(r.name)) && i === idx - 1) i = idx;
+  });
   return i;
 }
 function rankTitle(){ return RANKS[rankIndex()].name; }
+// A Degree is only yours once you have opened its door. Reaching the number
+// summons the door; solving it grants the light.
+function doorOpen(name){ return !!(S.doors || {})[name]; }
+function earnedIndex(){
+  let i = 0;
+  RANKS.forEach((r, idx) => {
+    if (idx === 0) return;
+    if (S.totalRight >= r.at && doorOpen(r.name) && i === idx - 1) i = idx;
+  });
+  return i;
+}
+// the door standing in your way right now, if any
+function pendingDoor(){
+  const i = earnedIndex();
+  const next = RANKS[i + 1];
+  if (!next) return null;
+  if (S.totalRight < next.at) return null;
+  if (typeof DOORS === 'undefined' || !DOORS[next.name]) return null;
+  return { degree: next.name, puzzle: DOORS[next.name] };
+}
+function fragmentsEarned(){
+  if (typeof DOORS === 'undefined') return [];
+  return RANKS.filter(r => doorOpen(r.name) && DOORS[r.name]).map(r => ({ degree: r.name, text: DOORS[r.name].fragment }));
+}
 function rankProgress(){
   const i = rankIndex();
   if (i === RANKS.length - 1) return { pct: 100, toGo: 0, next: null };
@@ -9264,6 +9447,7 @@ function go(name){
   if (name === 'subjects') renderSubjects();
   if (name === 'codex') renderCodex();
   if (name === 'tale') renderTale();
+  if (name === 'door') openDoorScreen();
   if (name === 'detention') startDetention();
   if (name === 'expedition') startExpedition();
   if (name === 'workshop') renderWorkshop();
@@ -9303,6 +9487,81 @@ wireReveal('campus-toggle', '#office-scene', 'campus', '🏫 Visit the campus', 
 wireReveal('menu-toggle', '.home-menu', 'menu', '🚪 See every room laid out', '🚪 Tuck the rooms away');
 const heroAll = document.getElementById('hero-all');
 if (heroAll) heroAll.addEventListener('click', () => { if (window.openDirectory) openDirectory(); });
+
+// ---------- THE SEALED DOORS ----------
+// One stands at the top of every Degree. Reaching the number is not enough;
+// the door asks you something first.
+function announceDoor(){
+  const d = pendingDoor();
+  if (!d) return;
+  toast('🚪 A door you have not seen before is standing open a crack.');
+  renderHome();
+}
+function openDoorScreen(){
+  const d = pendingDoor();
+  if (!d) { go('home'); return; }
+  const p = d.puzzle;
+  document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
+  $('#screen-door').classList.add('active');
+  window.scrollTo(0, 0);
+  $('#door-topbar').textContent = 'The ' + d.degree + ' Door';
+  const body = $('#door-body');
+  body.innerHTML = '';
+  let tries = 0;
+  const card = el(`<div class="lesson-card door-card">
+    <div class="door-kind">${p.kind}</div>
+    <p class="door-intro">${p.intro}</p>
+    <div class="door-wick"><span class="door-lamp">🪔</span><span>${p.wick}</span></div>
+    <p class="door-prompt">${p.prompt}</p>
+    ${p.display ? `<div class="door-display">${p.display}</div>` : ''}
+    <div class="door-opts"></div>
+    <div class="door-hint" id="door-hint"></div>
+    <button class="btn-secondary" data-go="home">Walk away for now</button>
+  </div>`);
+  const box = card.querySelector('.door-opts');
+  shuffle(p.a.map((text, i) => ({ text, right: i === p.c }))).forEach(o => {
+    const btn = el(`<button class="answer-btn">${o.text}</button>`);
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      if (o.right) {
+        btn.classList.add('correct');
+        SFX.correct();
+        setTimeout(() => solveDoor(d, p), 500);
+      } else {
+        btn.classList.add('faded'); btn.disabled = true;
+        SFX.wrong();
+        tries++;
+        if (tries >= 2) $('#door-hint').textContent = '🪔 Wick, quietly: "Take your time. The door has nowhere to be."';
+        else toast('The door does not move.');
+      }
+    });
+    box.appendChild(btn);
+  });
+  body.appendChild(card);
+}
+function solveDoor(d, p){
+  S.doors = S.doors || {};
+  S.doors[d.degree] = true;
+  save();
+  checkAchievements();
+  confetti(60);
+  SFX.reward();
+  const body = $('#door-body');
+  body.innerHTML = '';
+  body.appendChild(el(`<div class="lesson-card door-card door-won">
+    <div class="door-kind">The door opens</div>
+    <div class="door-degree">${d.degree}</div>
+    <p class="qcard-why">${p.why}</p>
+    <div class="door-fragment">
+      <div class="door-frag-label">Carved inside the frame</div>
+      ${p.fragment}
+    </div>
+    <p class="door-intro">You are a ${d.degree} now. ${fragmentsEarned().length} of ${Object.keys(DOORS).length} fragments found.</p>
+    <button class="btn-primary" data-go="home">Take the stairs back down</button>
+    <button class="btn-secondary" data-go="tale">Read what you have gathered</button>
+  </div>`));
+  setTimeout(() => { if (typeof rankCeremony === 'function') rankCeremony(d.degree); }, 450);
+}
 
 // ---------- THE STORY: The Last Curator ----------
 // Chapters arrive in order, once each, when the game has earned them.
@@ -9751,6 +10010,17 @@ function renderHome(){
     toast(`🪔 All three done tonight. +${got} lumens. (${S.attendanceCount} night${S.attendanceCount === 1 ? '' : 's'} total)`);
   }
 
+  const dp = pendingDoor();
+  const doorCard = $('#door-card');
+  if (doorCard) {
+    if (dp) {
+      doorCard.style.display = '';
+      doorCard.innerHTML = `<div class="iod-label">Something is waiting upstairs</div>
+        <div class="mystery-title">🚪 The ${dp.degree} Door</div>
+        <div class="iod-hint">You have earned the light. The door asks one thing first.</div>`;
+      doorCard.onclick = () => go('door');
+    } else { doorCard.style.display = 'none'; doorCard.onclick = null; }
+  }
   if (window.updateCampusStatus) window.updateCampusStatus();
   setTimeout(checkStory, 400);
 
