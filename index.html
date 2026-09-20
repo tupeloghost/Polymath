@@ -4081,31 +4081,30 @@ const CURIO_NOTE = {
 </script>
 <script>
 // The Lamp: one story told across the whole castle.
-// Each chapter waits for its moment, arrives once, and is kept in The Tale So Far.
-// when(S) decides when a chapter is ready. Chapters always arrive in order.
+// Rule for this file: say what happens. Never imply it and make the reader work it out.
 const STORY = [
   {
     id: 's1', title: 'The Letter',
     speaker: 'A letter, unsigned', face: '📜',
     when: () => true,
     lines: [
-      'The envelope was under your door this morning. Your name is on it in careful old handwriting.',
-      '"You have been noticed. You ask more questions than is strictly normal, and somebody here keeps a list."',
-      '"There is a castle, and a lamp, and forty-two objects that belong in it. The objects are scattered across the world at present. That part was my doing."',
-      '"Come and find them. Work out what each one is. When the shelves are full, a drawer will open that has been shut for a very long time."',
-      'It is signed with a single letter: A.'
+      'A letter was under your door this morning. Your name is on the front.',
+      '"You ask a lot of questions. I like that. This is an invitation."',
+      '"I own a castle. Inside it is a cabinet that should hold forty-two objects. Right now it is empty, because I mailed every object away."',
+      '"Come and find them. Work out what each one is. When all forty-two are back on the shelves, a locked drawer will open."',
+      'It is signed with one letter: A.'
     ]
   },
   {
-    id: 's2', title: 'Wick, Delighted',
+    id: 's2', title: 'Wick',
     speaker: 'Wick', face: '🪔',
     when: (S) => S.totalRight >= 5,
     need: { text: 'Answer 5 questions right', go: 'daily', goText: 'Tonight’s challenge', at: 5, count: (S) => S.totalRight },
     lines: [
-      'A man is sitting on the empty shelves, swinging his boots, holding a lamp that is far older than he looks.',
-      '"Wick. I carry the lamp, I know the way around, and I have been to most of the centuries you are about to read about."',
-      '"Her name was Alma. She kept this castle before you, filled that cabinet with forty-two objects, and then one night she wrapped every one of them up and sent them out into the world."',
-      '"Everyone assumed she had lost her mind. I was here. She was laughing."'
+      'A man is sitting on the empty shelves, swinging his boots. He is holding an old brass lamp.',
+      '"I am Wick. I look after this castle, and I am going to help you."',
+      '"The woman who wrote your letter is called Alma. It took her a lifetime to fill that cabinet with forty-two objects."',
+      '"Then one night she wrapped them all up and mailed them around the world. Everyone said she had gone mad. I was here. She was laughing."'
     ]
   },
   {
@@ -4114,34 +4113,34 @@ const STORY = [
     when: (S) => Object.keys(S.restored || {}).length >= 1,
     need: { text: 'Identify your first object', go: 'collection', goText: 'Open the Vault', at: 1, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'The first object is on the shelf, cleaned and named. A slip of paper came out of the wrapping with it.',
-      'Wick reads over your shoulder without asking.',
-      '"That is her hand. She numbered them. Forty-two notes, and you have one."',
-      '"She never cared about owning beautiful things. She cared about what each one proved."'
+      'Your first object is on the shelf, cleaned and named.',
+      'A slip of paper came out of the wrapping with it. Wick reads it over your shoulder.',
+      '"That is Alma’s handwriting. She numbered them. There are forty-two notes, and you have one."',
+      '"She never cared about owning beautiful things. She cared about what they proved."'
     ]
   },
   {
-    id: 's4', title: 'The Raven Has a Theory',
+    id: 's4', title: 'The Raven',
     speaker: 'The Raven', face: '🐦‍⬛',
     when: (S) => Object.keys(S.restored || {}).length >= 4,
     need: { text: 'Bring back 4 objects', go: 'collection', goText: 'Open the Vault', at: 4, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'The raven lands on the windowsill, uninvited, the way he does everything.',
-      '"Caw. Wick is telling it sweetly. Ask him what she said the night she packed the last crate."',
-      '"She said a thing that is handed to you is a decoration. She said a thing you work out is yours forever."',
-      '"Then she posted her entire life across five continents, and went to bed very pleased with herself."'
+      'A raven lands on the windowsill.',
+      '"Caw. Wick tells this story politely. I will tell you what Alma actually said."',
+      '"She said a thing somebody hands you is a decoration. A thing you work out yourself is yours forever."',
+      '"Then she mailed her whole life to five continents and slept very well that night."'
     ]
   },
   {
-    id: 's5', title: 'What the Notes Are Doing',
+    id: 's5', title: 'What the Notes Say',
     speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 9,
     need: { text: 'Bring back 9 objects', go: 'collection', goText: 'Open the Vault', at: 9, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'You lay the notes side by side on the desk. They are not a diary. They are a map of everything she loved.',
-      '"One note for every object," Wick says. "Never what it is. Always what it proves."',
-      '"A clay tablet proves the first writing was a receipt for barley. A pinch of blue pigment proves somebody walked four thousand miles for a color."',
-      '"Keep going. You are about a fifth of the way to reading the whole argument."'
+      'You lay the notes out on the desk. Each one explains why its object matters.',
+      '"One note for every object," Wick says. "She never writes down what a thing is. She writes down what it proves."',
+      '"A clay tablet proves the first writing in the world was a shopping list. A pinch of blue paint proves somebody carried it four thousand miles."',
+      '"Keep going. You have read about a fifth of what she wanted to tell you."'
     ]
   },
   {
@@ -4150,23 +4149,23 @@ const STORY = [
     when: (S) => Object.keys(S.restored || {}).length >= 16,
     need: { text: 'Bring back 16 objects', go: 'collection', goText: 'Open the Vault', at: 16, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'Wick comes in holding an auction catalogue, which he puts down very carefully.',
-      '"Two of the objects on your list sold last month. Somebody is buying them back, same as you."',
-      'He is grinning, which is not the reaction you expected.',
-      '"Good. That means the letters went out to more than one door. Alma always did play a long game."'
+      'Wick comes in carrying a catalogue from an auction house.',
+      '"Two objects from your list were sold last month. Somebody else is buying them back."',
+      'He is smiling, which is not what you expected.',
+      '"Alma posted more than one letter. There is another person out there doing exactly what you are doing."'
     ]
   },
   {
-    id: 's7', title: 'Why She Scattered Them',
+    id: 's7', title: 'Why She Mailed Them Away',
     speaker: 'Wick', face: '🪔',
     when: (S) => Object.keys(S.restored || {}).length >= 26,
     need: { text: 'Bring back 26 objects', go: 'collection', goText: 'Open the Vault', at: 26, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'More than half the shelves are full. Wick is quiet for a while before he says it.',
+      'Half the shelves are full now. Wick is quiet for a while.',
       '"She was never collecting objects. Anyone with money can collect objects."',
-      '"Every single thing in that cabinet was made by somebody ordinary. A clerk. A weaver. A boy grinding paint in a workshop that belonged to a famous man."',
-      '"She was collecting proof that the useful and the beautiful were always the same thing, and that anybody can walk into any subject and belong there."',
-      '"She scattered them because you are learning more chasing them than you ever would dusting them."'
+      '"Look at who made these things. A clerk. A weaver. A boy grinding paint in a famous man’s workshop."',
+      '"She was proving that useful things and beautiful things are the same things, and that anybody can belong in any subject."',
+      '"She mailed them away because you learn far more chasing something than dusting it."'
     ]
   },
   {
@@ -4175,10 +4174,10 @@ const STORY = [
     when: (S) => Object.keys(S.restored || {}).length >= 36,
     need: { text: 'Bring back 36 objects', go: 'collection', goText: 'Open the Vault', at: 36, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'There is a drawer at the base of the cabinet that has never opened for you. Tonight you see why.',
-      'It has no keyhole anywhere on it. The weight of the full shelves above is what releases the catch.',
-      '"She built it to open when the collection was complete," Wick says. "Not one object sooner. She was a stubborn woman and a very good carpenter."',
-      '"Six to go. Whatever is down there, she left it for whoever finished what she started."'
+      'There is a drawer at the bottom of the cabinet. It has never opened for you.',
+      'Tonight you see why. It has no keyhole. The weight of the full shelves above is what unlocks it.',
+      '"She built it to open when the collection is finished," Wick says. "Not one object sooner. She was stubborn, and a very good carpenter."',
+      '"Six to go. Whatever is inside, she left it for whoever finished her game."'
     ]
   },
   {
@@ -4187,11 +4186,11 @@ const STORY = [
     when: (S) => Object.keys(S.restored || {}).length >= 42,
     need: { text: 'Bring back all 42 objects', go: 'collection', goText: 'Open the Vault', at: 42, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'The last object goes onto the shelf. Something underneath gives way, and the drawer slides open on its own.',
-      'Inside is one page, written the night she sent everything away.',
-      '"If you are reading this, the shelves are full, which means you found all forty-two, which means you know what I know."',
-      '"I could have left you a full cabinet and a list. You would have dusted it and forgotten it by spring."',
-      '"So I gave you the chase instead. Everything you now know, you know because you went and got it. That is yours for good."',
+      'The last object goes on the shelf. Something clicks underneath, and the drawer slides open by itself.',
+      'Inside is one page, written the night she mailed everything away.',
+      '"If you are reading this, all forty-two are home. So you know what I know now."',
+      '"I could have left you a full cabinet and a list of labels. You would have dusted it and forgotten it by spring."',
+      '"So I gave you the hunt instead. Everything you know now, you know because you went and got it. Nobody can take that back."',
       '"Light the lamp. Somebody out there is asking their first real question tonight."'
     ]
   },
@@ -4201,11 +4200,11 @@ const STORY = [
     when: (S) => Object.keys(S.restored || {}).length >= 42 && (S.storyDone || {}).s9,
     need: { text: 'Read Alma’s last note', go: 'collection', goText: 'Open the Vault', at: 42, count: (S) => Object.keys(S.restored || {}).length },
     lines: [
-      'In the morning Wick is on the gatepost, looking down the road, which is a thing he never does.',
-      '"There is a lamp lit in the hall and I did not light it. Somebody came up the drive at dawn and left a question on the step."',
-      'He turns around, and for once there is no lecture in it.',
-      '"Congratulations. The shelves are full, the ledger is written, and the castle is yours to keep."',
-      '"You know how this works now. You find the strange object, you sit with it until it makes sense, and then you tell somebody."'
+      'In the morning Wick is standing at the gate, looking down the road. He never does this.',
+      '"Somebody walked up the drive at dawn and left a question on the step. The lamp in the hall was already lit when I got there."',
+      'He turns around, and for once he is not teasing you.',
+      '"The shelves are full. The castle is yours to keep."',
+      '"You know how this works now. Find the strange object, sit with it until it makes sense, then go and tell somebody."'
     ]
   }
 ];
@@ -4238,7 +4237,7 @@ const DOORS = {
     fragment: 'We keep the things everyone else walked past.'
   },
   'Candle': {
-    intro: 'This one taps. A small brass arm on the door strikes the wood, over and over, patiently.',
+    intro: 'A small brass arm on this door taps the wood, over and over, very patiently.',
     wick: '"It has been tapping the same word since before your grandmother was born. A dot is a short tap, a dash is a long one. You know this alphabet already."',
     kind: 'The tapping door',
     prompt: 'The door taps out three letters:  · · ·    − − −    · · ·',
@@ -4248,7 +4247,7 @@ const DOORS = {
     fragment: 'Every one of us arrived by following a question.'
   },
   'Lamp': {
-    intro: 'Four tiles, badly scuffed, set into the floor in front of the door. Wick nudges one with his boot.',
+    intro: 'Four scuffed tiles are set into the floor in front of the door. Wick nudges one with his boot.',
     wick: '"Step on them oldest first and the door opens. Get the order wrong and nothing happens at all. It is very good at waiting."',
     kind: 'The four tiles',
     prompt: 'Put these in the order they happened, oldest first:',
@@ -4261,7 +4260,7 @@ const DOORS = {
     fragment: 'We meet where the lamps are lit, and we keep no register.'
   },
   'Lantern': {
-    intro: 'No handle. Only a slot the size of a hand, and a line of writing worn almost smooth.',
+    intro: 'This door has no handle. It has a slot the size of your hand, and a line of writing worn almost smooth.',
     wick: '"The door wants an object, and it just described it to you. You have held this one. Think about how far it had to travel."',
     kind: 'The riddle of the object',
     prompt: '"I crossed about 4,000 miles by mule and ship so that a painter could afford one blue robe. Ground fine, I was worth more than gold. What am I?"',
@@ -4271,7 +4270,7 @@ const DOORS = {
     fragment: 'We show you a thing, and then we wait.'
   },
   'Signal Fire': {
-    intro: 'A voice on the other side of this one, reading letters aloud and waiting.',
+    intro: 'Somebody on the other side of this door is reading letters out loud, over and over, waiting for an answer.',
     wick: '"Pilots and sailors spell this way so a crackly radio cannot lose a letter. The voice is spelling one word. Take the first letter of each."',
     kind: 'The spoken door',
     prompt: 'The voice says:  Foxtrot · India · Romeo · Echo',
@@ -4281,7 +4280,7 @@ const DOORS = {
     fragment: 'Every member here is equal, and always has been.'
   },
   'Beacon': {
-    intro: 'A set of brass scales, and the door will not move until they balance.',
+    intro: 'A set of brass scales hangs beside the door. The door opens when the scales balance.',
     wick: '"No trick here. Just a question almost everyone gets backwards. Take a guess before you read the answers."',
     kind: 'The scales',
     prompt: 'Which is there more of?',
@@ -4294,7 +4293,7 @@ const DOORS = {
     fragment: 'Anyone may knock. The door has always been unlocked.'
   },
   'Lighthouse': {
-    intro: 'The last door is at the top of the castle, and it has no puzzle carved on it at all. Only a question, in Wick’s handwriting.',
+    intro: 'The last door is at the top of the castle. It has no puzzle on it, just one question written in Wick’s handwriting.',
     wick: '"You picked up seven fragments on the way up here. By now you know what we are. Say it plainly and the door just opens."',
     kind: 'The last door',
     prompt: 'So what is this society, really?',
@@ -8062,7 +8061,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v87 · Sep 19, 2026";
+window.GAME_VERSION = "v88 · Sep 19, 2026";
 
 </script>
 <script>
