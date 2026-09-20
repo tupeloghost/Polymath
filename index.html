@@ -7887,7 +7887,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v79 · Sep 19, 2026";
+window.GAME_VERSION = "v80 · Sep 19, 2026";
 
 </script>
 <script>
@@ -8008,43 +8008,186 @@ const ACHIEVEMENTS = [
 
 </script>
 <script>
-// Tiny synthesized sounds, no audio files. Soft library tones.
+// Synthesized sounds, no audio files. Struck wood, brass, glass and paper,
+// played into a small room. Every voice gets partials, a filter, a soft
+// attack and a reverb send, which is the difference between an instrument
+// and a beep.
 const SFX = (function(){
-  let ctx = null;
+  let ctx = null, master = null, room = null, roomSend = null;
+
+  function makeRoom(c, seconds, decay){
+    const rate = c.sampleRate, len = Math.floor(rate * seconds);
+    const buf = c.createBuffer(2, len, rate);
+    for (let ch = 0; ch < 2; ch++){
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++){
+        // decaying noise, slightly different per ear so the room feels wide
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+      }
+    }
+    return buf;
+  }
   function ac(){
-    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} }
+    if (!ctx) {
+      try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return null; }
+      master = ctx.createGain();
+      master.gain.value = 0.9;
+      // gentle ceiling so nothing ever spikes or clips
+      const squeeze = ctx.createDynamicsCompressor();
+      squeeze.threshold.value = -16; squeeze.knee.value = 24; squeeze.ratio.value = 3;
+      squeeze.attack.value = 0.005; squeeze.release.value = 0.22;
+      room = ctx.createConvolver();
+      room.buffer = makeRoom(ctx, 1.7, 2.6);
+      roomSend = ctx.createGain();
+      roomSend.gain.value = 0.26;
+      roomSend.connect(room); room.connect(squeeze);
+      master.connect(squeeze); squeeze.connect(ctx.destination);
+    }
     if (ctx && ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
   function enabled(){ return typeof window.SOUND_ON === 'function' ? window.SOUND_ON() : true; }
-  function tone(freq, dur, type, vol, delay){
+
+  // one struck voice: a fundamental plus partials, each with its own decay
+  function struck(freq, opts){
     const c = ac(); if (!c || !enabled()) return;
-    const t = c.currentTime + (delay || 0);
-    const o = c.createOscillator(), g = c.createGain();
-    o.type = type || 'sine';
-    o.frequency.value = freq;
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol || 0.08, t + 0.015);
+    const o = opts || {};
+    const t = c.currentTime + (o.delay || 0);
+    const dur = o.dur || 0.5;
+    const vol = o.vol == null ? 0.09 : o.vol;
+    const parts = o.partials || [[1, 1], [2.01, 0.32], [3.02, 0.12]];
+    const bus = c.createGain();
+    bus.gain.value = 1;
+    const lp = c.createBiquadFilter();
+    lp.type = 'lowpass';
+    lp.frequency.setValueAtTime(o.open || 4200, t);
+    lp.frequency.exponentialRampToValueAtTime(Math.max(220, (o.close || 900)), t + dur);
+    lp.Q.value = o.q || 0.6;
+    bus.connect(lp);
+    lp.connect(master);
+    lp.connect(roomSend);
+    parts.forEach(([mult, amp], i) => {
+      const osc = c.createOscillator(), g = c.createGain();
+      osc.type = o.type || 'sine';
+      osc.frequency.value = freq * mult;
+      // real objects are never perfectly in tune
+      osc.detune.value = (Math.random() * 2 - 1) * (o.spread == null ? 6 : o.spread);
+      const a = o.attack == null ? 0.012 : o.attack;
+      const peak = vol * amp;
+      const pDur = dur * (1 - i * 0.16);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(0.06, pDur));
+      osc.connect(g); g.connect(bus);
+      osc.start(t); osc.stop(t + dur + 0.1);
+    });
+  }
+
+  // filtered noise: paper, wood, fire, breath
+  function noise(opts){
+    const c = ac(); if (!c || !enabled()) return;
+    const o = opts || {};
+    const t = c.currentTime + (o.delay || 0);
+    const dur = o.dur || 0.12;
+    const len = Math.max(1, Math.floor(c.sampleRate * dur));
+    const buf = c.createBuffer(1, len, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter();
+    f.type = o.type || 'bandpass';
+    f.frequency.setValueAtTime(o.freq || 2000, t);
+    if (o.sweepTo) f.frequency.exponentialRampToValueAtTime(o.sweepTo, t + dur);
+    f.Q.value = o.q || 1.1;
+    const g = c.createGain();
+    const vol = o.vol == null ? 0.05 : o.vol;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + (o.attack || 0.008));
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(c.destination);
-    o.start(t); o.stop(t + dur + 0.05);
+    src.connect(f); f.connect(g); g.connect(master);
+    if (o.send !== false) g.connect(roomSend);
+    src.start(t); src.stop(t + dur + 0.05);
   }
   function buzz(p){ try { if (navigator.vibrate) navigator.vibrate(p); } catch(e){} }
+
+  // wooden-bar partials (marimba-ish) and glassy bell partials
+  const WOOD = [[1, 1], [3.94, 0.22], [9.2, 0.06]];
+  const GLASS = [[1, 1], [2.76, 0.45], [5.4, 0.18], [8.9, 0.07]];
+  const SOFT = [[1, 1], [2.02, 0.28], [3.01, 0.08]];
+
   return {
-    correct(){ tone(660, .18, 'sine', .06); tone(990, .22, 'sine', .05, .07); buzz(15); },
-    wrong(){ tone(180, .25, 'triangle', .07); tone(140, .3, 'triangle', .05, .08); buzz([40, 50, 40]); },
-    reward(){ tone(523, .15, 'sine', .05); tone(659, .15, 'sine', .05, .09); tone(784, .3, 'sine', .06, .18); buzz([20, 30, 60]); },
-    page(){ tone(2400, .04, 'triangle', .015); tone(1800, .05, 'triangle', .012, .02); },
-    tick(){ tone(1200, .03, 'sine', .02); },
-    combo(n){ const f = 523 * Math.pow(2, Math.min(n, 12) / 12); tone(f, .12, 'sine', .05); tone(f * 1.5, .16, 'sine', .04, .06); },
-    fanfare(){ [523, 659, 784, 1047].forEach((f, i) => tone(f, .5, 'sine', .06, i * .13)); tone(1319, .8, 'sine', .05, .55); buzz([30, 40, 30, 40, 80]); },
-    drumroll(dur){ const n = Math.floor((dur || .7) / .05); for (let i = 0; i < n; i++) tone(900 + Math.random() * 200, .03, 'triangle', .02, i * .05); },
-    crackle(){ for (let i = 0; i < 7; i++) tone(120 + Math.random() * 300, .04, 'triangle', .03, Math.random() * .8); },
-    chime(){ tone(880, .6, 'sine', .05); tone(1108, .8, 'sine', .04, .3); buzz(20); },
-    note(freq, dur, delay){ tone(freq, dur || .5, 'sine', .07, delay || 0); },
-    door(){ tone(260, .18, 'triangle', .045); tone(215, .2, 'triangle', .04, .14); tone(170, .24, 'triangle', .04, .3); tone(90, .12, 'triangle', .05, .5); },
-    bell(){ [660, 660].forEach((f, i) => { tone(f, 1.1, 'sine', .06, i * .7); tone(f * 2.76, .5, 'sine', .02, i * .7); }); buzz([40, 200, 40]); },
-    purr(){ for (let i = 0; i < 6; i++) tone(82, .09, 'triangle', .04, i * .12); tone(520, .18, 'sine', .04, .8); tone(430, .22, 'sine', .04, .92); buzz([50, 40, 50, 40, 50]); }
+    correct(){
+      struck(784, { dur: .7, vol: .085, partials: WOOD, open: 5200, close: 1100, attack: .006 });
+      struck(1175, { dur: .55, vol: .05, partials: WOOD, delay: .055, open: 6000, close: 1400 });
+      buzz(14);
+    },
+    wrong(){
+      // a soft wooden knock, no buzz, nothing harsh
+      noise({ dur: .07, vol: .05, type: 'lowpass', freq: 900, sweepTo: 240, q: .8 });
+      struck(147, { dur: .5, vol: .075, partials: [[1, 1], [1.5, .18]], open: 1100, close: 260, attack: .004, type: 'triangle' });
+      buzz([26, 40, 26]);
+    },
+    reward(){
+      [523, 659, 784].forEach((f, i) => struck(f, { dur: .8, vol: .06, partials: WOOD, delay: i * .085, open: 5200, close: 1200 }));
+      struck(1047, { dur: 1.1, vol: .05, partials: GLASS, delay: .26, open: 7000, close: 1800 });
+      buzz([18, 28, 55]);
+    },
+    page(){
+      // actual paper, not a beep
+      noise({ dur: .13, vol: .035, type: 'highpass', freq: 1900, sweepTo: 3600, q: .5, attack: .02 });
+      noise({ dur: .09, vol: .022, type: 'highpass', freq: 2600, sweepTo: 1500, q: .4, delay: .07 });
+    },
+    tick(){ noise({ dur: .022, vol: .03, type: 'bandpass', freq: 2400, q: 3 }); },
+    combo(n){
+      const f = 523 * Math.pow(2, Math.min(n, 12) / 12);
+      struck(f, { dur: .6, vol: .07, partials: WOOD, open: 5400, close: 1200 });
+      struck(f * 2, { dur: .5, vol: .035, partials: GLASS, delay: .05, open: 7000, close: 2000 });
+    },
+    fanfare(){
+      [523, 659, 784, 1047].forEach((f, i) =>
+        struck(f, { dur: 1.5, vol: .07, partials: GLASS, delay: i * .12, open: 6500, close: 1500 }));
+      struck(1319, { dur: 2.2, vol: .055, partials: GLASS, delay: .5, open: 8000, close: 1800 });
+      buzz([26, 36, 26, 36, 70]);
+    },
+    drumroll(dur){
+      const n = Math.floor((dur || .7) / .045);
+      for (let i = 0; i < n; i++)
+        noise({ dur: .035, vol: .022 + Math.random() * .012, type: 'bandpass', freq: 380 + Math.random() * 260, q: 1.6, delay: i * .045 });
+    },
+    crackle(){
+      for (let i = 0; i < 9; i++)
+        noise({ dur: .03 + Math.random() * .04, vol: .018 + Math.random() * .02, type: 'bandpass',
+                freq: 420 + Math.random() * 900, q: 2.2, delay: Math.random() * .9 });
+    },
+    chime(){
+      struck(880, { dur: 2.4, vol: .06, partials: GLASS, open: 7500, close: 1600, attack: .004 });
+      struck(1320, { dur: 1.8, vol: .03, partials: GLASS, delay: .22, open: 8000, close: 2000 });
+      buzz(18);
+    },
+    note(freq, dur, delay){
+      struck(freq, { dur: dur || .9, vol: .085, partials: SOFT, delay: delay || 0, open: 4200, close: 900, attack: .02 });
+    },
+    door(){
+      // latch, then the weight of the door, then a low settle
+      noise({ dur: .05, vol: .045, type: 'bandpass', freq: 1700, q: 2.4 });
+      noise({ dur: .22, vol: .05, type: 'lowpass', freq: 600, sweepTo: 170, q: .7, delay: .06 });
+      struck(72, { dur: 1.0, vol: .075, partials: [[1, 1], [2.1, .16]], delay: .1, open: 500, close: 90, attack: .02, type: 'triangle' });
+    },
+    bell(){
+      [0, .62].forEach(d => {
+        struck(523, { dur: 3.2, vol: .07, partials: [[1, 1], [2.76, .55], [5.4, .22], [8.9, .1], [13.3, .04]],
+                      delay: d, open: 7000, close: 900, attack: .002, spread: 3 });
+      });
+      buzz([34, 180, 34]);
+    },
+    purr(){
+      // a low rolling rumble, then a small questioning chirp
+      for (let i = 0; i < 9; i++)
+        noise({ dur: .1, vol: .03, type: 'lowpass', freq: 220, q: .6, delay: i * .085 });
+      struck(540, { dur: .35, vol: .04, partials: SOFT, delay: .82, open: 3000, close: 900, attack: .03 });
+      struck(700, { dur: .4, vol: .035, partials: SOFT, delay: .95, open: 3400, close: 1000, attack: .03 });
+      buzz([40, 34, 40, 34, 40]);
+    }
   };
 })();
 
