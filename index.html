@@ -1955,7 +1955,7 @@ body.dt #workshop-list { grid-template-columns: 1fr 1fr; }
     <header class="masthead">
       <div class="masthead-rule"></div>
       <h1>Curiosity Castle</h1>
-      <p class="tagline">You were not enrolled. You were recruited.</p>
+      <p class="tagline">You were recruited.</p>
       <button id="charter-link" title="Why this place exists">📜 Our Charter</button>
       <div class="masthead-rule"></div>
     </header>
@@ -4219,7 +4219,7 @@ const STORY = [
 const DOORS = {
   'Spark': {
     intro: 'A door you have walked past a dozen times is open a crack tonight. Wick is leaning on it, delighted.',
-    wick: '"Someone carved a year above this door, in the old Roman numbers. Read it out and the door opens. I could just tell you, but then it would be my door, not yours."',
+    wick: '"Someone carved a year above this door, in the old Roman numbers. Read it out and the door opens. I could tell you, but then it would be my door instead of yours."',
     kind: 'The carving',
     prompt: 'The stone above the door reads:',
     display: 'MDCCLXXVI',
@@ -4269,7 +4269,7 @@ const DOORS = {
     a: ['Lapis lazuli', 'A Roman coin', 'A wax cylinder', 'A tuning fork'],
     c: 0,
     why: 'Lapis lazuli was mined in Afghanistan and carried across the world. Renaissance painters saved it for heaven itself, and somebody walked it every mile.',
-    fragment: 'We do not teach. We show you a thing, and then we wait.'
+    fragment: 'We show you a thing, and then we wait.'
   },
   'Signal Fire': {
     intro: 'A voice on the other side of this one, reading letters aloud and waiting.',
@@ -4279,7 +4279,7 @@ const DOORS = {
     a: ['FIRE', 'FIRM', 'FAIR', 'FIVE'],
     c: 0,
     why: 'Foxtrot is F, India is I, Romeo is R, Echo is E. The alphabet exists so that F is never mistaken for S over a crackling radio.',
-    fragment: 'There is no headmaster here. There never was.'
+    fragment: 'Every member here is equal, and always has been.'
   },
   'Beacon': {
     intro: 'A set of brass scales, and the door will not move until they balance.',
@@ -8063,7 +8063,7 @@ const SKILL_SUM = {
 
 </script>
 <script>
-window.GAME_VERSION = "v85 · Sep 19, 2026";
+window.GAME_VERSION = "v86 · Sep 19, 2026";
 
 </script>
 <script>
@@ -9757,12 +9757,12 @@ if (charterBtn) charterBtn.addEventListener('click', () => {
   ov.innerHTML = `<div class="dir-card charter-card">
     <div class="dir-head">📜 The Founder’s Charter</div>
     <div class="charter-text">
-      <p>This place exists because too much of school did not.</p>
-      <p>You can graduate knowing the chief exports of countries you will never visit, and still not know how money grows, how liars argue, why your body begs for sleep, or what a day of your life is worth.</p>
-      <p>Not here.</p>
-      <p>So the aim here is simple: <b>make learning fun, and feed every kind of curiosity.</b></p>
+      <p>School taught you the chief exports of countries you will never visit.</p>
+      <p>It skipped how money grows, how liars argue, why your body begs for sleep, and what a day of your life is worth.</p>
+      <p>We start there.</p>
+      <p>The aim is simple: <b>make learning fun, and feed every kind of curiosity.</b></p>
       <p>People are curious about different things. One of you wants to know how money grows. One wants to know why the sky went red last night, or who really built the pyramids, or what makes a song stick in your head. Those are all real questions, and not one of them is a waste of time.</p>
-      <p>So there is no syllabus here. No order you have to follow, no final exam, and nothing sitting on a shelf because a committee decided it belonged there.</p>
+      <p>Everything here is optional, in any order, with a way out at every step. Every room stays open.</p>
       <p>Ask what you want. Skip what bores you. Come back when you like.</p>
       <p class="charter-sig">Follow whatever you are curious about.<br>That has always been the whole method.<br>· Alma, who started this collection ·</p>
     </div>
@@ -10632,7 +10632,7 @@ function endExpedition(survived){
 function renderParlor(){
   const body = $('#parlor-body');
   body.innerHTML = `
-    <p class="helper-text">For 2 or more on one device. Your own progress is untouched.</p>
+    <p class="helper-text">For 2 or more on one device. Your own progress stays safe.</p>
     <div class="bridge-list">
       <button class="bridge-item" id="parlor-duel">
         <span class="bridge-domains">⚔ Head to head</span>
